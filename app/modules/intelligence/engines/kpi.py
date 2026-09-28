@@ -113,8 +113,18 @@ class KPIEngine:
 
         delivery = [
             KPIItem(key="projects_total", label="Projects", value=str(perf.project_count)),
-            KPIItem(key="projects_green", label="Green projects", value=str(green), rag="green"),
-            KPIItem(key="projects_amber", label="Amber projects", value=str(amber), rag="amber"),
+            KPIItem(
+                key="projects_green",
+                label="Green projects",
+                value=str(green),
+                rag="green",
+            ),
+            KPIItem(
+                key="projects_amber",
+                label="Amber projects",
+                value=str(amber),
+                rag="amber",
+            ),
             KPIItem(
                 key="projects_red",
                 label="Red projects",
@@ -143,7 +153,10 @@ class KPIEngine:
                 unit="currency",
             ),
             KPIItem(
-                key="actual_cost", label="Actual cost (AC)", value=perf.evm.ac, unit="currency"
+                key="actual_cost",
+                label="Actual cost (AC)",
+                value=perf.evm.ac,
+                unit="currency",
             ),
             KPIItem(
                 key="budget_overrun",
@@ -221,7 +234,9 @@ class KPIEngine:
                             value=str(resvar.under_utilized),
                         ),
                         KPIItem(
-                            key="balanced", label="Balanced resources", value=str(resvar.balanced)
+                            key="balanced",
+                            label="Balanced resources",
+                            value=str(resvar.balanced),
                         ),
                     ],
                 )

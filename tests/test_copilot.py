@@ -33,7 +33,9 @@ def _project(client: TestClient, h: dict[str, str], code: str, **o: object) -> d
 
 def _ask(client: TestClient, h: dict[str, str], question: str, context: dict | None = None) -> dict:
     r = client.post(
-        f"{COPILOT}/ask", headers=h, json={"question": question, "context": context or {}}
+        f"{COPILOT}/ask",
+        headers=h,
+        json={"question": question, "context": context or {}},
     )
     assert r.status_code == 200, r.text
     return r.json()
@@ -45,7 +47,12 @@ def _member(client: TestClient, admin_headers: dict[str, str], email: str) -> st
     r = client.post(
         USERS,
         headers=admin_headers,
-        json={"email": email, "full_name": "Person", "password": PW, "role_ids": [role_id]},
+        json={
+            "email": email,
+            "full_name": "Person",
+            "password": PW,
+            "role_ids": [role_id],
+        },
     )
     assert r.status_code == 201, r.text
     return r.json()["id"]
@@ -54,7 +61,11 @@ def _member(client: TestClient, admin_headers: dict[str, str], email: str) -> st
 def _headers(client: TestClient, registered_org: dict[str, str], email: str) -> dict[str, str]:
     tokens = _login(
         client,
-        {"organization_slug": registered_org["organization_slug"], "email": email, "password": PW},
+        {
+            "organization_slug": registered_org["organization_slug"],
+            "email": email,
+            "password": PW,
+        },
     )
     return {"Authorization": f"Bearer {tokens['access_token']}"}
 
@@ -78,7 +89,12 @@ def test_raid_and_financial_intents(client: TestClient, admin_headers: dict[str,
     client.post(
         RISKS,
         headers=admin_headers,
-        json={"project_id": proj["id"], "title": "A risk", "probability": 4, "impact": 4},
+        json={
+            "project_id": proj["id"],
+            "title": "A risk",
+            "probability": 4,
+            "impact": 4,
+        },
     )
 
     raid = _ask(client, admin_headers, "What are the open risks and issues for BETA?")
@@ -120,7 +136,9 @@ def test_conversation_persists_turns_and_titles(
 ) -> None:
     _project(client, admin_headers, "DELTA")
     conv = client.post(
-        f"{COPILOT}/conversations", headers=admin_headers, json={"title": "New conversation"}
+        f"{COPILOT}/conversations",
+        headers=admin_headers,
+        json={"title": "New conversation"},
     ).json()
     cid = conv["id"]
 
@@ -191,7 +209,10 @@ def test_more_intents_and_resolution(client: TestClient, admin_headers: dict[str
     assert "total_hours" in hours["grounding"]["data"]
 
     by_ctx = _ask(
-        client, admin_headers, "portfolio overview please", context={"portfolio_id": port["id"]}
+        client,
+        admin_headers,
+        "portfolio overview please",
+        context={"portfolio_id": port["id"]},
     )
     assert by_ctx["intent"] == "portfolio_overview"
     by_code = _ask(client, admin_headers, "status?", context={"project_code": "EPS"})

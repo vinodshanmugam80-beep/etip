@@ -43,7 +43,12 @@ def _user_with_role(
     r = client.post(
         USERS,
         headers=admin_headers,
-        json={"email": email, "full_name": "Person", "password": PW, "role_ids": [role_id]},
+        json={
+            "email": email,
+            "full_name": "Person",
+            "password": PW,
+            "role_ids": [role_id],
+        },
     )
     assert r.status_code == 201, r.text
     return r.json()["id"]
@@ -52,7 +57,11 @@ def _user_with_role(
 def _headers(client: TestClient, registered_org: dict[str, str], email: str) -> dict[str, str]:
     tokens = _login(
         client,
-        {"organization_slug": registered_org["organization_slug"], "email": email, "password": PW},
+        {
+            "organization_slug": registered_org["organization_slug"],
+            "email": email,
+            "password": PW,
+        },
     )
     return {"Authorization": f"Bearer {tokens['access_token']}"}
 
@@ -68,7 +77,12 @@ def _report(
     r = client.post(
         REPORTS,
         headers=h,
-        json={"name": name, "report_type": report_type, "parameters": params, "is_shared": shared},
+        json={
+            "name": name,
+            "report_type": report_type,
+            "parameters": params,
+            "is_shared": shared,
+        },
     )
     assert r.status_code == 201, r.text
     return r.json()
@@ -146,7 +160,10 @@ def test_run_project_status_and_param_validation(
     run = client.post(
         f"{REPORTS}/run",
         headers=admin_headers,
-        json={"report_type": "project_status", "parameters": {"project_id": proj["id"]}},
+        json={
+            "report_type": "project_status",
+            "parameters": {"project_id": proj["id"]},
+        },
     )
     assert run.status_code == 200
     data = run.json()["data"]
@@ -164,7 +181,10 @@ def test_run_project_status_and_param_validation(
     unknown = client.post(
         f"{REPORTS}/run",
         headers=admin_headers,
-        json={"report_type": "project_status", "parameters": {"project_id": str(uuid.uuid4())}},
+        json={
+            "report_type": "project_status",
+            "parameters": {"project_id": str(uuid.uuid4())},
+        },
     )
     assert unknown.status_code == 404
 
@@ -231,14 +251,20 @@ def test_run_financial_and_portfolio(client: TestClient, admin_headers: dict[str
     fin = client.post(
         f"{REPORTS}/run",
         headers=admin_headers,
-        json={"report_type": "financial_summary", "parameters": {"project_id": p1["id"]}},
+        json={
+            "report_type": "financial_summary",
+            "parameters": {"project_id": p1["id"]},
+        },
     ).json()["data"]
     assert fin["budget"] == "50000.00" and fin["cost_variance"] == "50000.00"
 
     over = client.post(
         f"{REPORTS}/run",
         headers=admin_headers,
-        json={"report_type": "portfolio_overview", "parameters": {"portfolio_id": port["id"]}},
+        json={
+            "report_type": "portfolio_overview",
+            "parameters": {"portfolio_id": port["id"]},
+        },
     ).json()["data"]
     assert over["project_count"] == 2
     assert over["total_budget"] == "80000.00"
@@ -247,7 +273,11 @@ def test_run_financial_and_portfolio(client: TestClient, admin_headers: dict[str
 def test_run_saved_stamps_last_run(client: TestClient, admin_headers: dict[str, str]) -> None:
     proj = _project(client, admin_headers)
     saved = _report(
-        client, admin_headers, "project_status", {"project_id": proj["id"]}, name="Saved"
+        client,
+        admin_headers,
+        "project_status",
+        {"project_id": proj["id"]},
+        name="Saved",
     )
     assert saved["last_run_date"] is None
     run = client.post(f"{REPORTS}/{saved['id']}/run", headers=admin_headers)
@@ -259,7 +289,11 @@ def test_run_saved_stamps_last_run(client: TestClient, admin_headers: dict[str, 
 def test_update_and_invalid_params(client: TestClient, admin_headers: dict[str, str]) -> None:
     proj = _project(client, admin_headers)
     rpt = _report(
-        client, admin_headers, "project_status", {"project_id": proj["id"]}, name="Editable"
+        client,
+        admin_headers,
+        "project_status",
+        {"project_id": proj["id"]},
+        name="Editable",
     )
     updated = client.patch(
         f"{REPORTS}/{rpt['id']}",
@@ -275,7 +309,10 @@ def test_update_and_invalid_params(client: TestClient, admin_headers: dict[str, 
     bad_id = client.post(
         f"{REPORTS}/run",
         headers=admin_headers,
-        json={"report_type": "project_status", "parameters": {"project_id": "not-a-uuid"}},
+        json={
+            "report_type": "project_status",
+            "parameters": {"project_id": "not-a-uuid"},
+        },
     )
     assert bad_id.status_code == 422 and bad_id.json()["error"]["code"] == "invalid_parameter"
 

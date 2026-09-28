@@ -30,9 +30,7 @@ class MetricsService:
         self.snapshots = MetricSnapshotRepository(uow.session)
 
     def _intel(self) -> IntelligenceService:
-        return IntelligenceService(
-            self._uow, organization_id=self._org_id, actor_id=self._actor_id
-        )
+        return IntelligenceService(self._uow, organization_id=self._org_id, actor_id=self._actor_id)
 
     # ------------------------------------------------------------------ capture
     def _headline_values(self, as_of: date) -> dict[str, float]:
@@ -51,11 +49,7 @@ class MetricsService:
     def _project_spis(self, as_of: date) -> dict[uuid.UUID, float]:
         intel = self._intel()
         perf = intel.transformation_performance(as_of=as_of)
-        return {
-            item.project_id: float(item.spi)
-            for item in perf.breakdown
-            if item.spi is not None
-        }
+        return {item.project_id: float(item.spi) for item in perf.breakdown if item.spi is not None}
 
     def capture(self, *, as_of: date | None = None) -> int:
         """Snapshot the current headline + per-project metrics for one day."""
@@ -102,13 +96,25 @@ class MetricsService:
                 if metric == "success_score":
                     v = max(0, min(100, v))
                 self.snapshots.upsert_day(
-                    self._org_id, "transformation", None, metric, round(v, 4), day, self._actor_id
+                    self._org_id,
+                    "transformation",
+                    None,
+                    metric,
+                    round(v, 4),
+                    day,
+                    self._actor_id,
                 )
                 count += 1
             for project_id, spi in project_spis.items():
                 v = max(0, spi * factor * wave)
                 self.snapshots.upsert_day(
-                    self._org_id, "project", project_id, "spi", round(v, 4), day, self._actor_id
+                    self._org_id,
+                    "project",
+                    project_id,
+                    "spi",
+                    round(v, 4),
+                    day,
+                    self._actor_id,
                 )
                 count += 1
         count += self.capture(as_of=today)

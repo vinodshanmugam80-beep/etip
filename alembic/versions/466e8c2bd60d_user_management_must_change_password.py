@@ -4,6 +4,7 @@ Revision ID: 466e8c2bd60d
 Revises: 7d9a1c13815f
 Create Date: 2026-07-28 11:41:55.177322
 """
+
 from __future__ import annotations
 
 from collections.abc import Sequence
@@ -11,9 +12,8 @@ from collections.abc import Sequence
 from alembic import op
 import sqlalchemy as sa
 
-
-revision: str = '466e8c2bd60d'
-down_revision: str | None = '7d9a1c13815f'
+revision: str = "466e8c2bd60d"
+down_revision: str | None = "7d9a1c13815f"
 branch_labels: str | Sequence[str] | None = None
 depends_on: str | Sequence[str] | None = None
 

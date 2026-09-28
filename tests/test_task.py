@@ -53,7 +53,9 @@ def test_create_task_defaults_and_numbering(
 
 def test_create_requires_project(client: TestClient, admin_headers: dict[str, str]) -> None:
     r = client.post(
-        TASKS, headers=admin_headers, json={"project_id": str(uuid.uuid4()), "title": "X-ray"}
+        TASKS,
+        headers=admin_headers,
+        json={"project_id": str(uuid.uuid4()), "title": "X-ray"},
     )
     assert r.status_code == 404
 
@@ -63,7 +65,11 @@ def test_unknown_assignee_and_bad_dates(client: TestClient, admin_headers: dict[
     unknown = client.post(
         TASKS,
         headers=admin_headers,
-        json={"project_id": proj["id"], "title": "Task A", "assignee_user_id": str(uuid.uuid4())},
+        json={
+            "project_id": proj["id"],
+            "title": "Task A",
+            "assignee_user_id": str(uuid.uuid4()),
+        },
     )
     assert unknown.status_code == 422
     bad_dates = client.post(
@@ -109,7 +115,11 @@ def test_parent_must_be_same_project(client: TestClient, admin_headers: dict[str
     cross = client.post(
         TASKS,
         headers=admin_headers,
-        json={"project_id": proj_b["id"], "title": "Child in B", "parent_task_id": parent["id"]},
+        json={
+            "project_id": proj_b["id"],
+            "title": "Child in B",
+            "parent_task_id": parent["id"],
+        },
     )
     assert cross.status_code == 422
 
@@ -178,7 +188,11 @@ def test_delete_blocked_with_subtasks(client: TestClient, admin_headers: dict[st
     proj = _project(client, admin_headers)
     parent = _task(client, admin_headers, proj["id"], title="Parent task")
     child = _task(
-        client, admin_headers, proj["id"], title="Child task", parent_task_id=parent["id"]
+        client,
+        admin_headers,
+        proj["id"],
+        title="Child task",
+        parent_task_id=parent["id"],
     )
 
     blocked = client.delete(f"{TASKS}/{parent['id']}", headers=admin_headers)
@@ -240,7 +254,9 @@ def test_rbac_member_permissions(
     # But cannot create or delete.
     assert (
         client.post(
-            TASKS, headers=headers, json={"project_id": proj["id"], "title": "Nope task"}
+            TASKS,
+            headers=headers,
+            json={"project_id": proj["id"], "title": "Nope task"},
         ).status_code
         == 403
     )

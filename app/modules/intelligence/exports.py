@@ -147,7 +147,11 @@ def board_pack_pdf(service: IntelligenceService) -> bytes:
     pdf.set_font("Helvetica", "", 10)
     pdf.set_text_color(90, 90, 90)
     pdf.cell(
-        0, 6, _ascii(f"As of {brief.as_of}  |  CONFIDENTIAL"), new_x=XPos.LMARGIN, new_y=YPos.NEXT
+        0,
+        6,
+        _ascii(f"As of {brief.as_of}  |  CONFIDENTIAL"),
+        new_x=XPos.LMARGIN,
+        new_y=YPos.NEXT,
     )
     pdf.ln(3)
 

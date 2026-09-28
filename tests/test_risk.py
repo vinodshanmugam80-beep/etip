@@ -135,7 +135,9 @@ def test_status_lifecycle(client: TestClient, admin_headers: dict[str, str]) -> 
     client.patch(f"{RISKS}/{risk2['id']}", headers=admin_headers, json={"status": "mitigating"})
     assert (
         client.patch(
-            f"{RISKS}/{risk2['id']}", headers=admin_headers, json={"status": "identified"}
+            f"{RISKS}/{risk2['id']}",
+            headers=admin_headers,
+            json={"status": "identified"},
         ).status_code
         == 422
     )
@@ -147,7 +149,9 @@ def test_update_rescores_and_updates_rollup(
     proj = _project(client, admin_headers)
     risk = _risk(client, admin_headers, proj["id"], 2, 2)  # score 4, low
     updated = client.patch(
-        f"{RISKS}/{risk['id']}", headers=admin_headers, json={"probability": 5, "impact": 4}
+        f"{RISKS}/{risk['id']}",
+        headers=admin_headers,
+        json={"probability": 5, "impact": 4},
     )
     assert updated.status_code == 200
     body = updated.json()
@@ -163,7 +167,9 @@ def test_search_filters(client: TestClient, admin_headers: dict[str, str]) -> No
     _risk(client, admin_headers, proj["id"], 1, 2, title="Tech risk", category="technical")
 
     crit = client.get(
-        RISKS, headers=admin_headers, params={"project_id": proj["id"], "severity": "critical"}
+        RISKS,
+        headers=admin_headers,
+        params={"project_id": proj["id"], "severity": "critical"},
     ).json()
     assert crit["total"] == 1 and crit["items"][0]["title"] == "Sched risk"
     sched = client.get(RISKS, headers=admin_headers, params={"category": "schedule"}).json()
@@ -235,7 +241,12 @@ def test_rbac_member_read_not_create(
         client.post(
             RISKS,
             headers=headers,
-            json={"project_id": proj["id"], "title": "Nope risk", "probability": 2, "impact": 2},
+            json={
+                "project_id": proj["id"],
+                "title": "Nope risk",
+                "probability": 2,
+                "impact": 2,
+            },
         ).status_code
         == 403
     )

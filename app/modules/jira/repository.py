@@ -37,7 +37,11 @@ class ExternalLinkRepository(BaseRepository[ExternalLink]):
         super().__init__(session, ExternalLink)
 
     def by_entity(
-        self, organization_id: uuid.UUID, system: str, entity_type: str, entity_id: uuid.UUID
+        self,
+        organization_id: uuid.UUID,
+        system: str,
+        entity_type: str,
+        entity_id: uuid.UUID,
     ) -> ExternalLink | None:
         stmt = self._base_query(organization_id).where(
             ExternalLink.system == system,
@@ -55,7 +59,12 @@ class ExternalLinkRepository(BaseRepository[ExternalLink]):
         return self.session.execute(stmt).scalars().first()
 
     def list_for_org(
-        self, organization_id: uuid.UUID, system: str, *, limit: int = 100, offset: int = 0
+        self,
+        organization_id: uuid.UUID,
+        system: str,
+        *,
+        limit: int = 100,
+        offset: int = 0,
     ) -> Sequence[ExternalLink]:
         stmt = (
             self._base_query(organization_id)
@@ -75,8 +84,6 @@ class JiraSyncLogRepository(BaseRepository[JiraSyncLog]):
 
     def recent(self, organization_id: uuid.UUID, *, limit: int = 50) -> Sequence[JiraSyncLog]:
         stmt = (
-            self._base_query(organization_id)
-            .order_by(JiraSyncLog.created_date.desc())
-            .limit(limit)
+            self._base_query(organization_id).order_by(JiraSyncLog.created_date.desc()).limit(limit)
         )
         return self.session.execute(stmt).scalars().all()

@@ -88,7 +88,12 @@ def test_owner_must_exist_across_types(client: TestClient, admin_headers: dict[s
     risk = client.post(
         RISKS,
         headers=admin_headers,
-        json={"project_id": proj["id"], "title": "A risk", "probability": 2, "impact": 2},
+        json={
+            "project_id": proj["id"],
+            "title": "A risk",
+            "probability": 2,
+            "impact": 2,
+        },
     ).json()
     assert _doc(client, admin_headers, "task", task["id"], "k/task.pdf")["owner_type"] == "task"
     assert _doc(client, admin_headers, "risk", risk["id"], "k/risk.pdf")["owner_type"] == "risk"
@@ -117,7 +122,11 @@ def test_versioning(client: TestClient, admin_headers: dict[str, str]) -> None:
     v2 = client.post(
         f"{DOCS}/{v1['id']}/versions",
         headers=admin_headers,
-        json={"storage_key": "k/v2.pdf", "content_type": "application/pdf", "size_bytes": 2048},
+        json={
+            "storage_key": "k/v2.pdf",
+            "content_type": "application/pdf",
+            "size_bytes": 2048,
+        },
     )
     assert v2.status_code == 201
     v2_body = v2.json()
@@ -136,7 +145,9 @@ def test_versioning(client: TestClient, admin_headers: dict[str, str]) -> None:
 
     # A duplicate key on a new version is rejected.
     dup = client.post(
-        f"{DOCS}/{v1['id']}/versions", headers=admin_headers, json={"storage_key": "k/v2.pdf"}
+        f"{DOCS}/{v1['id']}/versions",
+        headers=admin_headers,
+        json={"storage_key": "k/v2.pdf"},
     )
     assert dup.status_code == 409
 
@@ -145,7 +156,9 @@ def test_current_filter(client: TestClient, admin_headers: dict[str, str]) -> No
     proj = _project(client, admin_headers)
     v1 = _doc(client, admin_headers, "project", proj["id"], "k/c1.pdf")
     client.post(
-        f"{DOCS}/{v1['id']}/versions", headers=admin_headers, json={"storage_key": "k/c2.pdf"}
+        f"{DOCS}/{v1['id']}/versions",
+        headers=admin_headers,
+        json={"storage_key": "k/c2.pdf"},
     )
 
     current = client.get(
@@ -158,7 +171,9 @@ def test_promote_on_delete(client: TestClient, admin_headers: dict[str, str]) ->
     proj = _project(client, admin_headers)
     v1 = _doc(client, admin_headers, "project", proj["id"], "k/p1.pdf")
     v2 = client.post(
-        f"{DOCS}/{v1['id']}/versions", headers=admin_headers, json={"storage_key": "k/p2.pdf"}
+        f"{DOCS}/{v1['id']}/versions",
+        headers=admin_headers,
+        json={"storage_key": "k/p2.pdf"},
     ).json()
 
     # Deleting the current revision promotes the predecessor.

@@ -35,7 +35,12 @@ def _task(client: TestClient, h: dict[str, str], project_id: str, title: str = "
 
 
 def _dep(
-    client: TestClient, h: dict[str, str], entity_type: str, pred: str, succ: str, **o: object
+    client: TestClient,
+    h: dict[str, str],
+    entity_type: str,
+    pred: str,
+    succ: str,
+    **o: object,
 ) -> object:
     body: dict[str, object] = {
         "entity_type": entity_type,

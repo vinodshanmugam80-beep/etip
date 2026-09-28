@@ -168,7 +168,11 @@ class JiraService:
         if link is not None:
             task = self.tasks.get(link.entity_id, organization_id=organization_id)
             if task is not None:
-                task.title, task.description, task.status = title[:300], description[:4000], status
+                task.title, task.description, task.status = (
+                    title[:300],
+                    description[:4000],
+                    status,
+                )
                 task.priority = priority
                 if assignee_id is not None:
                     task.assignee_user_id = assignee_id
@@ -216,9 +220,12 @@ class JiraService:
         if result["action"] in counts:
             counts[result["action"]] = 1
         self._log(
-            organization_id, SyncDirection.INBOUND, SyncStatus.SUCCESS,
+            organization_id,
+            SyncDirection.INBOUND,
+            SyncStatus.SUCCESS,
             f"Webhook {result['action']} {result['external_key']}".strip(),
-            counts, external_ref=result["external_key"],
+            counts,
+            external_ref=result["external_key"],
         )
         return result
 
@@ -256,10 +263,17 @@ class JiraService:
         link = self.links.by_entity(self._org_id, _SYSTEM, "task", task_id)
         if link is not None:
             client.jira_request(
-                conn, "PUT", f"/rest/api/2/issue/{link.external_key}", {"fields": fields}
+                conn,
+                "PUT",
+                f"/rest/api/2/issue/{link.external_key}",
+                {"fields": fields},
             )
             self._apply_transition(conn, link.external_key, task.status)
-            return {"action": "updated", "task_id": task_id, "external_key": link.external_key}
+            return {
+                "action": "updated",
+                "task_id": task_id,
+                "external_key": link.external_key,
+            }
         create_fields = {
             **fields,
             "project": {"key": conn.project_key},
@@ -280,8 +294,12 @@ class JiraService:
         )
         result = {"action": "created", "task_id": task_id, "external_key": key}
         self._log(
-            self._org_id, SyncDirection.OUTBOUND, SyncStatus.SUCCESS,
-            f"Pushed task as {key}", {"created": 1}, external_ref=key,
+            self._org_id,
+            SyncDirection.OUTBOUND,
+            SyncStatus.SUCCESS,
+            f"Pushed task as {key}",
+            {"created": 1},
+            external_ref=key,
         )
         return result
 
@@ -300,13 +318,14 @@ class JiraService:
         try:
             me = client.get_myself(conn)
         except ValidationError as exc:
-            self._log(
-                self._org_id, SyncDirection.TEST, SyncStatus.ERROR, str(exc.message), {}
-            )
+            self._log(self._org_id, SyncDirection.TEST, SyncStatus.ERROR, str(exc.message), {})
             return TestConnectionResult(ok=False, message=exc.message)
         self._log(
-            self._org_id, SyncDirection.TEST, SyncStatus.SUCCESS,
-            "Connection verified", {},
+            self._org_id,
+            SyncDirection.TEST,
+            SyncStatus.SUCCESS,
+            "Connection verified",
+            {},
             external_ref=str(me.get("accountId") or ""),
         )
         return TestConnectionResult(
@@ -350,12 +369,24 @@ class JiraService:
                 break
         message = f"Imported {created} new, {updated} updated from Jira."
         self._log(
-            self._org_id, SyncDirection.IMPORT, SyncStatus.SUCCESS, message,
-            {"created": created, "updated": updated, "skipped": skipped, "failed": failed},
+            self._org_id,
+            SyncDirection.IMPORT,
+            SyncStatus.SUCCESS,
+            message,
+            {
+                "created": created,
+                "updated": updated,
+                "skipped": skipped,
+                "failed": failed,
+            },
             external_ref=conn.project_key,
         )
         return SyncResult(
-            created=created, updated=updated, skipped=skipped, failed=failed, message=message
+            created=created,
+            updated=updated,
+            skipped=skipped,
+            failed=failed,
+            message=message,
         )
 
     def list_links(self, *, limit: int = 100, offset: int = 0) -> list[ExternalLink]:

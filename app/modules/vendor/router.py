@@ -58,7 +58,10 @@ def create_vendor(
 
 
 @router.get(
-    "/vendors", response_model=PaginatedVendors, dependencies=[_READ], summary="Search vendors"
+    "/vendors",
+    response_model=PaginatedVendors,
+    dependencies=[_READ],
+    summary="Search vendors",
 )
 def list_vendors(
     service: VendorServiceDep,
@@ -98,7 +101,10 @@ def get_vendor(vendor_id: uuid.UUID, service: VendorServiceDep) -> VendorRespons
     summary="Update a vendor",
 )
 def update_vendor(
-    vendor_id: uuid.UUID, payload: VendorUpdateRequest, service: VendorServiceDep, uow: UowDep
+    vendor_id: uuid.UUID,
+    payload: VendorUpdateRequest,
+    service: VendorServiceDep,
+    uow: UowDep,
 ) -> VendorResponse:
     """Update a vendor."""
     vendor = service.update_vendor(vendor_id, payload)
@@ -194,7 +200,10 @@ def get_contract(contract_id: uuid.UUID, service: VendorServiceDep) -> ContractR
     summary="Update a contract",
 )
 def update_contract(
-    contract_id: uuid.UUID, payload: ContractUpdateRequest, service: VendorServiceDep, uow: UowDep
+    contract_id: uuid.UUID,
+    payload: ContractUpdateRequest,
+    service: VendorServiceDep,
+    uow: UowDep,
 ) -> ContractResponse:
     """Update a contract."""
     contract = service.update_contract(contract_id, payload)
@@ -292,7 +301,10 @@ def get_order(order_id: uuid.UUID, service: VendorServiceDep) -> PurchaseOrderRe
     summary="Update a purchase order",
 )
 def update_order(
-    order_id: uuid.UUID, payload: PurchaseOrderUpdateRequest, service: VendorServiceDep, uow: UowDep
+    order_id: uuid.UUID,
+    payload: PurchaseOrderUpdateRequest,
+    service: VendorServiceDep,
+    uow: UowDep,
 ) -> PurchaseOrderResponse:
     """Update a purchase order."""
     order = service.update_order(order_id, payload)

@@ -51,7 +51,9 @@ def test_config_upsert_hides_secret(client: TestClient, admin_headers: dict[str,
     assert body["secret_set"] is True and "client_secret" not in body and body["is_enabled"] is True
     # A PUT without a secret keeps the stored one.
     r2 = client.put(
-        CFG, headers=admin_headers, json=_cfg(client_secret="", default_role_name="Project Manager")
+        CFG,
+        headers=admin_headers,
+        json=_cfg(client_secret="", default_role_name="Project Manager"),
     )
     assert r2.status_code == 200 and r2.json()["secret_set"] is True
     assert client.get(CFG, headers=admin_headers).json()["default_role_name"] == "Project Manager"
@@ -79,7 +81,9 @@ def test_callback_provisions_user_and_issues_tokens(
     client.put(CFG, headers=admin_headers, json=_cfg())
     state = _state_from_login(client)
     monkeypatch.setattr(
-        oidc, "fetch_oidc_claims", lambda *a, **k: {"email": "newhire@corp.io", "name": "New Hire"}
+        oidc,
+        "fetch_oidc_claims",
+        lambda *a, **k: {"email": "newhire@corp.io", "name": "New Hire"},
     )
     r = client.get(CALLBACK, params={"code": "authcode", "state": state})
     assert r.status_code == 200
@@ -95,7 +99,9 @@ def test_callback_enforces_allowed_domain(
     client.put(CFG, headers=admin_headers, json=_cfg(allowed_domains=["corp.io"]))
     state = _state_from_login(client)
     monkeypatch.setattr(
-        oidc, "fetch_oidc_claims", lambda *a, **k: {"email": "person@other.com", "name": "X"}
+        oidc,
+        "fetch_oidc_claims",
+        lambda *a, **k: {"email": "person@other.com", "name": "X"},
     )
     assert client.get(CALLBACK, params={"code": "c", "state": state}).status_code == 401
 

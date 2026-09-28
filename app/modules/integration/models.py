@@ -64,7 +64,10 @@ class WebhookDelivery(BaseEntity, TenantMixin):
     __tablename__ = "webhook_deliveries"
 
     endpoint_id: Mapped[uuid.UUID] = mapped_column(
-        Uuid, ForeignKey("webhook_endpoints.id", ondelete="CASCADE"), nullable=False, index=True
+        Uuid,
+        ForeignKey("webhook_endpoints.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
     )
     event_type: Mapped[str] = mapped_column(String(100), nullable=False, index=True)
     payload: Mapped[str] = mapped_column(String(8000), default="")

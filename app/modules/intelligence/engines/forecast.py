@@ -109,7 +109,11 @@ class ForecastEngine:
         as_of = as_of or utcnow().date()
         projects = list(self.projects.search(self._org_id, limit=1000))
         rollup = self._aggregate(
-            projects, as_of, scope="transformation", scope_id=None, label="Transformation"
+            projects,
+            as_of,
+            scope="transformation",
+            scope_id=None,
+            label="Transformation",
         )
         score, label = self._success(projects, as_of)
         return TransformationForecast(

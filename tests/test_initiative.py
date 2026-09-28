@@ -79,7 +79,9 @@ def test_initiative_crud_and_filters(client: TestClient, admin_headers: dict[str
 
 def test_reference_validation(client: TestClient, admin_headers: dict[str, str]) -> None:
     bad_port = client.post(
-        INIT, headers=admin_headers, json={"name": "Bad port", "portfolio_id": str(uuid.uuid4())}
+        INIT,
+        headers=admin_headers,
+        json={"name": "Bad port", "portfolio_id": str(uuid.uuid4())},
     )
     assert bad_port.status_code == 422
     bad_sponsor = client.post(
@@ -108,7 +110,9 @@ def test_goal_and_kpi_crud(client: TestClient, admin_headers: dict[str, str]) ->
     # KPI under unknown goal.
     assert (
         client.post(
-            KPIS, headers=admin_headers, json={"goal_id": str(uuid.uuid4()), "name": "Orphan"}
+            KPIS,
+            headers=admin_headers,
+            json={"goal_id": str(uuid.uuid4()), "name": "Orphan"},
         ).status_code
         == 404
     )
@@ -140,7 +144,9 @@ def test_kpi_attainment_increase(client: TestClient, admin_headers: dict[str, st
     assert float(kpi["variance"]) == -50.0 and kpi["target_met"] is False
     # Record beyond target.
     beat = client.post(
-        f"{KPIS}/{kpi['id']}/measurement", headers=admin_headers, json={"current_value": "120"}
+        f"{KPIS}/{kpi['id']}/measurement",
+        headers=admin_headers,
+        json={"current_value": "120"},
     ).json()
     assert beat["attainment_percent"] == 120.0 and beat["target_met"] is True
     assert float(beat["variance"]) == 20.0
@@ -162,7 +168,9 @@ def test_kpi_attainment_decrease(client: TestClient, admin_headers: dict[str, st
     )
     assert kpi["attainment_percent"] == 50.0 and kpi["target_met"] is False
     beat = client.post(
-        f"{KPIS}/{kpi['id']}/measurement", headers=admin_headers, json={"current_value": "40"}
+        f"{KPIS}/{kpi['id']}/measurement",
+        headers=admin_headers,
+        json={"current_value": "40"},
     ).json()
     assert beat["attainment_percent"] == 120.0 and beat["target_met"] is True
 
@@ -260,7 +268,11 @@ def test_update_paths_and_goal_delete(client: TestClient, admin_headers: dict[st
     upd = client.patch(
         f"{INIT}/{init['id']}",
         headers=admin_headers,
-        json={"name": "Renamed init", "portfolio_id": port["id"], "sponsor_user_id": sponsor["id"]},
+        json={
+            "name": "Renamed init",
+            "portfolio_id": port["id"],
+            "sponsor_user_id": sponsor["id"],
+        },
     ).json()
     assert upd["name"] == "Renamed init" and upd["portfolio_id"] == port["id"]
     assert upd["sponsor_user_id"] == sponsor["id"]

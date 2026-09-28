@@ -76,7 +76,10 @@ class StrategicInitiative(BaseEntity, TenantMixin):
     __tablename__ = "strategic_initiatives"
 
     portfolio_id: Mapped[uuid.UUID | None] = mapped_column(
-        Uuid, ForeignKey("portfolios.id", ondelete="SET NULL"), nullable=True, index=True
+        Uuid,
+        ForeignKey("portfolios.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
     )
     sponsor_user_id: Mapped[uuid.UUID | None] = mapped_column(
         Uuid, ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True
@@ -121,7 +124,10 @@ class GoalKPI(BaseEntity, TenantMixin):
     __tablename__ = "goal_kpis"
 
     goal_id: Mapped[uuid.UUID] = mapped_column(
-        Uuid, ForeignKey("business_goals.id", ondelete="CASCADE"), nullable=False, index=True
+        Uuid,
+        ForeignKey("business_goals.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
     )
     name: Mapped[str] = mapped_column(String(200), nullable=False)
     unit: Mapped[str] = mapped_column(String(50), default="")

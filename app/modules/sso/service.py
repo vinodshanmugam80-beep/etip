@@ -130,9 +130,12 @@ class SsoService:
         config.modified_by = self._actor_id
         config = self.configs.update(config)
         self._uow.record_audit(
-            "SsoConfiguration", config.id, "discover",
+            "SsoConfiguration",
+            config.id,
+            "discover",
             f"Discovered OIDC endpoints from {target}",
-            actor_id=self._actor_id, organization_id=self._org_id,
+            actor_id=self._actor_id,
+            organization_id=self._org_id,
         )
         return config
 
@@ -200,9 +203,7 @@ class SsoService:
             raise AuthenticationError("This user account is inactive.")
         return self._issue_tokens(user)
 
-    def _roles_from_claims(
-        self, config: SsoConfiguration, claims: dict[str, object]
-    ) -> list[str]:
+    def _roles_from_claims(self, config: SsoConfiguration, claims: dict[str, object]) -> list[str]:
         """Resolve ETIP role names for a new SSO user from mapped IdP groups.
 
         Falls back to the configured default role when no group maps.

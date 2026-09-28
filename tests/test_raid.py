@@ -30,7 +30,11 @@ def _project(client: TestClient, h: dict[str, str], code: str = "PR") -> dict:
 
 
 def _action(
-    client: TestClient, h: dict[str, str], project_id: str, title: str = "Do a thing", **o: object
+    client: TestClient,
+    h: dict[str, str],
+    project_id: str,
+    title: str = "Do a thing",
+    **o: object,
 ) -> dict:
     body: dict[str, object] = {"project_id": project_id, "title": title}
     body.update(o)
@@ -40,7 +44,11 @@ def _action(
 
 
 def _decision(
-    client: TestClient, h: dict[str, str], project_id: str, title: str = "Pick a stack", **o: object
+    client: TestClient,
+    h: dict[str, str],
+    project_id: str,
+    title: str = "Pick a stack",
+    **o: object,
 ) -> dict:
     body: dict[str, object] = {"project_id": project_id, "title": title}
     body.update(o)
@@ -73,7 +81,11 @@ def test_action_requires_project_and_owner(
     bad = client.post(
         ACTIONS,
         headers=admin_headers,
-        json={"project_id": proj["id"], "title": "Owned", "owner_user_id": str(uuid.uuid4())},
+        json={
+            "project_id": proj["id"],
+            "title": "Owned",
+            "owner_user_id": str(uuid.uuid4()),
+        },
     )
     assert bad.status_code == 422
 
@@ -98,11 +110,15 @@ def test_action_workflow_and_completed_date(
 
     cancelled = _action(client, admin_headers, proj["id"], title="To cancel")
     client.patch(
-        f"{ACTIONS}/{cancelled['id']}", headers=admin_headers, json={"status": "cancelled"}
+        f"{ACTIONS}/{cancelled['id']}",
+        headers=admin_headers,
+        json={"status": "cancelled"},
     )
     assert (
         client.patch(
-            f"{ACTIONS}/{cancelled['id']}", headers=admin_headers, json={"status": "open"}
+            f"{ACTIONS}/{cancelled['id']}",
+            headers=admin_headers,
+            json={"status": "open"},
         ).status_code
         == 422
     )
@@ -115,7 +131,9 @@ def test_action_search_and_delete(client: TestClient, admin_headers: dict[str, s
     client.patch(f"{ACTIONS}/{a['id']}", headers=admin_headers, json={"status": "done"})
 
     done = client.get(
-        ACTIONS, headers=admin_headers, params={"project_id": proj["id"], "status": "done"}
+        ACTIONS,
+        headers=admin_headers,
+        params={"project_id": proj["id"], "status": "done"},
     ).json()
     assert done["total"] == 1 and done["items"][0]["title"] == "Alpha"
     assert client.delete(f"{ACTIONS}/{a['id']}", headers=admin_headers).status_code == 200
@@ -152,7 +170,9 @@ def test_decision_reject_and_search(client: TestClient, admin_headers: dict[str,
     client.patch(f"{DECISIONS}/{d['id']}", headers=admin_headers, json={"status": "rejected"})
 
     rejected = client.get(
-        DECISIONS, headers=admin_headers, params={"project_id": proj["id"], "status": "rejected"}
+        DECISIONS,
+        headers=admin_headers,
+        params={"project_id": proj["id"], "status": "rejected"},
     ).json()
     assert rejected["total"] == 1
     assert client.delete(f"{DECISIONS}/{d['id']}", headers=admin_headers).status_code == 200
@@ -167,10 +187,19 @@ def test_raid_summary_aggregates_all_quadrants(
     client.post(
         RISKS,
         headers=admin_headers,
-        json={"project_id": proj["id"], "title": "A risk", "probability": 3, "impact": 3},
+        json={
+            "project_id": proj["id"],
+            "title": "A risk",
+            "probability": 3,
+            "impact": 3,
+        },
     )
     # One open issue.
-    client.post(ISSUES, headers=admin_headers, json={"project_id": proj["id"], "title": "An issue"})
+    client.post(
+        ISSUES,
+        headers=admin_headers,
+        json={"project_id": proj["id"], "title": "An issue"},
+    )
     # Two actions, one done (so one open).
     a = _action(client, admin_headers, proj["id"], title="Action one")
     _action(client, admin_headers, proj["id"], title="Action two")
@@ -235,7 +264,9 @@ def test_rbac_member_read_update_not_create(
     # But cannot create.
     assert (
         client.post(
-            ACTIONS, headers=headers, json={"project_id": proj["id"], "title": "Nope action"}
+            ACTIONS,
+            headers=headers,
+            json={"project_id": proj["id"], "title": "Nope action"},
         ).status_code
         == 403
     )

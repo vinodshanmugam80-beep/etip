@@ -102,9 +102,7 @@ def update_kpi(
     dependencies=[_MANAGE],
     summary="Delete a project KPI",
 )
-def delete_kpi(
-    kpi_id: uuid.UUID, service: ProjectKPIServiceDep, uow: UowDep
-) -> MessageResponse:
+def delete_kpi(kpi_id: uuid.UUID, service: ProjectKPIServiceDep, uow: UowDep) -> MessageResponse:
     """Soft-delete a KPI."""
     service.delete(kpi_id)
     uow.commit()

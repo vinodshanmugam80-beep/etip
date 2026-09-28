@@ -75,7 +75,9 @@ def test_vendor_crud(client: TestClient, admin_headers: dict[str, str]) -> None:
     got = client.get(f"{VEN}/{v['id']}", headers=admin_headers).json()
     assert got["code"] == "ACME"
     upd = client.patch(
-        f"{VEN}/{v['id']}", headers=admin_headers, json={"status": "suspended", "code": "ACME2"}
+        f"{VEN}/{v['id']}",
+        headers=admin_headers,
+        json={"status": "suspended", "code": "ACME2"},
     ).json()
     assert upd["status"] == "suspended" and upd["code"] == "ACME2"
 
@@ -101,7 +103,9 @@ def test_contract_crud(client: TestClient, admin_headers: dict[str, str]) -> Non
     # Unknown vendor → 404.
     assert (
         client.post(
-            CON, headers=admin_headers, json={"vendor_id": str(uuid.uuid4()), "title": "Orphan"}
+            CON,
+            headers=admin_headers,
+            json={"vendor_id": str(uuid.uuid4()), "title": "Orphan"},
         ).status_code
         == 404
     )
@@ -110,7 +114,11 @@ def test_contract_crud(client: TestClient, admin_headers: dict[str, str]) -> Non
         client.post(
             CON,
             headers=admin_headers,
-            json={"vendor_id": v["id"], "title": "BadProj", "project_id": str(uuid.uuid4())},
+            json={
+                "vendor_id": v["id"],
+                "title": "BadProj",
+                "project_id": str(uuid.uuid4()),
+            },
         ).status_code
         == 422
     )
@@ -127,12 +135,16 @@ def test_po_computed_and_invoicing(client: TestClient, admin_headers: dict[str, 
     assert order["outstanding_amount"] == "1000.00" and order["status"] == "draft"
     # Partial invoice.
     partial = client.post(
-        f"{PO}/{order['id']}/invoice", headers=admin_headers, json={"invoiced_amount": "300.00"}
+        f"{PO}/{order['id']}/invoice",
+        headers=admin_headers,
+        json={"invoiced_amount": "300.00"},
     ).json()
     assert partial["status"] == "partially_invoiced" and partial["outstanding_amount"] == "700.00"
     # Full invoice.
     full = client.post(
-        f"{PO}/{order['id']}/invoice", headers=admin_headers, json={"invoiced_amount": "1000.00"}
+        f"{PO}/{order['id']}/invoice",
+        headers=admin_headers,
+        json={"invoiced_amount": "1000.00"},
     ).json()
     assert full["status"] == "invoiced" and full["outstanding_amount"] == "0.00"
 
@@ -145,7 +157,11 @@ def test_po_contract_must_match_vendor(client: TestClient, admin_headers: dict[s
     r = client.post(
         PO,
         headers=admin_headers,
-        json={"vendor_id": vb["id"], "contract_id": ca["id"], "committed_amount": "100.00"},
+        json={
+            "vendor_id": vb["id"],
+            "contract_id": ca["id"],
+            "committed_amount": "100.00",
+        },
     )
     assert r.status_code == 422
 
@@ -182,7 +198,14 @@ def test_summaries(client: TestClient, admin_headers: dict[str, str]) -> None:
         committed_amount="1500.00",
         invoiced_amount="300.00",
     )
-    _po(client, admin_headers, v["id"], reference="P2", project_id=proj, committed_amount="500.00")
+    _po(
+        client,
+        admin_headers,
+        v["id"],
+        reference="P2",
+        project_id=proj,
+        committed_amount="500.00",
+    )
 
     spend = client.get(f"{VEN}/{v['id']}/spend", headers=admin_headers).json()
     assert spend["po_count"] == 2 and spend["total_committed"] == "2000.00"

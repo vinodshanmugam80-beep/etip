@@ -134,7 +134,10 @@ class OutboxRepository:
         """Return the oldest pending events for the tenant."""
         stmt = (
             select(OutboxEvent)
-            .where(OutboxEvent.organization_id == organization_id, OutboxEvent.status == "pending")
+            .where(
+                OutboxEvent.organization_id == organization_id,
+                OutboxEvent.status == "pending",
+            )
             .order_by(OutboxEvent.created_date)
             .limit(limit)
         )

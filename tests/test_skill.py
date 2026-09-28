@@ -32,7 +32,11 @@ def _resource(client: TestClient, h: dict[str, str], name: str, hours: str = "40
     r = client.post(
         RESOURCES,
         headers=h,
-        json={"name": name, "resource_type": "employee", "capacity_hours_per_week": hours},
+        json={
+            "name": name,
+            "resource_type": "employee",
+            "capacity_hours_per_week": hours,
+        },
     )
     assert r.status_code == 201, r.text
     return r.json()["id"]
@@ -107,7 +111,11 @@ def test_assignments(client: TestClient, admin_headers: dict[str, str]) -> None:
         client.post(
             f"{SK}/assignments",
             headers=admin_headers,
-            json={"resource_id": str(uuid.uuid4()), "skill_id": skill["id"], "proficiency": 3},
+            json={
+                "resource_id": str(uuid.uuid4()),
+                "skill_id": skill["id"],
+                "proficiency": 3,
+            },
         ).status_code
         == 404
     )
@@ -139,7 +147,9 @@ def test_matrix_coverage_capacity(client: TestClient, admin_headers: dict[str, s
 
     # Coverage: Python at proficiency >= 3 → only Engineer One.
     cov = client.get(
-        f"{SK}/{py['id']}/resources", headers=admin_headers, params={"min_proficiency": 3}
+        f"{SK}/{py['id']}/resources",
+        headers=admin_headers,
+        params={"min_proficiency": 3},
     ).json()
     assert cov["resource_count"] == 1 and cov["resources"][0]["resource_name"] == "Engineer One"
 
@@ -204,7 +214,9 @@ def test_update_skill_name(client: TestClient, admin_headers: dict[str, str]) ->
     _skill(client, admin_headers, "Scala")
     # Rename to a fresh name.
     renamed = client.patch(
-        f"{SK}/{a['id']}", headers=admin_headers, json={"name": "Go", "description": "Backend"}
+        f"{SK}/{a['id']}",
+        headers=admin_headers,
+        json={"name": "Go", "description": "Backend"},
     ).json()
     assert renamed["name"] == "Go" and renamed["description"] == "Backend"
     # Rename onto an existing name → 409.

@@ -28,7 +28,12 @@ def _def(client: TestClient, h: dict[str, str], name: str = "Project gate", **bo
 
 
 def _stage(
-    client: TestClient, h: dict[str, str], def_id: str, name: str, seq: int, approval: bool
+    client: TestClient,
+    h: dict[str, str],
+    def_id: str,
+    name: str,
+    seq: int,
+    approval: bool,
 ) -> dict:
     r = client.post(
         f"{WF}/{def_id}/stages",
@@ -43,14 +48,21 @@ def _start(client: TestClient, h: dict[str, str], def_id: str) -> dict:
     r = client.post(
         f"{WF}/instances",
         headers=h,
-        json={"definition_id": def_id, "entity_type": "Project", "entity_id": str(uuid.uuid4())},
+        json={
+            "definition_id": def_id,
+            "entity_type": "Project",
+            "entity_id": str(uuid.uuid4()),
+        },
     )
     assert r.status_code == 201, r.text
     return r.json()
 
 
 def _approver(
-    client: TestClient, admin_headers: dict[str, str], registered_org: dict[str, str], email: str
+    client: TestClient,
+    admin_headers: dict[str, str],
+    registered_org: dict[str, str],
+    email: str,
 ) -> dict[str, str]:
     """Create a second user with the Project Manager role and log them in."""
     roles = client.get(ROLES, headers=admin_headers).json()
@@ -58,11 +70,20 @@ def _approver(
     client.post(
         USERS,
         headers=admin_headers,
-        json={"email": email, "full_name": "Approver P", "password": PW, "role_ids": [pm_role]},
+        json={
+            "email": email,
+            "full_name": "Approver P",
+            "password": PW,
+            "role_ids": [pm_role],
+        },
     )
     tokens = _login(
         client,
-        {"organization_slug": registered_org["organization_slug"], "email": email, "password": PW},
+        {
+            "organization_slug": registered_org["organization_slug"],
+            "email": email,
+            "password": PW,
+        },
     )
     return {"Authorization": f"Bearer {tokens['access_token']}"}
 
@@ -109,7 +130,11 @@ def test_start_instance(client: TestClient, admin_headers: dict[str, str]) -> No
     r = client.post(
         f"{WF}/instances",
         headers=admin_headers,
-        json={"definition_id": empty["id"], "entity_type": "X", "entity_id": str(uuid.uuid4())},
+        json={
+            "definition_id": empty["id"],
+            "entity_type": "X",
+            "entity_id": str(uuid.uuid4()),
+        },
     )
     assert r.status_code == 422
 
@@ -119,7 +144,11 @@ def test_start_instance(client: TestClient, admin_headers: dict[str, str]) -> No
     r = client.post(
         f"{WF}/instances",
         headers=admin_headers,
-        json={"definition_id": inactive["id"], "entity_type": "X", "entity_id": str(uuid.uuid4())},
+        json={
+            "definition_id": inactive["id"],
+            "entity_type": "X",
+            "entity_id": str(uuid.uuid4()),
+        },
     )
     assert r.status_code == 422
 
@@ -198,7 +227,9 @@ def test_rejection(
     client.post(f"{WF}/instances/{inst['id']}/advance", headers=admin_headers)
     approver = _approver(client, admin_headers, registered_org, "wf-rejector@contoso.com")
     rej = client.post(
-        f"{WF}/instances/{inst['id']}/decision", headers=approver, json={"decision": "rejected"}
+        f"{WF}/instances/{inst['id']}/decision",
+        headers=approver,
+        json={"decision": "rejected"},
     ).json()
     assert rej["status"] == "rejected"
     # No further action on a rejected instance.
@@ -222,7 +253,9 @@ def test_conflict_paths(client: TestClient, admin_headers: dict[str, str]) -> No
     _stage(client, admin_headers, d2["id"], "Plain", 1, False)
     i2 = _start(client, admin_headers, d2["id"])
     r = client.post(
-        f"{WF}/instances/{i2['id']}/decision", headers=admin_headers, json={"decision": "approved"}
+        f"{WF}/instances/{i2['id']}/decision",
+        headers=admin_headers,
+        json={"decision": "approved"},
     )
     assert r.status_code == 409
 
@@ -286,7 +319,13 @@ def test_rbac(
 
 def test_search_filters(client: TestClient, admin_headers: dict[str, str]) -> None:
     _def(client, admin_headers, name="Change gate", entity_type="Change")
-    _def(client, admin_headers, name="Retired gate", entity_type="Change", is_active=False)
+    _def(
+        client,
+        admin_headers,
+        name="Retired gate",
+        entity_type="Change",
+        is_active=False,
+    )
     # Definition filters: entity_type + is_active.
     by_type = client.get(WF, headers=admin_headers, params={"entity_type": "Change"}).json()
     assert by_type["total"] == 2

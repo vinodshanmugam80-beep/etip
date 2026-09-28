@@ -42,7 +42,11 @@ def _entry(
     date_str: str = "2026-03-02",
     **o: object,
 ) -> dict:
-    body: dict[str, object] = {"project_id": project_id, "work_date": date_str, "hours": hours}
+    body: dict[str, object] = {
+        "project_id": project_id,
+        "work_date": date_str,
+        "hours": hours,
+    }
     body.update(o)
     r = client.post(TS, headers=h, json=body)
     assert r.status_code == 201, r.text
@@ -67,7 +71,11 @@ def test_create_validations(client: TestClient, admin_headers: dict[str, str]) -
         client.post(
             TS,
             headers=admin_headers,
-            json={"project_id": str(uuid.uuid4()), "work_date": "2026-03-02", "hours": "1.00"},
+            json={
+                "project_id": str(uuid.uuid4()),
+                "work_date": "2026-03-02",
+                "hours": "1.00",
+            },
         ).status_code
         == 404
     )
@@ -92,7 +100,11 @@ def test_create_validations(client: TestClient, admin_headers: dict[str, str]) -
         client.post(
             TS,
             headers=admin_headers,
-            json={"project_id": proj_a["id"], "work_date": "2026-03-02", "hours": "25.00"},
+            json={
+                "project_id": proj_a["id"],
+                "work_date": "2026-03-02",
+                "hours": "25.00",
+            },
         ).status_code
         == 422
     )
@@ -157,7 +169,9 @@ def test_approve_reject_workflow(client: TestClient, admin_headers: dict[str, st
     e2 = _entry(client, admin_headers, proj["id"], hours="2.00")
     _submit(client, admin_headers, e2["id"])
     rejected = client.post(
-        f"{TS}/{e2['id']}/reject", headers=admin_headers, json={"decision_notes": "wrong project"}
+        f"{TS}/{e2['id']}/reject",
+        headers=admin_headers,
+        json={"decision_notes": "wrong project"},
     )
     assert rejected.status_code == 200 and rejected.json()["status"] == "rejected"
     assert (
@@ -211,7 +225,9 @@ def test_summary(client: TestClient, admin_headers: dict[str, str]) -> None:
     ).json()
     assert only_billable["total"] == 1 and only_billable["items"][0]["hours"] == "6.00"
     approved_only = client.get(
-        TS, headers=admin_headers, params={"project_id": proj["id"], "status": "approved"}
+        TS,
+        headers=admin_headers,
+        params={"project_id": proj["id"], "status": "approved"},
     ).json()
     assert approved_only["total"] == 1
 

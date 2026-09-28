@@ -32,7 +32,10 @@ def _project(client: TestClient, h: dict[str, str], code: str = "PR") -> dict:
 
 
 def _resource(
-    client: TestClient, h: dict[str, str], name: str = "Ada Engineer", **overrides: object
+    client: TestClient,
+    h: dict[str, str],
+    name: str = "Ada Engineer",
+    **overrides: object,
 ) -> dict:
     body: dict[str, object] = {"name": name}
     body.update(overrides)
@@ -86,7 +89,9 @@ def test_user_link_validation(
 
     # Unknown user is rejected.
     unknown = client.post(
-        RESOURCES, headers=admin_headers, json={"name": "Ghost", "user_id": str(uuid.uuid4())}
+        RESOURCES,
+        headers=admin_headers,
+        json={"name": "Ghost", "user_id": str(uuid.uuid4())},
     )
     assert unknown.status_code == 422
 
@@ -111,7 +116,13 @@ def test_allocation_requires_resource_and_project(
     res = _resource(client, admin_headers)
     # Unknown project.
     bad_proj = _allocate(
-        client, admin_headers, res["id"], str(uuid.uuid4()), 50, "2026-01-01", "2026-03-31"
+        client,
+        admin_headers,
+        res["id"],
+        str(uuid.uuid4()),
+        50,
+        "2026-01-01",
+        "2026-03-31",
     )
     assert bad_proj.status_code == 404
     # Unknown resource.
@@ -166,14 +177,26 @@ def test_non_overlapping_allocations_allowed(
     res = _resource(client, admin_headers)
     assert (
         _allocate(
-            client, admin_headers, res["id"], proj["id"], 100, "2026-01-01", "2026-03-31"
+            client,
+            admin_headers,
+            res["id"],
+            proj["id"],
+            100,
+            "2026-01-01",
+            "2026-03-31",
         ).status_code
         == 201
     )
     # Adjacent window, no overlap → full capacity again is fine.
     assert (
         _allocate(
-            client, admin_headers, res["id"], proj["id"], 100, "2026-04-01", "2026-06-30"
+            client,
+            admin_headers,
+            res["id"],
+            proj["id"],
+            100,
+            "2026-04-01",
+            "2026-06-30",
         ).status_code
         == 201
     )
@@ -191,7 +214,9 @@ def test_update_allocation_rechecks_and_excludes_self(
 
     # Raising the first to 60% would total 110% with the second → rejected.
     over = client.patch(
-        f"{ALLOCATIONS}/{a['id']}", headers=admin_headers, json={"allocation_percent": 60}
+        f"{ALLOCATIONS}/{a['id']}",
+        headers=admin_headers,
+        json={"allocation_percent": 60},
     )
     assert over.status_code == 422
 
@@ -237,7 +262,12 @@ def test_get_update_and_list_paths(client: TestClient, admin_headers: dict[str, 
     updated = client.patch(
         f"{RESOURCES}/{res['id']}",
         headers=admin_headers,
-        json={"name": "Ada Senior", "cost_rate": "150.00", "is_active": False, "skills": ["go"]},
+        json={
+            "name": "Ada Senior",
+            "cost_rate": "150.00",
+            "is_active": False,
+            "skills": ["go"],
+        },
     )
     assert updated.status_code == 200
     body = updated.json()

@@ -26,7 +26,10 @@ def main() -> int:
             launch["executable_path"] = exe
         browser = p.chromium.launch(**launch)  # type: ignore[arg-type]
         page = browser.new_page(viewport={"width": 1440, "height": 1100})
-        page.route("**/*", lambda r: r.continue_() if r.request.url.startswith(BASE) else r.abort())
+        page.route(
+            "**/*",
+            lambda r: r.continue_() if r.request.url.startswith(BASE) else r.abort(),
+        )
         page.goto(f"{BASE}/dashboard", wait_until="networkidle")
         page.fill("#slug", SLUG)
         page.fill("#email", EMAIL)
@@ -35,14 +38,12 @@ def main() -> int:
         page.wait_for_selector("#projRows tr", timeout=15000)
 
         # Pick the first Project option in the scope selector and apply it.
-        page.evaluate(
-            """() => {
+        page.evaluate("""() => {
                 const sel = document.getElementById('scopeSel');
                 const opt = Array.from(sel.options).find(o => o.value.startsWith('pj:'));
                 if (!opt) return;
                 sel.value = opt.value; onScope();
-            }"""
-        )
+            }""")
         page.wait_for_timeout(1500)
         page.screenshot(path=OUT_SCOPE, full_page=True)
         print(f"wrote {OUT_SCOPE}")

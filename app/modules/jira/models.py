@@ -59,10 +59,10 @@ class ExternalLink(BaseEntity, TenantMixin):
 class SyncDirection(enum.StrEnum):
     """Direction of a Jira sync operation."""
 
-    INBOUND = "inbound"   # Jira → ETIP (webhook)
-    IMPORT = "import"     # Jira → ETIP (bulk pull)
+    INBOUND = "inbound"  # Jira → ETIP (webhook)
+    IMPORT = "import"  # Jira → ETIP (bulk pull)
     OUTBOUND = "outbound"  # ETIP → Jira (push)
-    TEST = "test"         # connection test
+    TEST = "test"  # connection test
 
 
 class SyncStatus(enum.StrEnum):

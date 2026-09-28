@@ -55,7 +55,12 @@ def _member(client: TestClient, admin_headers: dict[str, str], email: str) -> st
     r = client.post(
         USERS,
         headers=admin_headers,
-        json={"email": email, "full_name": "Person", "password": PW, "role_ids": [member_role_id]},
+        json={
+            "email": email,
+            "full_name": "Person",
+            "password": PW,
+            "role_ids": [member_role_id],
+        },
     )
     assert r.status_code == 201, r.text
     return r.json()["id"]
@@ -126,7 +131,9 @@ def test_lifecycle_and_actual_times(client: TestClient, admin_headers: dict[str,
     )
     assert started.status_code == 200 and started.json()["actual_start"] is not None
     completed = client.patch(
-        f"{MEETINGS}/{mid}", headers=admin_headers, json={"status": "completed", "minutes": "Notes"}
+        f"{MEETINGS}/{mid}",
+        headers=admin_headers,
+        json={"status": "completed", "minutes": "Notes"},
     )
     assert completed.status_code == 200
     assert completed.json()["actual_end"] is not None and completed.json()["minutes"] == "Notes"
@@ -165,7 +172,9 @@ def test_attendee_management(client: TestClient, admin_headers: dict[str, str]) 
     attendee_id = added.json()["id"]
     # Duplicate.
     dup = client.post(
-        f"{MEETINGS}/{mid}/attendees", headers=admin_headers, json={"user_id": member_id}
+        f"{MEETINGS}/{mid}/attendees",
+        headers=admin_headers,
+        json={"user_id": member_id},
     )
     assert dup.status_code == 409 and dup.json()["error"]["code"] == "duplicate_attendee"
     # Unknown user.
@@ -272,7 +281,9 @@ def test_direct_delete_cascades_attendees(
     m = _meeting(client, admin_headers, proj["id"])
     member_id = _member(client, admin_headers, "gone@contoso.com")
     client.post(
-        f"{MEETINGS}/{m['id']}/attendees", headers=admin_headers, json={"user_id": member_id}
+        f"{MEETINGS}/{m['id']}/attendees",
+        headers=admin_headers,
+        json={"user_id": member_id},
     )
     assert client.delete(f"{MEETINGS}/{m['id']}", headers=admin_headers).status_code == 200
     assert client.get(f"{MEETINGS}/{m['id']}", headers=admin_headers).status_code == 404

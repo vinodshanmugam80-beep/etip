@@ -47,7 +47,10 @@ from app.modules.vendor.schemas import (
 logger = get_logger(__name__)
 
 _PO_TRANSITIONS: dict[PurchaseOrderStatus, set[PurchaseOrderStatus]] = {
-    PurchaseOrderStatus.DRAFT: {PurchaseOrderStatus.ISSUED, PurchaseOrderStatus.CANCELLED},
+    PurchaseOrderStatus.DRAFT: {
+        PurchaseOrderStatus.ISSUED,
+        PurchaseOrderStatus.CANCELLED,
+    },
     PurchaseOrderStatus.ISSUED: {
         PurchaseOrderStatus.PARTIALLY_INVOICED,
         PurchaseOrderStatus.INVOICED,
@@ -57,7 +60,10 @@ _PO_TRANSITIONS: dict[PurchaseOrderStatus, set[PurchaseOrderStatus]] = {
         PurchaseOrderStatus.INVOICED,
         PurchaseOrderStatus.CANCELLED,
     },
-    PurchaseOrderStatus.INVOICED: {PurchaseOrderStatus.PAID, PurchaseOrderStatus.CANCELLED},
+    PurchaseOrderStatus.INVOICED: {
+        PurchaseOrderStatus.PAID,
+        PurchaseOrderStatus.CANCELLED,
+    },
     PurchaseOrderStatus.PAID: set(),
     PurchaseOrderStatus.CANCELLED: set(),
 }
@@ -106,7 +112,14 @@ class VendorService:
             if self.vendors.get_by_code(self._org_id, payload.code) is not None:
                 raise ConflictError("A vendor with that code already exists.")
             vendor.code = payload.code
-        for field in ("name", "category", "status", "contact_name", "contact_email", "description"):
+        for field in (
+            "name",
+            "category",
+            "status",
+            "contact_name",
+            "contact_email",
+            "description",
+        ):
             value = getattr(payload, field)
             if value is not None:
                 setattr(vendor, field, value)
@@ -267,7 +280,10 @@ class VendorService:
         )
         order = self.orders.add(order)
         self._audit(
-            "PurchaseOrder", order.id, "create", f"Created PO '{order.reference or order.id}'"
+            "PurchaseOrder",
+            order.id,
+            "create",
+            f"Created PO '{order.reference or order.id}'",
         )
         return order
 
@@ -306,7 +322,10 @@ class VendorService:
         order.modified_by = self._actor_id
         order = self.orders.update(order)
         self._audit(
-            "PurchaseOrder", order.id, "invoice", f"Recorded invoiced {order.invoiced_amount}"
+            "PurchaseOrder",
+            order.id,
+            "invoice",
+            f"Recorded invoiced {order.invoiced_amount}",
         )
         return order
 

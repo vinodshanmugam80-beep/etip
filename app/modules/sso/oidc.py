@@ -38,7 +38,10 @@ def fetch_discovery(issuer: str) -> dict[str, str]:
     try:
         with urllib.request.urlopen(req, timeout=15) as resp:  # noqa: S310
             doc = json.loads(resp.read().decode())
-    except (urllib.error.URLError, ValueError) as exc:  # pragma: no cover - network guard
+    except (
+        urllib.error.URLError,
+        ValueError,
+    ) as exc:  # pragma: no cover - network guard
         raise AuthenticationError(f"Could not read OIDC discovery from {url}.") from exc
     required = ("authorization_endpoint", "token_endpoint", "jwks_uri")
     missing = [k for k in required if not doc.get(k)]
@@ -110,7 +113,10 @@ def fetch_oidc_claims(
     req = urllib.request.Request(
         config.token_url,
         data=data,
-        headers={"Content-Type": "application/x-www-form-urlencoded", "Accept": "application/json"},
+        headers={
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Accept": "application/json",
+        },
         method="POST",
     )
     with urllib.request.urlopen(req, timeout=15) as resp:  # noqa: S310

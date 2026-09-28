@@ -43,7 +43,11 @@ def _milestone(
     target: str = FUTURE,
     **o: object,
 ) -> dict:
-    body: dict[str, object] = {"project_id": project_id, "name": name, "target_date": target}
+    body: dict[str, object] = {
+        "project_id": project_id,
+        "name": name,
+        "target_date": target,
+    }
     body.update(o)
     r = client.post(MILESTONES, headers=h, json=body)
     assert r.status_code == 201, r.text
@@ -66,7 +70,11 @@ def test_create_requires_project_and_owner(
         client.post(
             MILESTONES,
             headers=admin_headers,
-            json={"project_id": str(uuid.uuid4()), "name": "Orphan", "target_date": FUTURE},
+            json={
+                "project_id": str(uuid.uuid4()),
+                "name": "Orphan",
+                "target_date": FUTURE,
+            },
         ).status_code
         == 404
     )
@@ -154,7 +162,12 @@ def test_search_orders_by_target_date(client: TestClient, admin_headers: dict[st
     _milestone(client, admin_headers, proj["id"], name="Later", target="2031-01-01")
     _milestone(client, admin_headers, proj["id"], name="Sooner", target="2029-01-01")
     keyed = _milestone(
-        client, admin_headers, proj["id"], name="Keyed", target="2030-06-01", is_key=True
+        client,
+        admin_headers,
+        proj["id"],
+        name="Keyed",
+        target="2030-06-01",
+        is_key=True,
     )
 
     listing = client.get(
@@ -164,7 +177,9 @@ def test_search_orders_by_target_date(client: TestClient, admin_headers: dict[st
     assert names == ["Sooner", "Keyed", "Later"]  # ascending target date
 
     only_key = client.get(
-        MILESTONES, headers=admin_headers, params={"project_id": proj["id"], "is_key": True}
+        MILESTONES,
+        headers=admin_headers,
+        params={"project_id": proj["id"], "is_key": True},
     ).json()
     assert only_key["total"] == 1 and only_key["items"][0]["id"] == keyed["id"]
 
@@ -175,7 +190,9 @@ def test_milestone_summary(client: TestClient, admin_headers: dict[str, str]) ->
     _milestone(client, admin_headers, proj["id"], name="Key one", target=FUTURE, is_key=True)
     achieved = _milestone(client, admin_headers, proj["id"], name="Done one", target=FUTURE)
     client.patch(
-        f"{MILESTONES}/{achieved['id']}", headers=admin_headers, json={"status": "achieved"}
+        f"{MILESTONES}/{achieved['id']}",
+        headers=admin_headers,
+        json={"status": "achieved"},
     )
 
     summary = client.get(f"{PROJECTS}/{proj['id']}/milestone-summary", headers=admin_headers).json()

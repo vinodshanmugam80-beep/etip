@@ -336,9 +336,7 @@ class MilestoneService:
     # Financial milestone: deliverable acceptance → payment release
     # ------------------------------------------------------------------
     def _workflow(self) -> WorkflowService:
-        return WorkflowService(
-            self._uow, organization_id=self._org_id, actor_id=self._actor_id
-        )
+        return WorkflowService(self._uow, organization_id=self._org_id, actor_id=self._actor_id)
 
     def submit_for_acceptance(self, milestone_id: uuid.UUID) -> Milestone:
         """Open the deliverable-acceptance gate for a financial milestone.
@@ -409,9 +407,7 @@ class MilestoneService:
                 "The deliverable must be fully accepted at the gate before payment is released."
             )
 
-        finance = FinanceService(
-            self._uow, organization_id=self._org_id, actor_id=self._actor_id
-        )
+        finance = FinanceService(self._uow, organization_id=self._org_id, actor_id=self._actor_id)
         today = utcnow().date()
         finance.create_entry(
             project_id=milestone.project_id,
@@ -456,9 +452,15 @@ class MilestoneService:
         milestones = [
             m
             for m in self.milestones.search(
-                self._org_id, query=None, project_id=None, status=None,
-                milestone_type=None, is_key=None, owner_user_id=None,
-                limit=1000, offset=0,
+                self._org_id,
+                query=None,
+                project_id=None,
+                status=None,
+                milestone_type=None,
+                is_key=None,
+                owner_user_id=None,
+                limit=1000,
+                offset=0,
             )
             if m.payment_amount is not None
         ]

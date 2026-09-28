@@ -84,7 +84,9 @@ def reconcile_all_tenants(session: Session, *, actor_id: uuid.UUID | None = None
     }
 
 
-def run_startup_reconciliation(session_factory: sessionmaker[Session]) -> dict[str, int]:
+def run_startup_reconciliation(
+    session_factory: sessionmaker[Session],
+) -> dict[str, int]:
     """Open a session, reconcile all tenants, commit, and log the outcome."""
     with session_factory() as session:
         summary = reconcile_all_tenants(session)

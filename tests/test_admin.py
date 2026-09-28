@@ -30,7 +30,12 @@ def _member(client: TestClient, admin_headers: dict[str, str], email: str) -> st
     r = client.post(
         USERS,
         headers=admin_headers,
-        json={"email": email, "full_name": "Person", "password": PW, "role_ids": [role_id]},
+        json={
+            "email": email,
+            "full_name": "Person",
+            "password": PW,
+            "role_ids": [role_id],
+        },
     )
     assert r.status_code == 201, r.text
     return r.json()["id"]
@@ -41,7 +46,11 @@ def _member_headers(
 ) -> dict[str, str]:
     tokens = _login(
         client,
-        {"organization_slug": registered_org["organization_slug"], "email": email, "password": PW},
+        {
+            "organization_slug": registered_org["organization_slug"],
+            "email": email,
+            "password": PW,
+        },
     )
     return {"Authorization": f"Bearer {tokens['access_token']}"}
 
@@ -53,7 +62,12 @@ def test_audit_log_search_and_get(client: TestClient, admin_headers: dict[str, s
     client.post(
         RISKS,
         headers=admin_headers,
-        json={"project_id": proj["id"], "title": "A risk", "probability": 3, "impact": 3},
+        json={
+            "project_id": proj["id"],
+            "title": "A risk",
+            "probability": 3,
+            "impact": 3,
+        },
     )
 
     # The audit log has entries written by the create operations.

@@ -53,7 +53,10 @@ class BuildRequestRepository(BaseRepository[BuildRequest]):
     ) -> Sequence[BuildRequest]:
         """Return a filtered, paginated page of build requests (newest first)."""
         stmt = self._filtered(
-            organization_id, status=status, target_type=target_type, project_id=project_id
+            organization_id,
+            status=status,
+            target_type=target_type,
+            project_id=project_id,
         )
         stmt = stmt.order_by(BuildRequest.created_date.desc()).limit(limit).offset(offset)
         return self.session.execute(stmt).scalars().all()
@@ -68,7 +71,10 @@ class BuildRequestRepository(BaseRepository[BuildRequest]):
     ) -> int:
         """Return the number of build requests matching the filters."""
         inner = self._filtered(
-            organization_id, status=status, target_type=target_type, project_id=project_id
+            organization_id,
+            status=status,
+            target_type=target_type,
+            project_id=project_id,
         ).subquery()
         return int(self.session.execute(select(func.count()).select_from(inner)).scalar_one())
 

@@ -26,7 +26,12 @@ def _member(client: TestClient, admin_headers: dict[str, str], email: str) -> st
     r = client.post(
         USERS,
         headers=admin_headers,
-        json={"email": email, "full_name": "Person", "password": PW, "role_ids": [member_role_id]},
+        json={
+            "email": email,
+            "full_name": "Person",
+            "password": PW,
+            "role_ids": [member_role_id],
+        },
     )
     assert r.status_code == 201, r.text
     return r.json()["id"]
@@ -37,7 +42,11 @@ def _member_headers(
 ) -> dict[str, str]:
     tokens = _login(
         client,
-        {"organization_slug": registered_org["organization_slug"], "email": email, "password": PW},
+        {
+            "organization_slug": registered_org["organization_slug"],
+            "email": email,
+            "password": PW,
+        },
     )
     return {"Authorization": f"Bearer {tokens['access_token']}"}
 
@@ -50,7 +59,11 @@ def _send(
     title: str = "Heads up",
     **o: object,
 ) -> dict:
-    body: dict[str, object] = {"user_id": user_id, "notification_type": ntype, "title": title}
+    body: dict[str, object] = {
+        "user_id": user_id,
+        "notification_type": ntype,
+        "title": title,
+    }
     body.update(o)
     r = client.post(NOTES, headers=admin_headers, json=body)
     assert r.status_code == 200, r.text
@@ -68,7 +81,11 @@ def test_send_and_recipient_validation(client: TestClient, admin_headers: dict[s
     bad = client.post(
         NOTES,
         headers=admin_headers,
-        json={"user_id": str(uuid.uuid4()), "notification_type": "system", "title": "Nope"},
+        json={
+            "user_id": str(uuid.uuid4()),
+            "notification_type": "system",
+            "title": "Nope",
+        },
     )
     assert bad.status_code == 422
 
@@ -189,7 +206,11 @@ def test_rbac_member_cannot_send(
         client.post(
             NOTES,
             headers=h,
-            json={"user_id": other_id, "notification_type": "system", "title": "Hi there"},
+            json={
+                "user_id": other_id,
+                "notification_type": "system",
+                "title": "Hi there",
+            },
         ).status_code
         == 403
     )

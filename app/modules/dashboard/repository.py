@@ -84,7 +84,11 @@ class DashboardWidgetRepository(BaseRepository[DashboardWidget]):
         return self.session.execute(stmt).scalars().all()
 
     def soft_delete_for_dashboard(
-        self, organization_id: uuid.UUID, dashboard_id: uuid.UUID, *, actor_id: uuid.UUID
+        self,
+        organization_id: uuid.UUID,
+        dashboard_id: uuid.UUID,
+        *,
+        actor_id: uuid.UUID,
     ) -> int:
         """Soft-delete every widget of a dashboard."""
         stmt = self._base_query(organization_id).where(DashboardWidget.dashboard_id == dashboard_id)

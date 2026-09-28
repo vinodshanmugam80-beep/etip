@@ -22,7 +22,10 @@ PW = "Initial-Passphrase!1"
 
 
 def _approver(
-    client: TestClient, admin_headers: dict[str, str], registered_org: dict[str, str], email: str
+    client: TestClient,
+    admin_headers: dict[str, str],
+    registered_org: dict[str, str],
+    email: str,
 ) -> dict[str, str]:
     """Create a second user (Project Manager role) and return their headers."""
     roles = client.get(ROLES, headers=admin_headers).json()
@@ -30,11 +33,20 @@ def _approver(
     client.post(
         USERS,
         headers=admin_headers,
-        json={"email": email, "full_name": "Pat Approver", "password": PW, "role_ids": [pm_role]},
+        json={
+            "email": email,
+            "full_name": "Pat Approver",
+            "password": PW,
+            "role_ids": [pm_role],
+        },
     )
     tokens = _login(
         client,
-        {"organization_slug": registered_org["organization_slug"], "email": email, "password": PW},
+        {
+            "organization_slug": registered_org["organization_slug"],
+            "email": email,
+            "password": PW,
+        },
     )
     return {"Authorization": f"Bearer {tokens['access_token']}"}
 
@@ -49,7 +61,11 @@ def _start(client: TestClient, h: dict[str, str], def_id: str, project_id: str) 
     r = client.post(
         f"{WF}/instances",
         headers=h,
-        json={"definition_id": def_id, "entity_type": "Project", "entity_id": project_id},
+        json={
+            "definition_id": def_id,
+            "entity_type": "Project",
+            "entity_id": project_id,
+        },
     )
     assert r.status_code == 201, r.text
     return r.json()

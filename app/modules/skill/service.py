@@ -242,7 +242,10 @@ class SkillService:
                 Decimal("0.00"),
             )
             avg = (
-                round(sum(a.proficiency for a in skill_assignments) / len(skill_assignments), 2)
+                round(
+                    sum(a.proficiency for a in skill_assignments) / len(skill_assignments),
+                    2,
+                )
                 if skill_assignments
                 else None
             )

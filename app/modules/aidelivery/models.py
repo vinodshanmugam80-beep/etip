@@ -116,7 +116,10 @@ class PipelineRun(BaseEntity, TenantMixin):
     __tablename__ = "pipeline_runs"
 
     build_request_id: Mapped[uuid.UUID] = mapped_column(
-        Uuid, ForeignKey("build_requests.id", ondelete="CASCADE"), nullable=False, index=True
+        Uuid,
+        ForeignKey("build_requests.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
     )
     stage: Mapped[PipelineStage] = mapped_column(enum_column(PipelineStage), index=True)
     status: Mapped[RunStatus] = mapped_column(enum_column(RunStatus), default=RunStatus.RUNNING)
@@ -135,7 +138,10 @@ class Deployment(BaseEntity, TenantMixin):
     __tablename__ = "deployments"
 
     build_request_id: Mapped[uuid.UUID] = mapped_column(
-        Uuid, ForeignKey("build_requests.id", ondelete="CASCADE"), nullable=False, index=True
+        Uuid,
+        ForeignKey("build_requests.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
     )
     environment: Mapped[Environment] = mapped_column(enum_column(Environment), index=True)
     status: Mapped[DeploymentStatus] = mapped_column(

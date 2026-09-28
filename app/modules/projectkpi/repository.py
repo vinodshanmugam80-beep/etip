@@ -18,9 +18,9 @@ class ProjectKPIRepository(BaseRepository[ProjectKPI]):
     def __init__(self, session: Session) -> None:
         super().__init__(session, ProjectKPI)
 
-    def _for_project(self, organization_id: uuid.UUID, project_id: uuid.UUID) -> Select[
-        tuple[ProjectKPI]
-    ]:
+    def _for_project(
+        self, organization_id: uuid.UUID, project_id: uuid.UUID
+    ) -> Select[tuple[ProjectKPI]]:
         return self._base_query(organization_id).where(ProjectKPI.project_id == project_id)
 
     def list_for_project(

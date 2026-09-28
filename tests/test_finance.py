@@ -124,11 +124,15 @@ def test_list_filters(client: TestClient, admin_headers: dict[str, str]) -> None
     _entry(client, admin_headers, proj["id"], "forecast", "200.00", category="travel")
 
     by_type = client.get(
-        ENTRIES, headers=admin_headers, params={"project_id": proj["id"], "entry_type": "actual"}
+        ENTRIES,
+        headers=admin_headers,
+        params={"project_id": proj["id"], "entry_type": "actual"},
     ).json()
     assert by_type["total"] == 1
     by_cat = client.get(
-        ENTRIES, headers=admin_headers, params={"project_id": proj["id"], "category": "travel"}
+        ENTRIES,
+        headers=admin_headers,
+        params={"project_id": proj["id"], "category": "travel"},
     ).json()
     assert by_cat["total"] == 1
 

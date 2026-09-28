@@ -38,7 +38,10 @@ def main() -> int:
             launch["executable_path"] = exe
         browser = p.chromium.launch(**launch)  # type: ignore[arg-type]
         page = browser.new_page(viewport={"width": 1440, "height": 1200})
-        page.route("**/*", lambda r: r.continue_() if r.request.url.startswith(BASE) else r.abort())
+        page.route(
+            "**/*",
+            lambda r: r.continue_() if r.request.url.startswith(BASE) else r.abort(),
+        )
         page.goto(f"{BASE}/dashboard", wait_until="networkidle")
 
         page.fill("#slug", SLUG)

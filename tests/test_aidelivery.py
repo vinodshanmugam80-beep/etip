@@ -25,7 +25,9 @@ def _build(client: TestClient, h: dict[str, str], **body: object) -> dict:
 
 def _run(client: TestClient, h: dict[str, str], bid: str, stage: str, status: str) -> dict:
     r = client.post(
-        f"{B}/{bid}/runs", headers=h, json={"stage": stage, "status": status, "provider": "tool"}
+        f"{B}/{bid}/runs",
+        headers=h,
+        json={"stage": stage, "status": status, "provider": "tool"},
     )
     assert r.status_code == 201, r.text
     return r.json()
@@ -90,7 +92,9 @@ def test_not_found_and_bad_project(client: TestClient, admin_headers: dict[str, 
     assert client.get(f"{B}/{uuid.uuid4()}", headers=admin_headers).status_code == 404
     assert (
         client.post(
-            B, headers=admin_headers, json={"title": "Bad", "project_id": str(uuid.uuid4())}
+            B,
+            headers=admin_headers,
+            json={"title": "Bad", "project_id": str(uuid.uuid4())},
         ).status_code
         == 422
     )
@@ -169,7 +173,11 @@ def test_codegen_factory_and_llm_path(monkeypatch) -> None:
         lambda url, h, body: "```html\n<!doctype html><html>LLM built</html>\n```",
     )
     s = base.model_copy(
-        update={"codegen_provider": "anthropic", "codegen_api_key": "sk-test", "codegen_model": "m"}
+        update={
+            "codegen_provider": "anthropic",
+            "codegen_api_key": "sk-test",
+            "codegen_model": "m",
+        }
     )
     provider = codegen.get_codegen_provider(s)
     assert provider.name == "anthropic"
@@ -391,10 +399,16 @@ def test_c_cpp_shell_stacks(client: TestClient, admin_headers: dict[str, str]) -
         files = client.post(f"{B}/{b['id']}/generate", headers=admin_headers).json()["files"]
         assert entry in files and test_file in files
     # detection
-    for filenames, stack in [(["main.cpp"], "cpp"), (["prog.c"], "c"), (["run.sh"], "shell")]:
+    for filenames, stack in [
+        (["main.cpp"], "cpp"),
+        (["prog.c"], "c"),
+        (["run.sh"], "shell"),
+    ]:
         assert (
             client.post(
-                f"{B}/detect-stack", headers=admin_headers, json={"filenames": filenames}
+                f"{B}/detect-stack",
+                headers=admin_headers,
+                json={"filenames": filenames},
             ).json()["stack"]
             == stack
         )
@@ -413,7 +427,11 @@ def test_added_languages_generate(client: TestClient, admin_headers: dict[str, s
         b = _build(client, admin_headers, tech_stack=stack)
         files = client.post(f"{B}/{b['id']}/generate", headers=admin_headers).json()["files"]
         assert entry in files and test_file in files
-    for stack, only in [("sql", "schema.sql"), ("terraform", "main.tf"), ("bicep", "main.bicep")]:
+    for stack, only in [
+        ("sql", "schema.sql"),
+        ("terraform", "main.tf"),
+        ("bicep", "main.bicep"),
+    ]:
         b = _build(client, admin_headers, tech_stack=stack)
         assert only in client.post(f"{B}/{b['id']}/generate", headers=admin_headers).json()["files"]
     for filenames, stack in [
@@ -424,7 +442,9 @@ def test_added_languages_generate(client: TestClient, admin_headers: dict[str, s
     ]:
         assert (
             client.post(
-                f"{B}/detect-stack", headers=admin_headers, json={"filenames": filenames}
+                f"{B}/detect-stack",
+                headers=admin_headers,
+                json={"filenames": filenames},
             ).json()["stack"]
             == stack
         )
@@ -462,7 +482,9 @@ def test_more_languages_generate(client: TestClient, admin_headers: dict[str, st
     ]:
         assert (
             client.post(
-                f"{B}/detect-stack", headers=admin_headers, json={"filenames": filenames}
+                f"{B}/detect-stack",
+                headers=admin_headers,
+                json={"filenames": filenames},
             ).json()["stack"]
             == stack
         )
@@ -508,14 +530,18 @@ def test_final_languages_generate(client: TestClient, admin_headers: dict[str, s
     ]:
         assert (
             client.post(
-                f"{B}/detect-stack", headers=admin_headers, json={"filenames": filenames}
+                f"{B}/detect-stack",
+                headers=admin_headers,
+                json={"filenames": filenames},
             ).json()["stack"]
             == stack
         )
     # A .proto alongside a Go service still detects Go.
     assert (
         client.post(
-            f"{B}/detect-stack", headers=admin_headers, json={"filenames": ["go.mod", "api.proto"]}
+            f"{B}/detect-stack",
+            headers=admin_headers,
+            json={"filenames": ["go.mod", "api.proto"]},
         ).json()["stack"]
         == "go-http"
     )

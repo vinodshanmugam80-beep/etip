@@ -93,7 +93,10 @@ class WorkflowService:
         )
         definition = self.definitions.add(definition)
         self._audit(
-            "WorkflowDefinition", definition.id, "create", f"Created workflow '{definition.name}'"
+            "WorkflowDefinition",
+            definition.id,
+            "create",
+            f"Created workflow '{definition.name}'",
         )
         return definition
 
@@ -108,7 +111,12 @@ class WorkflowService:
                 setattr(definition, field, value)
         definition.modified_by = self._actor_id
         definition = self.definitions.update(definition)
-        self._audit("WorkflowDefinition", definition.id, "update", f"Updated '{definition.name}'")
+        self._audit(
+            "WorkflowDefinition",
+            definition.id,
+            "update",
+            f"Updated '{definition.name}'",
+        )
         return definition
 
     def delete_definition(self, definition_id: uuid.UUID) -> None:
@@ -121,7 +129,12 @@ class WorkflowService:
         ):
             self.instances.soft_delete(instance, actor_id=self._actor_id)
         self.definitions.soft_delete(definition, actor_id=self._actor_id)
-        self._audit("WorkflowDefinition", definition.id, "delete", f"Deleted '{definition.name}'")
+        self._audit(
+            "WorkflowDefinition",
+            definition.id,
+            "delete",
+            f"Deleted '{definition.name}'",
+        )
 
     def get_definition(self, definition_id: uuid.UUID) -> WorkflowDefinition:
         """Return a definition or raise ``NotFoundError``."""
@@ -216,7 +229,10 @@ class WorkflowService:
         )
         instance = self.instances.add(instance)
         self._audit(
-            "WorkflowInstance", instance.id, "start", f"Started workflow '{definition.name}'"
+            "WorkflowInstance",
+            instance.id,
+            "start",
+            f"Started workflow '{definition.name}'",
         )
         return instance
 
@@ -344,15 +360,16 @@ class WorkflowService:
             return existing
         definition = self.create_definition(
             WorkflowDefinitionCreateRequest(
-                name=name, description=description, entity_type=entity_type, is_active=True
+                name=name,
+                description=description,
+                entity_type=entity_type,
+                is_active=True,
             )
         )
         for index, stage_name in enumerate(stages, start=1):
             self.add_stage(
                 definition.id,
-                WorkflowStageCreateRequest(
-                    name=stage_name, sequence=index, requires_approval=True
-                ),
+                WorkflowStageCreateRequest(name=stage_name, sequence=index, requires_approval=True),
             )
         return definition
 
@@ -443,7 +460,7 @@ class WorkflowService:
                         requires_approval=stage.requires_approval,
                         state=state,
                         decision=approval.decision if approval else None,
-                        approver_user_id=approval.approver_user_id if approval else None,
+                        approver_user_id=(approval.approver_user_id if approval else None),
                         approver_name=(
                             names.get(approval.approver_user_id)
                             if approval and approval.approver_user_id is not None
@@ -484,12 +501,8 @@ class WorkflowService:
             instances_in_progress=sum(
                 1 for i in instances if i.status == WorkflowStatus.IN_PROGRESS
             ),
-            instances_completed=sum(
-                1 for i in instances if i.status == WorkflowStatus.COMPLETED
-            ),
-            instances_rejected=sum(
-                1 for i in instances if i.status == WorkflowStatus.REJECTED
-            ),
+            instances_completed=sum(1 for i in instances if i.status == WorkflowStatus.COMPLETED),
+            instances_rejected=sum(1 for i in instances if i.status == WorkflowStatus.REJECTED),
             pending_gates=pending_gates,
             approved_gates=approved_gates,
             awaiting_my_approval=awaiting_me,
@@ -502,9 +515,7 @@ class WorkflowService:
         )
 
     @staticmethod
-    def _sequence_of(
-        stage_id: uuid.UUID | None, stages: list[WorkflowStage]
-    ) -> int | None:
+    def _sequence_of(stage_id: uuid.UUID | None, stages: list[WorkflowStage]) -> int | None:
         if stage_id is None:
             return None
         return next((s.sequence for s in stages if s.id == stage_id), None)
@@ -518,11 +529,7 @@ class WorkflowService:
     ) -> str:
         """Classify one gate's state for the governance view."""
         if approval is not None:
-            return (
-                "approved"
-                if approval.decision == ApprovalDecision.APPROVED
-                else "rejected"
-            )
+            return "approved" if approval.decision == ApprovalDecision.APPROVED else "rejected"
         if instance.status == WorkflowStatus.COMPLETED:
             return "passed"
         if instance.status == WorkflowStatus.CANCELLED:
@@ -541,9 +548,7 @@ class WorkflowService:
             return "pending" if stage.requires_approval else "in_progress"
         return "upcoming"
 
-    def _entity_labels(
-        self, instances: list[WorkflowInstance]
-    ) -> dict[tuple[str, uuid.UUID], str]:
+    def _entity_labels(self, instances: list[WorkflowInstance]) -> dict[tuple[str, uuid.UUID], str]:
         """Resolve human labels for instance subjects (Projects and Milestones)."""
         from app.modules.milestone.repository import MilestoneRepository
         from app.modules.project.repository import ProjectRepository
@@ -570,10 +575,7 @@ class WorkflowService:
         from app.modules.auth.repository import UserRepository
 
         repo = UserRepository(self._uow.session)
-        return {
-            u.id: u.full_name
-            for u in repo.list(organization_id=self._org_id, limit=500)
-        }
+        return {u.id: u.full_name for u in repo.list(organization_id=self._org_id, limit=500)}
 
     # ------------------------------------------------------------------
     # Progression helpers

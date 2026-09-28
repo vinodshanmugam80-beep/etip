@@ -13,7 +13,11 @@ import uuid
 from fastapi import APIRouter, Depends, Query, status
 
 from app.core.dependencies import AiDeliveryServiceDep, UowDep, require_permission
-from app.modules.aidelivery.codegen import TECH_STACKS, detect_stack, framework_for_stack
+from app.modules.aidelivery.codegen import (
+    TECH_STACKS,
+    detect_stack,
+    framework_for_stack,
+)
 from app.modules.aidelivery.models import BuildStatus, BuildTargetType
 from app.modules.aidelivery.schemas import (
     BuildFilesResponse,
@@ -55,7 +59,10 @@ def create_build(
 
 
 @router.get(
-    "", response_model=PaginatedBuildRequests, dependencies=[_READ], summary="List build requests"
+    "",
+    response_model=PaginatedBuildRequests,
+    dependencies=[_READ],
+    summary="List build requests",
 )
 def list_builds(
     service: AiDeliveryServiceDep,
@@ -132,7 +139,10 @@ def get_build(build_id: uuid.UUID, service: AiDeliveryServiceDep) -> BuildReques
     summary="Update a build request",
 )
 def update_build(
-    build_id: uuid.UUID, payload: BuildRequestUpdate, service: AiDeliveryServiceDep, uow: UowDep
+    build_id: uuid.UUID,
+    payload: BuildRequestUpdate,
+    service: AiDeliveryServiceDep,
+    uow: UowDep,
 ) -> BuildRequestResponse:
     """Update a build request's metadata or status."""
     build = service.update(build_id, payload)
@@ -184,7 +194,10 @@ def generate_build(
     summary="Report a pipeline-stage run",
 )
 def record_run(
-    build_id: uuid.UUID, payload: PipelineRunCreate, service: AiDeliveryServiceDep, uow: UowDep
+    build_id: uuid.UUID,
+    payload: PipelineRunCreate,
+    service: AiDeliveryServiceDep,
+    uow: UowDep,
 ) -> PipelineRunResponse:
     """Record a generate / test / deploy run (called by AI or CI-CD tools)."""
     run = service.record_run(build_id, payload)
@@ -211,7 +224,10 @@ def list_runs(build_id: uuid.UUID, service: AiDeliveryServiceDep) -> list[Pipeli
     summary="Record a deployment to an environment",
 )
 def record_deployment(
-    build_id: uuid.UUID, payload: DeploymentCreate, service: AiDeliveryServiceDep, uow: UowDep
+    build_id: uuid.UUID,
+    payload: DeploymentCreate,
+    service: AiDeliveryServiceDep,
+    uow: UowDep,
 ) -> DeploymentResponse:
     """Record a deployment of a build to dev / staging / production."""
     deployment = service.record_deployment(
@@ -259,7 +275,10 @@ def get_files(build_id: uuid.UUID, service: AiDeliveryServiceDep) -> BuildFilesR
     summary="Save edited source files",
 )
 def save_files(
-    build_id: uuid.UUID, payload: FilesUpdate, service: AiDeliveryServiceDep, uow: UowDep
+    build_id: uuid.UUID,
+    payload: FilesUpdate,
+    service: AiDeliveryServiceDep,
+    uow: UowDep,
 ) -> BuildFilesResponse:
     """Save edited source files from the in-dashboard code editor."""
     build = service.save_files(build_id, payload.files)

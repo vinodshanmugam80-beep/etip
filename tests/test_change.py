@@ -28,7 +28,11 @@ def _project(client: TestClient, h: dict[str, str], code: str = "PR") -> dict:
 
 
 def _change(
-    client: TestClient, h: dict[str, str], project_id: str, title: str = "Scope change", **o: object
+    client: TestClient,
+    h: dict[str, str],
+    project_id: str,
+    title: str = "Scope change",
+    **o: object,
 ) -> dict:
     body: dict[str, object] = {"project_id": project_id, "title": title}
     body.update(o)
@@ -44,7 +48,13 @@ def _submit(client: TestClient, h: dict[str, str], change_id: str) -> None:
 
 def test_create_defaults_and_requester(client: TestClient, admin_headers: dict[str, str]) -> None:
     proj = _project(client, admin_headers)
-    cr = _change(client, admin_headers, proj["id"], schedule_impact_days=15, cost_impact="40000.00")
+    cr = _change(
+        client,
+        admin_headers,
+        proj["id"],
+        schedule_impact_days=15,
+        cost_impact="40000.00",
+    )
     assert cr["status"] == "draft"
     assert cr["requested_by_user_id"] is not None
     assert cr["schedule_impact_days"] == 15
@@ -66,7 +76,11 @@ def test_create_requires_project_and_approver(
     bad = client.post(
         CHANGES,
         headers=admin_headers,
-        json={"project_id": proj["id"], "title": "CR", "approver_user_id": str(uuid.uuid4())},
+        json={
+            "project_id": proj["id"],
+            "title": "CR",
+            "approver_user_id": str(uuid.uuid4()),
+        },
     )
     assert bad.status_code == 422
 
@@ -74,7 +88,11 @@ def test_create_requires_project_and_approver(
 def test_negative_impacts_allowed(client: TestClient, admin_headers: dict[str, str]) -> None:
     proj = _project(client, admin_headers)
     cr = _change(
-        client, admin_headers, proj["id"], schedule_impact_days=-5, cost_impact="-12000.00"
+        client,
+        admin_headers,
+        proj["id"],
+        schedule_impact_days=-5,
+        cost_impact="-12000.00",
     )
     assert cr["schedule_impact_days"] == -5  # acceleration
     assert cr["cost_impact"] == "-12000.00"  # saving
@@ -104,7 +122,9 @@ def test_approval_workflow(client: TestClient, admin_headers: dict[str, str]) ->
 
     _submit(client, admin_headers, cid)
     approved = client.post(
-        f"{CHANGES}/{cid}/approve", headers=admin_headers, json={"decision_notes": "Looks good"}
+        f"{CHANGES}/{cid}/approve",
+        headers=admin_headers,
+        json={"decision_notes": "Looks good"},
     )
     assert approved.status_code == 200
     body = approved.json()
@@ -150,7 +170,9 @@ def test_search_and_summary(client: TestClient, admin_headers: dict[str, str]) -
     client.post(f"{CHANGES}/{a['id']}/approve", headers=admin_headers, json={})
 
     scope = client.get(
-        CHANGES, headers=admin_headers, params={"project_id": proj["id"], "change_type": "scope"}
+        CHANGES,
+        headers=admin_headers,
+        params={"project_id": proj["id"], "change_type": "scope"},
     ).json()
     assert scope["total"] == 1 and scope["items"][0]["title"] == "Scope creep"
 
@@ -211,7 +233,9 @@ def test_rbac_member_can_raise_not_approve_or_edit(
     # But cannot edit or approve.
     assert (
         client.patch(
-            f"{CHANGES}/{raised.json()['id']}", headers=headers, json={"status": "submitted"}
+            f"{CHANGES}/{raised.json()['id']}",
+            headers=headers,
+            json={"status": "submitted"},
         ).status_code
         == 403
     )

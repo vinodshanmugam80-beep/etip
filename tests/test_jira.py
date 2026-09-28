@@ -47,7 +47,11 @@ def _issue(key: str, summary: str, status: str) -> dict:
         "issue": {
             "id": "10001",
             "key": key,
-            "fields": {"summary": summary, "description": "d", "status": {"name": status}},
+            "fields": {
+                "summary": summary,
+                "description": "d",
+                "status": {"name": status},
+            },
         },
     }
 
@@ -254,7 +258,9 @@ def test_inbound_assignee_mapping(client: TestClient, admin_headers: dict[str, s
         },
     }
     r = client.post(
-        f"/api/v1/integrations/jira/webhook/{org}", params={"secret": "whsec"}, json=payload
+        f"/api/v1/integrations/jira/webhook/{org}",
+        params={"secret": "whsec"},
+        json=payload,
     )
     tid = r.json()["task_id"]
     assert (
@@ -278,7 +284,11 @@ def test_connection_verifies_credentials(
 
     def fake(conn: object, method: str, path: str, payload: object = None) -> dict:
         assert path.endswith("/myself")
-        return {"accountId": "5b10", "displayName": "ETIP Bot", "emailAddress": "bot@acme.com"}
+        return {
+            "accountId": "5b10",
+            "displayName": "ETIP Bot",
+            "emailAddress": "bot@acme.com",
+        }
 
     monkeypatch.setattr(jira_client, "jira_request", fake)
     r = client.post("/api/v1/integrations/jira/test", headers=admin_headers)
@@ -305,7 +315,9 @@ def test_import_creates_then_updates(
 
     monkeypatch.setattr(jira_client, "jira_request", fake)
     r = client.post(
-        "/api/v1/integrations/jira/import", headers=admin_headers, json={"max_results": 50}
+        "/api/v1/integrations/jira/import",
+        headers=admin_headers,
+        json={"max_results": 50},
     )
     assert r.status_code == 200, r.text
     assert r.json()["created"] == 2 and r.json()["updated"] == 0
@@ -316,7 +328,9 @@ def test_import_creates_then_updates(
     assert {x["external_key"] for x in links} == {"ETIP-101", "ETIP-102"}
     rows[0]["fields"]["summary"] = "Import one (edited)"
     r2 = client.post(
-        "/api/v1/integrations/jira/import", headers=admin_headers, json={"max_results": 50}
+        "/api/v1/integrations/jira/import",
+        headers=admin_headers,
+        json={"max_results": 50},
     )
     assert r2.json()["updated"] == 2 and r2.json()["created"] == 0
     assert client.get(TASKS, headers=admin_headers, params={"project_id": pid}).json()["total"] == 2

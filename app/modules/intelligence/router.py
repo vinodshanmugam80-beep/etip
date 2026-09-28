@@ -549,7 +549,9 @@ def early_warning(
     summary="Early-warning signals for one project",
 )
 def early_warning_project(
-    project_id: uuid.UUID, service: IntelligenceServiceDep, as_of: date | None = Query(default=None)
+    project_id: uuid.UUID,
+    service: IntelligenceServiceDep,
+    as_of: date | None = Query(default=None),
 ) -> ProjectEarlyWarning:
     """Return leading-indicator warnings for a single project."""
     return service.early_warning_project(project_id, as_of=as_of)

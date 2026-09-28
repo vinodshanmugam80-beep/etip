@@ -157,7 +157,10 @@ def create_goal(
 
 
 @router.get(
-    "/goals/{goal_id}", response_model=GoalResponse, dependencies=[_READ], summary="Get a goal"
+    "/goals/{goal_id}",
+    response_model=GoalResponse,
+    dependencies=[_READ],
+    summary="Get a goal",
 )
 def get_goal(goal_id: uuid.UUID, service: InitiativeServiceDep) -> GoalResponse:
     """Return a single goal."""
@@ -165,10 +168,16 @@ def get_goal(goal_id: uuid.UUID, service: InitiativeServiceDep) -> GoalResponse:
 
 
 @router.patch(
-    "/goals/{goal_id}", response_model=GoalResponse, dependencies=[_MANAGE], summary="Update a goal"
+    "/goals/{goal_id}",
+    response_model=GoalResponse,
+    dependencies=[_MANAGE],
+    summary="Update a goal",
 )
 def update_goal(
-    goal_id: uuid.UUID, payload: GoalUpdateRequest, service: InitiativeServiceDep, uow: UowDep
+    goal_id: uuid.UUID,
+    payload: GoalUpdateRequest,
+    service: InitiativeServiceDep,
+    uow: UowDep,
 ) -> GoalResponse:
     """Update a business goal."""
     goal = service.update_goal(goal_id, payload)
@@ -227,17 +236,28 @@ def create_kpi(
     return KPIResponse.model_validate(kpi)
 
 
-@router.get("/kpis/{kpi_id}", response_model=KPIResponse, dependencies=[_READ], summary="Get a KPI")
+@router.get(
+    "/kpis/{kpi_id}",
+    response_model=KPIResponse,
+    dependencies=[_READ],
+    summary="Get a KPI",
+)
 def get_kpi(kpi_id: uuid.UUID, service: InitiativeServiceDep) -> KPIResponse:
     """Return a single KPI."""
     return KPIResponse.model_validate(service.get_kpi(kpi_id))
 
 
 @router.patch(
-    "/kpis/{kpi_id}", response_model=KPIResponse, dependencies=[_MANAGE], summary="Update a KPI"
+    "/kpis/{kpi_id}",
+    response_model=KPIResponse,
+    dependencies=[_MANAGE],
+    summary="Update a KPI",
 )
 def update_kpi(
-    kpi_id: uuid.UUID, payload: KPIUpdateRequest, service: InitiativeServiceDep, uow: UowDep
+    kpi_id: uuid.UUID,
+    payload: KPIUpdateRequest,
+    service: InitiativeServiceDep,
+    uow: UowDep,
 ) -> KPIResponse:
     """Update a KPI's definition."""
     kpi = service.update_kpi(kpi_id, payload)
@@ -252,7 +272,10 @@ def update_kpi(
     summary="Record a KPI value",
 )
 def record_kpi(
-    kpi_id: uuid.UUID, payload: KPIMeasurementRequest, service: InitiativeServiceDep, uow: UowDep
+    kpi_id: uuid.UUID,
+    payload: KPIMeasurementRequest,
+    service: InitiativeServiceDep,
+    uow: UowDep,
 ) -> KPIResponse:
     """Record a KPI's current value."""
     kpi = service.record_kpi(kpi_id, payload)

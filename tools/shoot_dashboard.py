@@ -25,6 +25,7 @@ def _find_chromium() -> str | None:
             return hits[-1]
     return None
 
+
 BASE = "http://127.0.0.1:8000"
 OUT = sys.argv[1] if len(sys.argv) > 1 else "/home/claude/etip/dashboard.png"
 SLUG = "demo-transformation-co"

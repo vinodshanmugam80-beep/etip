@@ -107,7 +107,13 @@ def main() -> None:
 
     # 3) Projects tuned to distinct health signals.
     def make_project(
-        code: str, name: str, budget: str, actual: str, progress: int, start_off: int, end_off: int
+        code: str,
+        name: str,
+        budget: str,
+        actual: str,
+        progress: int,
+        start_off: int,
+        end_off: int,
     ) -> dict:
         project = call(
             "POST",
@@ -190,7 +196,11 @@ def main() -> None:
             "baseline_end_date": str(today + timedelta(days=60)),
         },
     )
-    call("PATCH", f"/projects/{cx['id']}", {"actual_cost": "30000.00", "progress_percent": 60})
+    call(
+        "PATCH",
+        f"/projects/{cx['id']}",
+        {"actual_cost": "30000.00", "progress_percent": 60},
+    )
     call(
         "POST",
         "/benefits",
@@ -481,16 +491,57 @@ def main() -> None:
 
     # (project, name, deliverable, amount, days_out, gates_to_approve, reject?, release?)
     fin_plan = [
-        (green, "Phase 1 delivery", "Design pack + working beta, signed off",
-         "60000.00", 20, 2, False, True),
-        (amber, "UAT completion", "UAT sign-off report accepted by business",
-         "40000.00", 35, 1, False, False),
-        (cx, "Go-live cutover", "Production cutover runbook executed",
-         "30000.00", 25, 0, False, False),
-        (red, "Data migration", "Validated migrated dataset reconciliation",
-         "25000.00", 15, 0, True, False),
+        (
+            green,
+            "Phase 1 delivery",
+            "Design pack + working beta, signed off",
+            "60000.00",
+            20,
+            2,
+            False,
+            True,
+        ),
+        (
+            amber,
+            "UAT completion",
+            "UAT sign-off report accepted by business",
+            "40000.00",
+            35,
+            1,
+            False,
+            False,
+        ),
+        (
+            cx,
+            "Go-live cutover",
+            "Production cutover runbook executed",
+            "30000.00",
+            25,
+            0,
+            False,
+            False,
+        ),
+        (
+            red,
+            "Data migration",
+            "Validated migrated dataset reconciliation",
+            "25000.00",
+            15,
+            0,
+            True,
+            False,
+        ),
     ]
-    for project, name, deliverable, amount, days_out, approvals, reject, release in fin_plan:
+    for (
+        project,
+        name,
+        deliverable,
+        amount,
+        days_out,
+        approvals,
+        reject,
+        release,
+    ) in fin_plan:
         ms = make_fin_milestone(project, name, deliverable, amount, days_out)
         # PMO submits the deliverable for acceptance (becomes the initiator).
         login_as(slug, "pmo@demo.co", PASSWORD)
@@ -502,13 +553,19 @@ def main() -> None:
             call(
                 "POST",
                 f"/workflows/instances/{inst}/decision",
-                {"decision": "approved", "comment": "Deliverable meets acceptance criteria."},
+                {
+                    "decision": "approved",
+                    "comment": "Deliverable meets acceptance criteria.",
+                },
             )
         if reject:
             call(
                 "POST",
                 f"/workflows/instances/{inst}/decision",
-                {"decision": "rejected", "comment": "Reconciliation gaps — returned for rework."},
+                {
+                    "decision": "rejected",
+                    "comment": "Reconciliation gaps — returned for rework.",
+                },
             )
         if release:
             call("POST", f"/milestones/{ms['id']}/release-payment")
@@ -517,8 +574,15 @@ def main() -> None:
     print("Created financial milestones with deliverable acceptance (released/pending/rejected).")
 
     # 7d) Per-project KPIs so each project can be managed with its own scorecard.
-    def kpi(project: dict, name: str, unit: str, direction: str,
-            baseline: str, current: str, target: str) -> None:
+    def kpi(
+        project: dict,
+        name: str,
+        unit: str,
+        direction: str,
+        baseline: str,
+        current: str,
+        target: str,
+    ) -> None:
         call(
             "POST",
             f"/projects/{project['id']}/kpis",

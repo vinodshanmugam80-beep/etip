@@ -216,7 +216,14 @@ class TimesheetService:
 
         wants_field_edit = any(
             value is not None
-            for value in (task_id, work_date, hours, billable, activity_type, description)
+            for value in (
+                task_id,
+                work_date,
+                hours,
+                billable,
+                activity_type,
+                description,
+            )
         )
         if wants_field_edit and entry.status not in _EDITABLE:
             raise ValidationError(

@@ -103,7 +103,9 @@ def test_issue_count_rollup(client: TestClient, admin_headers: dict[str, str]) -
 
     # A resolved (but not closed) issue still counts as open.
     b_list = client.get(
-        ISSUES, headers=admin_headers, params={"project_id": proj["id"], "status": "open"}
+        ISSUES,
+        headers=admin_headers,
+        params={"project_id": proj["id"], "status": "open"},
     ).json()
     other_id = b_list["items"][0]["id"]
     client.patch(f"{ISSUES}/{other_id}", headers=admin_headers, json={"status": "resolved"})
@@ -165,11 +167,18 @@ def test_search_filters(client: TestClient, admin_headers: dict[str, str]) -> No
         task_id=task["id"],
     )
     _issue(
-        client, admin_headers, proj["id"], title="Typo", severity="low", issue_type="improvement"
+        client,
+        admin_headers,
+        proj["id"],
+        title="Typo",
+        severity="low",
+        issue_type="improvement",
     )
 
     crit = client.get(
-        ISSUES, headers=admin_headers, params={"project_id": proj["id"], "severity": "critical"}
+        ISSUES,
+        headers=admin_headers,
+        params={"project_id": proj["id"], "severity": "critical"},
     ).json()
     assert crit["total"] == 1 and crit["items"][0]["title"] == "Crash"
     by_task = client.get(ISSUES, headers=admin_headers, params={"task_id": task["id"]}).json()
@@ -227,7 +236,9 @@ def test_rbac_member_can_report_and_work_not_delete(
 
     # Member can raise and work an issue.
     raised = client.post(
-        ISSUES, headers=headers, json={"project_id": proj["id"], "title": "Member found this"}
+        ISSUES,
+        headers=headers,
+        json={"project_id": proj["id"], "title": "Member found this"},
     )
     assert raised.status_code == 201
     iid = raised.json()["id"]

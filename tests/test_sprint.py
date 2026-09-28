@@ -55,7 +55,9 @@ def test_create_requires_project_and_valid_dates(
 ) -> None:
     assert (
         client.post(
-            SPRINTS, headers=admin_headers, json={"project_id": str(uuid.uuid4()), "name": "S"}
+            SPRINTS,
+            headers=admin_headers,
+            json={"project_id": str(uuid.uuid4()), "name": "S"},
         ).status_code
         == 404
     )

@@ -58,7 +58,9 @@ def _configure(
 
 
 def test_project_evm_math(
-    client: TestClient, admin_headers: dict[str, str], session_factory: sessionmaker[Session]
+    client: TestClient,
+    admin_headers: dict[str, str],
+    session_factory: sessionmaker[Session],
 ) -> None:
     proj = _project(client, admin_headers, "EVM")
     # Budget 100k, 50% done, spent 60k; baseline 10 days, as_of at day 5 → PV 50%.
@@ -72,7 +74,9 @@ def test_project_evm_math(
         bend=date(2026, 1, 11),
     )
     r = client.get(
-        f"{PERF}/projects/{proj['id']}", headers=admin_headers, params={"as_of": "2026-01-06"}
+        f"{PERF}/projects/{proj['id']}",
+        headers=admin_headers,
+        params={"as_of": "2026-01-06"},
     )
     assert r.status_code == 200
     evm = r.json()["evm"]
@@ -89,7 +93,9 @@ def test_project_evm_math(
 
 
 def test_health_states(
-    client: TestClient, admin_headers: dict[str, str], session_factory: sessionmaker[Session]
+    client: TestClient,
+    admin_headers: dict[str, str],
+    session_factory: sessionmaker[Session],
 ) -> None:
     green = _project(client, admin_headers, "GRN")
     _configure(
@@ -102,7 +108,9 @@ def test_health_states(
         bend=date(2026, 1, 11),
     )
     r = client.get(
-        f"{PERF}/projects/{green['id']}", headers=admin_headers, params={"as_of": "2026-02-01"}
+        f"{PERF}/projects/{green['id']}",
+        headers=admin_headers,
+        params={"as_of": "2026-02-01"},
     )
     assert r.json()["health"]["rag"] == "green"  # SPI 1.0, CPI 1.11
 
@@ -112,7 +120,9 @@ def test_health_states(
 
 
 def test_planned_value_tracks_as_of(
-    client: TestClient, admin_headers: dict[str, str], session_factory: sessionmaker[Session]
+    client: TestClient,
+    admin_headers: dict[str, str],
+    session_factory: sessionmaker[Session],
 ) -> None:
     proj = _project(client, admin_headers, "PVT")
     _configure(
@@ -126,17 +136,23 @@ def test_planned_value_tracks_as_of(
     )
     # Before start → PV 0; end → PV = BAC.
     before = client.get(
-        f"{PERF}/projects/{proj['id']}", headers=admin_headers, params={"as_of": "2025-12-01"}
+        f"{PERF}/projects/{proj['id']}",
+        headers=admin_headers,
+        params={"as_of": "2025-12-01"},
     ).json()
     assert before["evm"]["pv"] == "0.00" and before["evm"]["planned_percent"] == 0.0
     after = client.get(
-        f"{PERF}/projects/{proj['id']}", headers=admin_headers, params={"as_of": "2026-03-01"}
+        f"{PERF}/projects/{proj['id']}",
+        headers=admin_headers,
+        params={"as_of": "2026-03-01"},
     ).json()
     assert after["evm"]["pv"] == "100000.00" and after["evm"]["planned_percent"] == 1.0
 
 
 def test_portfolio_rollup(
-    client: TestClient, admin_headers: dict[str, str], session_factory: sessionmaker[Session]
+    client: TestClient,
+    admin_headers: dict[str, str],
+    session_factory: sessionmaker[Session],
 ) -> None:
     port = client.post(
         PORTFOLIOS, headers=admin_headers, json={"name": "Growth", "code": "GRW"}
@@ -157,7 +173,9 @@ def test_portfolio_rollup(
 
 
 def test_program_and_transformation(
-    client: TestClient, admin_headers: dict[str, str], session_factory: sessionmaker[Session]
+    client: TestClient,
+    admin_headers: dict[str, str],
+    session_factory: sessionmaker[Session],
 ) -> None:
     port = client.post(
         PORTFOLIOS, headers=admin_headers, json={"name": "Port", "code": "PRT"}
@@ -208,7 +226,9 @@ def test_project_variance_math(
         bend=date(2026, 1, 11),
     )
     body = client.get(
-        f"{VAR}/projects/{proj['id']}", headers=admin_headers, params={"as_of": "2026-01-06"}
+        f"{VAR}/projects/{proj['id']}",
+        headers=admin_headers,
+        params={"as_of": "2026-01-06"},
     ).json()
     # SV = EV - PV = 0
     assert body["schedule"]["amount"] == "0.00" and body["schedule"]["favourable"] is True
@@ -430,7 +450,9 @@ def test_project_forecast_math(
         bend=date(2026, 1, 11),
     )
     body = client.get(
-        f"{FC}/projects/{proj['id']}", headers=admin_headers, params={"as_of": "2026-01-06"}
+        f"{FC}/projects/{proj['id']}",
+        headers=admin_headers,
+        params={"as_of": "2026-01-06"},
     ).json()
     sched = body["schedule"]
     assert sched["forecast_completion"] == "2026-01-21"  # 10 / 0.5 = 20 days
@@ -486,7 +508,9 @@ def test_forecast_rollup_and_transformation(
     _configure(session_factory, p2["id"], budget="100000.00", progress=100, actual="80000.00")
 
     roll = client.get(
-        f"{FC}/portfolios/{port['id']}", headers=admin_headers, params={"as_of": "2026-01-06"}
+        f"{FC}/portfolios/{port['id']}",
+        headers=admin_headers,
+        params={"as_of": "2026-01-06"},
     ).json()
     assert roll["project_count"] == 2
     # EAC: p1 = 160000, p2 = 80000 → forecast_cost 240000; BAC 200000; overrun 40000.
@@ -558,11 +582,15 @@ def test_forecast_program_and_zero_spi(
         bend=date(2026, 1, 11),
     )
     prog_fc = client.get(
-        f"{FC}/programs/{prog['id']}", headers=admin_headers, params={"as_of": "2026-01-06"}
+        f"{FC}/programs/{prog['id']}",
+        headers=admin_headers,
+        params={"as_of": "2026-01-06"},
     ).json()
     assert prog_fc["scope"] == "program" and prog_fc["project_count"] == 1
     proj_fc = client.get(
-        f"{FC}/projects/{proj['id']}", headers=admin_headers, params={"as_of": "2026-01-06"}
+        f"{FC}/projects/{proj['id']}",
+        headers=admin_headers,
+        params={"as_of": "2026-01-06"},
     ).json()
     assert proj_fc["schedule"]["basis"] == "insufficient data (no SPI)"
     assert proj_fc["schedule"]["forecast_completion"] is None
@@ -603,7 +631,9 @@ def test_portfolio_heatmap(
         bend=date(2026, 1, 11),
     )
     hm = client.get(
-        f"{HM}/portfolios/{port['id']}", headers=admin_headers, params={"as_of": "2026-01-06"}
+        f"{HM}/portfolios/{port['id']}",
+        headers=admin_headers,
+        params={"as_of": "2026-01-06"},
     ).json()
     assert hm["columns"] == ["Schedule", "Cost", "Budget", "Overall"]
     assert hm["summary"]["green"] == 1 and hm["summary"]["red"] == 1
@@ -692,7 +722,12 @@ def test_executive_kpis(
     client.post(
         RISKS,
         headers=admin_headers,
-        json={"project_id": proj["id"], "title": "Big risk", "probability": 5, "impact": 5},
+        json={
+            "project_id": proj["id"],
+            "title": "Big risk",
+            "probability": 5,
+            "impact": 5,
+        },
     )
 
     body = client.get(
@@ -750,12 +785,16 @@ def test_heatmap_edge_branches(
 
     # program_heatmap path
     phm = client.get(
-        f"{HM}/programs/{prog['id']}", headers=admin_headers, params={"as_of": "2026-01-06"}
+        f"{HM}/programs/{prog['id']}",
+        headers=admin_headers,
+        params={"as_of": "2026-01-06"},
     ).json()
     assert phm["scope"] == "program" and len(phm["cells"]) == 4
 
     hm = client.get(
-        f"{HM}/portfolios/{port['id']}", headers=admin_headers, params={"as_of": "2026-01-06"}
+        f"{HM}/portfolios/{port['id']}",
+        headers=admin_headers,
+        params={"as_of": "2026-01-06"},
     ).json()
     cells = {(c["row_label"], c["column"]): c["rag"] for c in hm["cells"]}
     assert cells[("AMB", "Budget")] == "amber"
@@ -786,7 +825,11 @@ def test_heatmap_edge_branches(
     ov = client.post(
         RESOURCES,
         headers=admin_headers,
-        json={"name": "Ov Person", "resource_type": "employee", "capacity_hours_per_week": "40.00"},
+        json={
+            "name": "Ov Person",
+            "resource_type": "employee",
+            "capacity_hours_per_week": "40.00",
+        },
     ).json()
     with session_factory() as session:
         for _ in range(2):
@@ -809,7 +852,12 @@ def test_heatmap_edge_branches(
     rk = client.post(
         RISKS,
         headers=admin_headers,
-        json={"project_id": proj["id"], "title": "Closed risk", "probability": 3, "impact": 3},
+        json={
+            "project_id": proj["id"],
+            "title": "Closed risk",
+            "probability": 3,
+            "impact": 3,
+        },
     ).json()
     with session_factory() as session:
         risk = session.get(Risk, uuid.UUID(rk["id"]))
@@ -826,7 +874,11 @@ TI = "/api/v1/intelligence/transformation"
 
 
 def _set_rollups(
-    factory: sessionmaker[Session], project_id: str, *, risk_score: int, issue_count: int
+    factory: sessionmaker[Session],
+    project_id: str,
+    *,
+    risk_score: int,
+    issue_count: int,
 ) -> None:
     with factory() as session:
         p = session.get(Project, uuid.UUID(project_id))
@@ -855,7 +907,9 @@ def test_project_recommendations(
     _set_rollups(session_factory, proj["id"], risk_score=20, issue_count=25)
 
     body = client.get(
-        f"{REC}/projects/{proj['id']}", headers=admin_headers, params={"as_of": "2026-01-06"}
+        f"{REC}/projects/{proj['id']}",
+        headers=admin_headers,
+        params={"as_of": "2026-01-06"},
     ).json()
     assert body["scope"] == "project" and body["total"] >= 4
     categories = {r["category"] for r in body["recommendations"]}
@@ -884,7 +938,9 @@ def test_not_started_recommendation(
         bend=date(2026, 3, 1),
     )
     body = client.get(
-        f"{REC}/projects/{proj['id']}", headers=admin_headers, params={"as_of": "2026-02-01"}
+        f"{REC}/projects/{proj['id']}",
+        headers=admin_headers,
+        params={"as_of": "2026-02-01"},
     ).json()
     assert any(r["category"] == "delivery" for r in body["recommendations"])
 
@@ -969,7 +1025,9 @@ def test_portfolio_recommendations(
         bend=date(2026, 1, 11),
     )
     body = client.get(
-        f"{REC}/portfolios/{port['id']}", headers=admin_headers, params={"as_of": "2026-01-06"}
+        f"{REC}/portfolios/{port['id']}",
+        headers=admin_headers,
+        params={"as_of": "2026-01-06"},
     ).json()
     assert body["scope"] == "portfolio" and body["scope_id"] == port["id"]
     assert body["total"] >= 1
@@ -1023,7 +1081,9 @@ def test_benefits_variance(client: TestClient, admin_headers: dict[str, str]) ->
 def test_kpi_variance(client: TestClient, admin_headers: dict[str, str]) -> None:
     init = client.post(INITIATIVES, headers=admin_headers, json={"name": "KPI init"}).json()
     goal = client.post(
-        GOALS, headers=admin_headers, json={"initiative_id": init["id"], "title": "Grow"}
+        GOALS,
+        headers=admin_headers,
+        json={"initiative_id": init["id"], "title": "Grow"},
     ).json()
     # One met, one missed.
     client.post(
@@ -1075,7 +1135,9 @@ def test_kpi_variance_portfolio(client: TestClient, admin_headers: dict[str, str
         json={"name": "Portfolio initiative", "portfolio_id": port["id"]},
     ).json()
     goal = client.post(
-        GOALS, headers=admin_headers, json={"initiative_id": init["id"], "title": "Grow"}
+        GOALS,
+        headers=admin_headers,
+        json={"initiative_id": init["id"], "title": "Grow"},
     ).json()
     client.post(
         KPIS,
@@ -1120,9 +1182,13 @@ def test_board_pack_exports(client: TestClient, admin_headers: dict[str, str]) -
     assert x.status_code == 200
     assert "spreadsheetml" in x.headers["content-type"]
     wb = load_workbook(BytesIO(x.content))
-    assert {"Executive Summary", "Projects", "Benefits", "KPIs", "Recommendations"} <= set(
-        wb.sheetnames
-    )
+    assert {
+        "Executive Summary",
+        "Projects",
+        "Benefits",
+        "KPIs",
+        "Recommendations",
+    } <= set(wb.sheetnames)
 
     p = client.get("/api/v1/intelligence/exports/board-pack.pdf", headers=admin_headers)
     assert p.status_code == 200
@@ -1134,12 +1200,18 @@ def test_resource_demand_forecast(client: TestClient, admin_headers: dict[str, s
     from datetime import date, timedelta
 
     proj = client.post(
-        "/api/v1/projects", headers=admin_headers, json={"name": "RDF Proj", "code": "RDF"}
+        "/api/v1/projects",
+        headers=admin_headers,
+        json={"name": "RDF Proj", "code": "RDF"},
     ).json()
     res = client.post(
         "/api/v1/resources",
         headers=admin_headers,
-        json={"name": "Ada Eng", "resource_type": "employee", "capacity_hours_per_week": "40.00"},
+        json={
+            "name": "Ada Eng",
+            "resource_type": "employee",
+            "capacity_hours_per_week": "40.00",
+        },
     ).json()
     today = date.today()
     r = client.post(
@@ -1177,7 +1249,8 @@ def test_early_warning_flags_burn_ahead(client: TestClient, admin_headers: dict[
         json={"actual_cost": "60000.00", "progress_percent": 30, "status": "active"},
     )
     one = client.get(
-        f"/api/v1/intelligence/early-warning/projects/{proj['id']}", headers=admin_headers
+        f"/api/v1/intelligence/early-warning/projects/{proj['id']}",
+        headers=admin_headers,
     ).json()
     assert one["level"] == "warning"
     assert any(s["type"] == "burn_ahead" for s in one["signals"])
@@ -1201,6 +1274,7 @@ def test_early_warning_healthy_project_clear(
         json={"actual_cost": "10000.00", "progress_percent": 20, "status": "active"},
     )
     one = client.get(
-        f"/api/v1/intelligence/early-warning/projects/{proj['id']}", headers=admin_headers
+        f"/api/v1/intelligence/early-warning/projects/{proj['id']}",
+        headers=admin_headers,
     ).json()
     assert one["level"] == "clear" and one["signals"] == []

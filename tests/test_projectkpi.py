@@ -40,8 +40,15 @@ def test_attainment_increase_and_on_target(
     p = _project(client, admin_headers, "PK1")
     # baseline 40 → target 90, current 65 → halfway = 50%.
     k = _kpi(
-        client, admin_headers, p["id"], name="Coverage", unit="%", direction="increase",
-        baseline_value="40", current_value="65", target_value="90",
+        client,
+        admin_headers,
+        p["id"],
+        name="Coverage",
+        unit="%",
+        direction="increase",
+        baseline_value="40",
+        current_value="65",
+        target_value="90",
     )
     assert k["attainment_percent"] == 50.0
     assert k["on_target"] is False
@@ -54,14 +61,19 @@ def test_attainment_increase_and_on_target(
     assert updated["on_target"] is True
 
 
-def test_attainment_decrease_direction(
-    client: TestClient, admin_headers: dict[str, str]
-) -> None:
+def test_attainment_decrease_direction(client: TestClient, admin_headers: dict[str, str]) -> None:
     p = _project(client, admin_headers, "PK2")
     # Lower is better: baseline 120 → target 30, current 75 → (120-75)/(120-30)=50%.
     k = _kpi(
-        client, admin_headers, p["id"], name="MTTR", unit="min", direction="decrease",
-        baseline_value="120", current_value="75", target_value="30",
+        client,
+        admin_headers,
+        p["id"],
+        name="MTTR",
+        unit="min",
+        direction="decrease",
+        baseline_value="120",
+        current_value="75",
+        target_value="30",
     )
     assert k["attainment_percent"] == 50.0
     assert k["on_target"] is False
@@ -77,8 +89,14 @@ def test_equal_baseline_target_reports_none(
 ) -> None:
     p = _project(client, admin_headers, "PK3")
     k = _kpi(
-        client, admin_headers, p["id"], name="Flat", direction="increase",
-        baseline_value="50", current_value="50", target_value="50",
+        client,
+        admin_headers,
+        p["id"],
+        name="Flat",
+        direction="increase",
+        baseline_value="50",
+        current_value="50",
+        target_value="50",
     )
     assert k["attainment_percent"] is None
     assert k["on_target"] is True  # current >= target
@@ -87,12 +105,24 @@ def test_equal_baseline_target_reports_none(
 def test_list_and_summary(client: TestClient, admin_headers: dict[str, str]) -> None:
     p = _project(client, admin_headers, "PK4")
     _kpi(
-        client, admin_headers, p["id"], name="On track", direction="increase",
-        baseline_value="0", current_value="100", target_value="100",
+        client,
+        admin_headers,
+        p["id"],
+        name="On track",
+        direction="increase",
+        baseline_value="0",
+        current_value="100",
+        target_value="100",
     )  # 100%, on target
     _kpi(
-        client, admin_headers, p["id"], name="Behind", direction="increase",
-        baseline_value="0", current_value="20", target_value="100",
+        client,
+        admin_headers,
+        p["id"],
+        name="Behind",
+        direction="increase",
+        baseline_value="0",
+        current_value="20",
+        target_value="100",
     )  # 20%, off target
 
     listing = client.get(f"{PROJECTS}/{p['id']}/kpis", headers=admin_headers).json()
@@ -114,12 +144,13 @@ def test_delete(client: TestClient, admin_headers: dict[str, str]) -> None:
 
 
 def test_not_found(client: TestClient, admin_headers: dict[str, str]) -> None:
+    assert client.get(f"{PROJECTS}/{uuid.uuid4()}/kpis", headers=admin_headers).status_code == 404
     assert (
-        client.get(f"{PROJECTS}/{uuid.uuid4()}/kpis", headers=admin_headers).status_code == 404
+        client.patch(
+            f"{PKPI}/{uuid.uuid4()}", headers=admin_headers, json={"current_value": "1"}
+        ).status_code
+        == 404
     )
-    assert client.patch(
-        f"{PKPI}/{uuid.uuid4()}", headers=admin_headers, json={"current_value": "1"}
-    ).status_code == 404
 
 
 def test_rbac(
@@ -150,8 +181,6 @@ def test_rbac(
     # Member can read KPIs but not create them.
     assert client.get(f"{PROJECTS}/{p['id']}/kpis", headers=member).status_code == 200
     assert (
-        client.post(
-            f"{PROJECTS}/{p['id']}/kpis", headers=member, json={"name": "Nope"}
-        ).status_code
+        client.post(f"{PROJECTS}/{p['id']}/kpis", headers=member, json={"name": "Nope"}).status_code
         == 403
     )

@@ -95,13 +95,25 @@ class InitiativeService:
         if payload.sponsor_user_id is not None:
             self._validate_sponsor(payload.sponsor_user_id)
             initiative.sponsor_user_id = payload.sponsor_user_id
-        for field in ("name", "description", "status", "priority", "start_date", "target_date"):
+        for field in (
+            "name",
+            "description",
+            "status",
+            "priority",
+            "start_date",
+            "target_date",
+        ):
             value = getattr(payload, field)
             if value is not None:
                 setattr(initiative, field, value)
         initiative.modified_by = self._actor_id
         initiative = self.initiatives.update(initiative)
-        self._audit("StrategicInitiative", initiative.id, "update", f"Updated '{initiative.name}'")
+        self._audit(
+            "StrategicInitiative",
+            initiative.id,
+            "update",
+            f"Updated '{initiative.name}'",
+        )
         return initiative
 
     def delete_initiative(self, initiative_id: uuid.UUID) -> None:
@@ -110,7 +122,12 @@ class InitiativeService:
         for goal in self.goals.list_for_initiative(self._org_id, initiative_id):
             self._cascade_goal(goal)
         self.initiatives.soft_delete(initiative, actor_id=self._actor_id)
-        self._audit("StrategicInitiative", initiative.id, "delete", f"Deleted '{initiative.name}'")
+        self._audit(
+            "StrategicInitiative",
+            initiative.id,
+            "delete",
+            f"Deleted '{initiative.name}'",
+        )
 
     def get_initiative(self, initiative_id: uuid.UUID) -> StrategicInitiative:
         """Return an initiative or raise ``NotFoundError``."""
@@ -223,7 +240,12 @@ class InitiativeService:
         kpi.current_value = payload.current_value
         kpi.modified_by = self._actor_id
         kpi = self.kpis.update(kpi)
-        self._audit("GoalKPI", kpi.id, "measure", f"Recorded {kpi.current_value} for '{kpi.name}'")
+        self._audit(
+            "GoalKPI",
+            kpi.id,
+            "measure",
+            f"Recorded {kpi.current_value} for '{kpi.name}'",
+        )
         return kpi
 
     def delete_kpi(self, kpi_id: uuid.UUID) -> None:

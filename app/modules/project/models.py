@@ -92,7 +92,10 @@ class Project(BaseEntity, TenantMixin):
 
     # Hierarchy / ownership references.
     portfolio_id: Mapped[uuid.UUID | None] = mapped_column(
-        Uuid, ForeignKey("portfolios.id", ondelete="RESTRICT"), nullable=True, index=True
+        Uuid,
+        ForeignKey("portfolios.id", ondelete="RESTRICT"),
+        nullable=True,
+        index=True,
     )
     program_id: Mapped[uuid.UUID | None] = mapped_column(
         Uuid, ForeignKey("programs.id", ondelete="RESTRICT"), nullable=True, index=True

@@ -138,9 +138,7 @@ def test_sparkline_limit_is_respected(
     _seed_project(client, admin_headers, session_factory, "MCD")
     client.post(f"{METRICS}/backfill-demo", headers=admin_headers, params={"days": 20})
 
-    spark = client.get(
-        f"{METRICS}/sparklines", headers=admin_headers, params={"limit": 5}
-    ).json()
+    spark = client.get(f"{METRICS}/sparklines", headers=admin_headers, params={"limit": 5}).json()
     assert len(spark["headline"]["success_score"]) == 5
 
 

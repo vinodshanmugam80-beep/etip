@@ -46,8 +46,8 @@ def compute_attainment(kpi: ProjectKPI) -> tuple[float | None, bool]:
         span = baseline - target
     if span == 0:
         return None, on_target
-    progress = (current - baseline) if kpi.direction == KPIDirection.INCREASE else (
-        baseline - current
+    progress = (
+        (current - baseline) if kpi.direction == KPIDirection.INCREASE else (baseline - current)
     )
     percent = float(progress / span) * 100.0
     return round(max(0.0, percent), 1), on_target
@@ -56,9 +56,7 @@ def compute_attainment(kpi: ProjectKPI) -> tuple[float | None, bool]:
 class ProjectKPIService:
     """Manage per-project KPIs within a tenant."""
 
-    def __init__(
-        self, uow: UnitOfWork, *, organization_id: uuid.UUID, actor_id: uuid.UUID
-    ) -> None:
+    def __init__(self, uow: UnitOfWork, *, organization_id: uuid.UUID, actor_id: uuid.UUID) -> None:
         self._uow = uow
         self._org_id = organization_id
         self._actor_id = actor_id
@@ -99,8 +97,12 @@ class ProjectKPIService:
         )
         self.kpis.add(kpi)
         self._uow.record_audit(
-            "ProjectKPI", kpi.id, "create", f"Created KPI '{kpi.name}'",
-            actor_id=self._actor_id, organization_id=self._org_id,
+            "ProjectKPI",
+            kpi.id,
+            "create",
+            f"Created KPI '{kpi.name}'",
+            actor_id=self._actor_id,
+            organization_id=self._org_id,
         )
         return kpi
 
@@ -119,8 +121,13 @@ class ProjectKPIService:
         """Apply a partial update to a KPI (e.g. record the current value)."""
         kpi = self._get_or_404(kpi_id)
         for attr in (
-            "name", "description", "unit", "direction",
-            "baseline_value", "current_value", "target_value",
+            "name",
+            "description",
+            "unit",
+            "direction",
+            "baseline_value",
+            "current_value",
+            "target_value",
         ):
             value = getattr(payload, attr)
             if value is not None:
@@ -128,8 +135,12 @@ class ProjectKPIService:
         kpi.modified_by = self._actor_id
         self.kpis.update(kpi)
         self._uow.record_audit(
-            "ProjectKPI", kpi.id, "update", f"Updated KPI '{kpi.name}'",
-            actor_id=self._actor_id, organization_id=self._org_id,
+            "ProjectKPI",
+            kpi.id,
+            "update",
+            f"Updated KPI '{kpi.name}'",
+            actor_id=self._actor_id,
+            organization_id=self._org_id,
         )
         return kpi
 
@@ -138,8 +149,12 @@ class ProjectKPIService:
         kpi = self._get_or_404(kpi_id)
         self.kpis.soft_delete(kpi, actor_id=self._actor_id)
         self._uow.record_audit(
-            "ProjectKPI", kpi.id, "delete", f"Deleted KPI '{kpi.name}'",
-            actor_id=self._actor_id, organization_id=self._org_id,
+            "ProjectKPI",
+            kpi.id,
+            "delete",
+            f"Deleted KPI '{kpi.name}'",
+            actor_id=self._actor_id,
+            organization_id=self._org_id,
         )
 
     def summary(self, project_id: uuid.UUID) -> ProjectKPISummary:

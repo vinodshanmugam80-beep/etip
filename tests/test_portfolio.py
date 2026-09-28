@@ -133,7 +133,11 @@ def test_update_owner_and_budget(
     updated = client.patch(
         f"{BASE}/{pf['id']}",
         headers=admin_headers,
-        json={"owner_user_id": admin_id, "planned_budget": "999.99", "health": "at_risk"},
+        json={
+            "owner_user_id": admin_id,
+            "planned_budget": "999.99",
+            "health": "at_risk",
+        },
     )
     assert updated.status_code == 200
     body = updated.json()

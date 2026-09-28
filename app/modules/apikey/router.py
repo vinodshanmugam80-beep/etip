@@ -51,7 +51,10 @@ def list_keys(
 
 
 @router.get(
-    "/{key_id}", response_model=ApiKeyResponse, dependencies=[_MANAGE], summary="Get an API key"
+    "/{key_id}",
+    response_model=ApiKeyResponse,
+    dependencies=[_MANAGE],
+    summary="Get an API key",
 )
 def get_key(key_id: uuid.UUID, service: ApiKeyServiceDep) -> ApiKeyResponse:
     """Return a single API key's metadata."""

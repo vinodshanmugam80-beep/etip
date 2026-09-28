@@ -65,7 +65,11 @@ def create_app() -> FastAPI:
         """Return a simple liveness response for orchestrators."""
         return {"status": "ok", "environment": settings.app_env}
 
-    @app.get("/health/ready", tags=["System"], summary="Readiness probe (checks the database)")
+    @app.get(
+        "/health/ready",
+        tags=["System"],
+        summary="Readiness probe (checks the database)",
+    )
     def readiness() -> JSONResponse:
         """Verify database connectivity; 200 when ready, 503 when the DB is unreachable."""
         from sqlalchemy import text

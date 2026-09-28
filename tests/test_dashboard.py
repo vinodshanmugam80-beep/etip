@@ -34,7 +34,12 @@ def _user_with_role(
     r = client.post(
         USERS,
         headers=admin_headers,
-        json={"email": email, "full_name": "Person", "password": PW, "role_ids": [role_id]},
+        json={
+            "email": email,
+            "full_name": "Person",
+            "password": PW,
+            "role_ids": [role_id],
+        },
     )
     assert r.status_code == 201, r.text
     return r.json()["id"]
@@ -43,7 +48,11 @@ def _user_with_role(
 def _headers(client: TestClient, registered_org: dict[str, str], email: str) -> dict[str, str]:
     tokens = _login(
         client,
-        {"organization_slug": registered_org["organization_slug"], "email": email, "password": PW},
+        {
+            "organization_slug": registered_org["organization_slug"],
+            "email": email,
+            "password": PW,
+        },
     )
     return {"Authorization": f"Bearer {tokens['access_token']}"}
 
@@ -138,7 +147,12 @@ def test_widget_crud_and_validation(client: TestClient, admin_headers: dict[str,
     txt = client.post(
         f"{DASH}/{d['id']}/widgets",
         headers=admin_headers,
-        json={"title": "Note", "widget_type": "text", "content": "Hello", "position": 1},
+        json={
+            "title": "Note",
+            "widget_type": "text",
+            "content": "Hello",
+            "position": 1,
+        },
     )
     assert txt.status_code == 201
 
@@ -183,7 +197,12 @@ def test_render_mixed_widgets_and_error_isolation(
     client.post(
         f"{DASH}/{d['id']}/widgets",
         headers=admin_headers,
-        json={"title": "Note", "widget_type": "text", "content": "Standup at 9", "position": 2},
+        json={
+            "title": "Note",
+            "widget_type": "text",
+            "content": "Standup at 9",
+            "position": 2,
+        },
     )
     # Broken report widget: missing required project_id parameter.
     client.post(

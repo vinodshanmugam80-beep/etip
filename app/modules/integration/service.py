@@ -89,7 +89,14 @@ class IntegrationService:
     ) -> WebhookEndpoint:
         """Update a webhook endpoint."""
         endpoint = self._get_or_404(endpoint_id)
-        for field in ("name", "target_url", "secret", "event_types", "is_active", "description"):
+        for field in (
+            "name",
+            "target_url",
+            "secret",
+            "event_types",
+            "is_active",
+            "description",
+        ):
             value = getattr(payload, field)
             if value is not None:
                 setattr(endpoint, field, value)
@@ -135,7 +142,9 @@ class IntegrationService:
         body = self._envelope(event_type, payload)
         deliveries = [self._deliver(e, event_type, body) for e in matched]
         self._audit(
-            self._org_id, "publish", f"Published '{event_type}' to {len(matched)} endpoint(s)"
+            self._org_id,
+            "publish",
+            f"Published '{event_type}' to {len(matched)} endpoint(s)",
         )
         return len(matched), deliveries
 
@@ -158,7 +167,11 @@ class IntegrationService:
         """Return a filtered page of delivery records and the total count."""
         items = list(
             self.deliveries.search(
-                self._org_id, endpoint_id=endpoint_id, status=status, limit=limit, offset=offset
+                self._org_id,
+                endpoint_id=endpoint_id,
+                status=status,
+                limit=limit,
+                offset=offset,
             )
         )
         total = self.deliveries.count(self._org_id, endpoint_id=endpoint_id, status=status)

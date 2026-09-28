@@ -62,7 +62,11 @@ class HeatMapEngine:
             raise NotFoundError("Portfolio not found.")
         projects = self.projects.search(self._org_id, portfolio_id=portfolio_id, limit=500)
         return self._grid(
-            projects, as_of, scope="portfolio", scope_id=portfolio_id, label=portfolio.name
+            projects,
+            as_of,
+            scope="portfolio",
+            scope_id=portfolio_id,
+            label=portfolio.name,
         )
 
     def program_heatmap(self, program_id: uuid.UUID, *, as_of: date | None = None) -> HeatMap:
@@ -79,7 +83,11 @@ class HeatMapEngine:
         as_of = as_of or utcnow().date()
         projects = self.projects.search(self._org_id, limit=1000)
         return self._grid(
-            projects, as_of, scope="transformation", scope_id=None, label="Transformation"
+            projects,
+            as_of,
+            scope="transformation",
+            scope_id=None,
+            label="Transformation",
         )
 
     def _grid(
@@ -115,7 +123,12 @@ class HeatMapEngine:
         cost = evm.rag(None, cpi, has_started=has_started)
         overall = evm.rag(spi, cpi, has_started=has_started)
         budget = self._budget_rag(raw, has_started)
-        rags = {"Schedule": schedule, "Cost": cost, "Budget": budget, "Overall": overall}
+        rags = {
+            "Schedule": schedule,
+            "Cost": cost,
+            "Budget": budget,
+            "Overall": overall,
+        }
         details = {
             "Schedule": f"SPI {spi:.2f}" if spi is not None else None,
             "Cost": f"CPI {cpi:.2f}" if cpi is not None else None,

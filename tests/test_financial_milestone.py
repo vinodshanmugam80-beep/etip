@@ -32,7 +32,12 @@ def _project(client: TestClient, h: dict[str, str], code: str) -> dict:
 
 
 def _fin_milestone(
-    client: TestClient, h: dict[str, str], project_id: str, *, amount: str = "50000.00", **extra
+    client: TestClient,
+    h: dict[str, str],
+    project_id: str,
+    *,
+    amount: str = "50000.00",
+    **extra,
 ) -> dict:
     body = {
         "project_id": project_id,
@@ -50,18 +55,30 @@ def _fin_milestone(
 
 
 def _approver(
-    client: TestClient, admin_headers: dict[str, str], registered_org: dict[str, str], email: str
+    client: TestClient,
+    admin_headers: dict[str, str],
+    registered_org: dict[str, str],
+    email: str,
 ) -> dict[str, str]:
     roles = client.get(ROLES, headers=admin_headers).json()
     pm_role = next(r["id"] for r in roles if r["name"] == "Project Manager")
     client.post(
         USERS,
         headers=admin_headers,
-        json={"email": email, "full_name": "Acer Approver", "password": PW, "role_ids": [pm_role]},
+        json={
+            "email": email,
+            "full_name": "Acer Approver",
+            "password": PW,
+            "role_ids": [pm_role],
+        },
     )
     tokens = _login(
         client,
-        {"organization_slug": registered_org["organization_slug"], "email": email, "password": PW},
+        {
+            "organization_slug": registered_org["organization_slug"],
+            "email": email,
+            "password": PW,
+        },
     )
     return {"Authorization": f"Bearer {tokens['access_token']}"}
 
@@ -132,9 +149,7 @@ def test_full_acceptance_then_release(
     assert body["status"] == "achieved"
     assert body["paid_date"] is not None
 
-    summary = client.get(
-        f"{PROJECTS}/{p['id']}/financial-summary", headers=admin_headers
-    ).json()
+    summary = client.get(f"{PROJECTS}/{p['id']}/financial-summary", headers=admin_headers).json()
     assert Decimal(summary["actual_total"]) == Decimal("60000.00")
 
     # Double release is rejected.
@@ -175,9 +190,9 @@ def test_rejected_deliverable_blocks_release(
 ) -> None:
     p = _project(client, admin_headers, "FM4")
     m = _fin_milestone(client, admin_headers, p["id"])
-    inst = client.post(
-        f"{MS}/{m['id']}/submit-for-acceptance", headers=admin_headers
-    ).json()["acceptance_instance_id"]
+    inst = client.post(f"{MS}/{m['id']}/submit-for-acceptance", headers=admin_headers).json()[
+        "acceptance_instance_id"
+    ]
     approver = _approver(client, admin_headers, registered_org, "fm-reject@contoso.com")
     client.post(
         f"{WF}/instances/{inst}/decision",
@@ -195,9 +210,7 @@ def test_financial_overview_rollup(
     released = _fin_milestone(
         client, admin_headers, p["id"], amount="20000.00", name="Released one"
     )
-    pending = _fin_milestone(
-        client, admin_headers, p["id"], amount="15000.00", name="Pending one"
-    )
+    pending = _fin_milestone(client, admin_headers, p["id"], amount="15000.00", name="Pending one")
 
     inst = client.post(
         f"{MS}/{released['id']}/submit-for-acceptance", headers=admin_headers

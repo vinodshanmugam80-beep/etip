@@ -70,7 +70,11 @@ def test_endpoint_crud_and_secret_hidden(client: TestClient, admin_headers: dict
         client.post(
             WH,
             headers=admin_headers,
-            json={"name": "Bad", "target_url": "https://x.co", "event_types": ["nope.event"]},
+            json={
+                "name": "Bad",
+                "target_url": "https://x.co",
+                "event_types": ["nope.event"],
+            },
         ).status_code
         == 422
     )
@@ -123,14 +127,18 @@ def test_publish_routes_to_subscribers(
 
     # An event nobody subscribes to matches nothing.
     none = client.post(
-        PUBLISH, headers=admin_headers, json={"event_type": "milestone.overdue", "payload": {}}
+        PUBLISH,
+        headers=admin_headers,
+        json={"event_type": "milestone.overdue", "payload": {}},
     ).json()
     assert none["endpoints_matched"] == 0
 
     # Unknown event type is rejected.
     assert (
         client.post(
-            PUBLISH, headers=admin_headers, json={"event_type": "made.up", "payload": {}}
+            PUBLISH,
+            headers=admin_headers,
+            json={"event_type": "made.up", "payload": {}},
         ).status_code
         == 422
     )
@@ -246,7 +254,9 @@ def test_outbox_emits_and_dispatches(
     _endpoint(client, admin_headers, name="Proj hook", event_types=["project.created"])
     # Creating a project auto-emits an event into the transactional outbox.
     client.post(
-        "/api/v1/projects", headers=admin_headers, json={"name": "Outbox Proj", "code": "OBX"}
+        "/api/v1/projects",
+        headers=admin_headers,
+        json={"name": "Outbox Proj", "code": "OBX"},
     )
     ob = client.get("/api/v1/integrations/outbox", headers=admin_headers).json()
     assert any(
@@ -266,7 +276,9 @@ def test_outbox_emits_and_dispatches(
 def test_outbox_dispatch_no_subscribers(client: TestClient, admin_headers: dict[str, str]) -> None:
     # No webhook subscribes; the event still dispatches (0 deliveries).
     client.post(
-        "/api/v1/projects", headers=admin_headers, json={"name": "NoSub Proj", "code": "NOS"}
+        "/api/v1/projects",
+        headers=admin_headers,
+        json={"name": "NoSub Proj", "code": "NOS"},
     )
     res = client.post("/api/v1/integrations/outbox/dispatch", headers=admin_headers).json()
     assert res["dispatched"] >= 1 and res["deliveries_created"] == 0
@@ -280,7 +292,9 @@ def test_scheduled_dispatch_across_tenant(
 
     _endpoint(client, admin_headers, name="Beat hook", event_types=["project.created"])
     client.post(
-        "/api/v1/projects", headers=admin_headers, json={"name": "Beat Proj", "code": "BEAT"}
+        "/api/v1/projects",
+        headers=admin_headers,
+        json={"name": "Beat Proj", "code": "BEAT"},
     )
 
     # Run the beat-scheduled orchestration directly (no broker needed).

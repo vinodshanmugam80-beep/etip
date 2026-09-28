@@ -61,12 +61,16 @@ def test_record_realization_auto_status(client: TestClient, admin_headers: dict[
     ben = _benefit(client, admin_headers, proj, target_value="1000.00")
     # Partial realisation.
     partial = client.post(
-        f"{BEN}/{ben['id']}/realization", headers=admin_headers, json={"realized_value": "300.00"}
+        f"{BEN}/{ben['id']}/realization",
+        headers=admin_headers,
+        json={"realized_value": "300.00"},
     ).json()
     assert partial["status"] == "partially_realized" and partial["realization_percent"] == 30.0
     # Full realisation.
     full = client.post(
-        f"{BEN}/{ben['id']}/realization", headers=admin_headers, json={"realized_value": "1000.00"}
+        f"{BEN}/{ben['id']}/realization",
+        headers=admin_headers,
+        json={"realized_value": "1000.00"},
     ).json()
     assert full["status"] == "realized" and full["realization_percent"] == 100.0
     assert full["realized_date"] is not None
@@ -77,7 +81,9 @@ def test_status_transition_validation(client: TestClient, admin_headers: dict[st
     ben = _benefit(client, admin_headers, proj, target_value="1000.00")
     # Drive it to realized.
     client.post(
-        f"{BEN}/{ben['id']}/realization", headers=admin_headers, json={"realized_value": "1000.00"}
+        f"{BEN}/{ben['id']}/realization",
+        headers=admin_headers,
+        json={"realized_value": "1000.00"},
     )
     # realized → planned is not allowed.
     r = client.patch(f"{BEN}/{ben['id']}", headers=admin_headers, json={"status": "planned"})
@@ -158,7 +164,9 @@ def test_not_found(client: TestClient, admin_headers: dict[str, str]) -> None:
     assert client.get(f"{BEN}/{uuid.uuid4()}", headers=admin_headers).status_code == 404
     # Create under an unknown project.
     r = client.post(
-        BEN, headers=admin_headers, json={"project_id": str(uuid.uuid4()), "title": "Orphan"}
+        BEN,
+        headers=admin_headers,
+        json={"project_id": str(uuid.uuid4()), "title": "Orphan"},
     )
     assert r.status_code == 404
 
@@ -236,7 +244,9 @@ def test_update_fields_and_owner_validation(
 
     # Unknown owner is rejected.
     bad = client.patch(
-        f"{BEN}/{ben['id']}", headers=admin_headers, json={"owner_user_id": str(uuid.uuid4())}
+        f"{BEN}/{ben['id']}",
+        headers=admin_headers,
+        json={"owner_user_id": str(uuid.uuid4())},
     )
     assert bad.status_code == 422
 
@@ -247,7 +257,9 @@ def test_zero_target_computed_none(client: TestClient, admin_headers: dict[str, 
     assert ben["realization_percent"] is None and ben["roi_percent"] is None
     # Recording realisation with a zero target leaves status unchanged (no inference).
     rec = client.post(
-        f"{BEN}/{ben['id']}/realization", headers=admin_headers, json={"realized_value": "500.00"}
+        f"{BEN}/{ben['id']}/realization",
+        headers=admin_headers,
+        json={"realized_value": "500.00"},
     ).json()
     assert rec["status"] == "planned"
 
@@ -256,7 +268,9 @@ def test_search_by_status_and_owner(client: TestClient, admin_headers: dict[str,
     proj = _project(client, admin_headers, "SBO")
     ben = _benefit(client, admin_headers, proj, target_value="1000.00")
     client.post(
-        f"{BEN}/{ben['id']}/realization", headers=admin_headers, json={"realized_value": "1000.00"}
+        f"{BEN}/{ben['id']}/realization",
+        headers=admin_headers,
+        json={"realized_value": "1000.00"},
     )
     realized = client.get(
         BEN, headers=admin_headers, params={"project_id": proj, "status": "realized"}

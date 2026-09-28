@@ -131,7 +131,12 @@ def test_schedule_validation(client: TestClient, admin_headers: dict[str, str]) 
     bad = client.post(
         PROJECTS,
         headers=admin_headers,
-        json={"name": "Proj", "code": "S1", "start_date": "2026-06-01", "end_date": "2026-01-01"},
+        json={
+            "name": "Proj",
+            "code": "S1",
+            "start_date": "2026-06-01",
+            "end_date": "2026-01-01",
+        },
     )
     assert bad.status_code == 422
     bad_base = client.post(
@@ -194,7 +199,9 @@ def test_status_lifecycle_and_progress(client: TestClient, admin_headers: dict[s
     proj2 = _project(client, admin_headers, code="L2")
     assert (
         client.patch(
-            f"{PROJECTS}/{proj2['id']}", headers=admin_headers, json={"progress_percent": 150}
+            f"{PROJECTS}/{proj2['id']}",
+            headers=admin_headers,
+            json={"progress_percent": 150},
         ).status_code
         == 422
     )
@@ -217,7 +224,9 @@ def test_update_fields_and_partial_date_check(
 
     # Setting only end_date earlier than the stored start_date is rejected.
     bad = client.patch(
-        f"{PROJECTS}/{proj['id']}", headers=admin_headers, json={"end_date": "2026-01-01"}
+        f"{PROJECTS}/{proj['id']}",
+        headers=admin_headers,
+        json={"end_date": "2026-01-01"},
     )
     assert bad.status_code == 422
 
@@ -241,7 +250,9 @@ def test_team_members(
 
     # Duplicate membership rejected.
     dup = client.post(
-        f"{PROJECTS}/{proj['id']}/team", headers=admin_headers, json={"user_id": admin_id}
+        f"{PROJECTS}/{proj['id']}/team",
+        headers=admin_headers,
+        json={"user_id": admin_id},
     )
     assert dup.status_code == 409
 

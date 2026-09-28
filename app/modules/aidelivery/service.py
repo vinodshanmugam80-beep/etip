@@ -33,7 +33,11 @@ from app.modules.aidelivery.repository import (
     DeploymentRepository,
     PipelineRunRepository,
 )
-from app.modules.aidelivery.schemas import BuildRequestCreate, BuildRequestUpdate, PipelineRunCreate
+from app.modules.aidelivery.schemas import (
+    BuildRequestCreate,
+    BuildRequestUpdate,
+    PipelineRunCreate,
+)
 from app.modules.project.repository import ProjectRepository
 
 # How a reported (stage, status) advances the build lifecycle.
@@ -350,7 +354,11 @@ class AiDeliveryService:
         build.status = BuildStatus.GENERATED
         build.modified_by = self._actor_id
         self.builds.update(build)
-        self._audit(build.id, "generate", f"Generated via {artifact.provider}: {artifact.summary}")
+        self._audit(
+            build.id,
+            "generate",
+            f"Generated via {artifact.provider}: {artifact.summary}",
+        )
         return build, artifact
 
     # ------------------------------------------------------------------

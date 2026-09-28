@@ -16,7 +16,14 @@ from reportlab.lib.enums import TA_LEFT
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import mm
-from reportlab.platypus import Flowable, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
+from reportlab.platypus import (
+    Flowable,
+    Paragraph,
+    SimpleDocTemplate,
+    Spacer,
+    Table,
+    TableStyle,
+)
 
 from app.modules.intelligence.service import IntelligenceService
 
@@ -116,7 +123,10 @@ def build_board_pack_pdf(service: IntelligenceService, *, portfolio_id: uuid.UUI
         ["Budget at completion", perf.evm.bac],
         ["Estimate at completion", perf.evm.eac],
         ["Projects", str(perf.project_count)],
-        ["Benefits target / realized", f"{benefits.total_target} / {benefits.total_realized}"],
+        [
+            "Benefits target / realized",
+            f"{benefits.total_target} / {benefits.total_realized}",
+        ],
         ["Benefits realization %", str(benefits.realization_percent)],
         ["KPIs on target", f"{kpis.kpis_on_target} / {kpis.kpi_count}"],
     ]
@@ -165,7 +175,11 @@ def build_board_pack_pdf(service: IntelligenceService, *, portfolio_id: uuid.UUI
     story += [Paragraph("Recommended actions", st["h"])]
     if recs.recommendations:
         rrows = [["Priority", "Title", "Rationale"]] + [
-            [r.priority, Paragraph(r.title, st["cell"]), Paragraph(r.rationale, st["cell"])]
+            [
+                r.priority,
+                Paragraph(r.title, st["cell"]),
+                Paragraph(r.rationale, st["cell"]),
+            ]
             for r in recs.recommendations[:8]
         ]
         rt = Table(rrows, colWidths=[24 * mm, 60 * mm, 94 * mm], repeatRows=1)
