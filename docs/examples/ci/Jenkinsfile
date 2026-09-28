@@ -1,0 +1,66 @@
+// Reference Jenkins pipeline: your CI/CD as ETIP's executor.
+//
+// Copy into your application repo as a Jenkinsfile, together with
+// scripts/etip_report.py. Each stage runs the real work then reports the outcome
+// (with metrics) back to a build in ETIP.
+//
+// Configure credentials/variables (Manage Jenkins → Credentials, or job env):
+//   ETIP_URL       e.g. https://etip.your-company.com
+//   ETIP_API_KEY   an ETIP API key (build:manage)  — store as a Secret credential
+//   ETIP_BUILD_ID  the build request id to report against
+
+pipeline {
+  agent any
+  environment {
+    ETIP_URL      = "${env.ETIP_URL}"
+    ETIP_API_KEY  = credentials('etip-api-key')   // Secret text credential id
+    ETIP_BUILD_ID = "${env.ETIP_BUILD_ID}"
+    PROV          = "jenkins"
+  }
+  stages {
+    stage('Build') {
+      steps {
+        // <your compile/build command>
+        sh 'python scripts/etip_report.py run --stage build --status passed --provider "$PROV" --logs-url "$BUILD_URL"'
+      }
+    }
+    stage('Unit tests') {
+      steps {
+        // <your test command; compute coverage into COV>
+        sh '''
+          COV=91.4
+          python scripts/etip_report.py run --stage unit_test --status passed --provider "$PROV" --metrics "{\\"coverage\\": $COV}"
+        '''
+      }
+    }
+    stage('QA') {
+      steps { sh 'python scripts/etip_report.py run --stage qa --status passed --provider "$PROV"' }
+    }
+    stage('Deploy staging') {
+      steps {
+        // <your deploy command>
+        sh 'python scripts/etip_report.py deploy --environment staging --status deployed --url "https://staging.example.com" --version "${GIT_COMMIT}" --provider "$PROV"'
+      }
+    }
+    stage('Performance test') {
+      steps {
+        sh '''
+          P95=180; RPS=500
+          python scripts/etip_report.py run --stage perf_test --status passed --provider "$PROV" --metrics "{\\"p95_ms\\": $P95, \\"rps\\": $RPS}"
+        '''
+      }
+    }
+    stage('Deploy production') {
+      when { buildingTag() }        // gate production to tag builds
+      steps {
+        input message: 'Promote to production?'
+        sh 'python scripts/etip_report.py deploy --environment production --status deployed --url "https://app.example.com" --version "${TAG_NAME}" --provider "$PROV"'
+      }
+    }
+  }
+  post {
+    failure {
+      sh 'python scripts/etip_report.py run --stage build --status failed --provider "$PROV" || true'
+    }
+  }
+}

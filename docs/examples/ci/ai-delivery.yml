@@ -1,0 +1,81 @@
+# Reference GitHub Actions workflow: your CI/CD as ETIP's executor.
+#
+# Copy this into YOUR application repo (.github/workflows/ai-delivery.yml) together
+# with scripts/etip_report.py. On every push it runs the real build → test → QA →
+# deploy → perf-test stages and reports each outcome (with metrics) back to a build
+# in ETIP, so ETIP tracks and governs the live pipeline.
+#
+# Set these in the repo's Settings → Secrets and variables → Actions:
+#   Secret   ETIP_URL       e.g. https://etip.your-company.com
+#   Secret   ETIP_API_KEY   an ETIP API key (build:manage) — issue it in ETIP's API Keys tab
+#   Variable ETIP_BUILD_ID  the build request id to report against (create the build in ETIP)
+
+name: AI Delivery
+
+on:
+  push:
+    branches: [main]
+
+env:
+  ETIP_URL: ${{ secrets.ETIP_URL }}
+  ETIP_API_KEY: ${{ secrets.ETIP_API_KEY }}
+  ETIP_BUILD_ID: ${{ vars.ETIP_BUILD_ID }}
+
+jobs:
+  deliver:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+
+      # ---- build / compile -------------------------------------------------
+      - name: Build
+        run: |
+          # <your compile/build command, e.g. npm ci && npm run build>
+          python scripts/etip_report.py run --stage build --status passed \
+            --logs-url "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+      - name: Report build failure
+        if: failure()
+        run: python scripts/etip_report.py run --stage build --status failed
+
+      # ---- unit tests (with coverage) -------------------------------------
+      - name: Unit tests
+        run: |
+          # <your test command; then compute coverage into $COV>
+          COV=91.4
+          python scripts/etip_report.py run --stage unit_test --status passed \
+            --metrics "{\"coverage\": $COV}"
+      - name: Report test failure
+        if: failure()
+        run: python scripts/etip_report.py run --stage unit_test --status failed
+
+      # ---- QA gate ---------------------------------------------------------
+      - name: QA checks
+        run: |
+          # <lint / security scan / accessibility checks>
+          python scripts/etip_report.py run --stage qa --status passed
+
+      # ---- deploy to staging ----------------------------------------------
+      - name: Deploy to staging
+        run: |
+          # <your deploy command>
+          python scripts/etip_report.py deploy --environment staging --status deployed \
+            --url "https://staging.example.com" --version "${GITHUB_SHA::7}"
+
+      # ---- performance test ------------------------------------------------
+      - name: Performance test
+        run: |
+          # <run k6/Locust; parse results into $P95 and $RPS>
+          P95=180; RPS=500
+          python scripts/etip_report.py run --stage perf_test --status passed \
+            --metrics "{\"p95_ms\": $P95, \"rps\": $RPS}"
+
+      # ---- promote to production (gated) ----------------------------------
+      - name: Deploy to production
+        # e.g. only on a tag, or behind a GitHub Environment approval
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          # <your production deploy command>
+          python scripts/etip_report.py deploy --environment production --status deployed \
+            --url "https://app.example.com" --version "${GITHUB_REF_NAME}"

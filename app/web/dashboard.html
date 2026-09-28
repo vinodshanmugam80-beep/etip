@@ -1,0 +1,2010 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ETIP — Executive Intelligence</title>
+<script src="/vendor/chart.umd.js"></script>
+<style>
+  /* ---- Self-hosted fonts (offline, no CDN). Drop a licensed
+         fonts/engravers-gothic.woff2 in and it wins automatically. ---- */
+  @font-face{font-family:'Inter';src:url('/fonts/inter-latin-400-normal.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+  @font-face{font-family:'Inter';src:url('/fonts/inter-latin-500-normal.woff2') format('woff2');font-weight:500;font-style:normal;font-display:swap}
+  @font-face{font-family:'Inter';src:url('/fonts/inter-latin-600-normal.woff2') format('woff2');font-weight:600;font-style:normal;font-display:swap}
+  @font-face{font-family:'Inter';src:url('/fonts/inter-latin-700-normal.woff2') format('woff2');font-weight:700;font-style:normal;font-display:swap}
+  @font-face{font-family:'Montserrat';src:url('/fonts/montserrat-latin-400-normal.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+  @font-face{font-family:'Montserrat';src:url('/fonts/montserrat-latin-500-normal.woff2') format('woff2');font-weight:500;font-style:normal;font-display:swap}
+  @font-face{font-family:'Montserrat';src:url('/fonts/montserrat-latin-600-normal.woff2') format('woff2');font-weight:600;font-style:normal;font-display:swap}
+  @font-face{font-family:'Montserrat';src:url('/fonts/montserrat-latin-700-normal.woff2') format('woff2');font-weight:700;font-style:normal;font-display:swap}
+  /* Your licensed Engravers Gothic — served only if the file is present. */
+  @font-face{font-family:'Engravers Gothic';src:url('/fonts/engravers-gothic.woff2') format('woff2');font-weight:400 700;font-style:normal;font-display:swap}
+  :root{
+    --navy:#0F1B2D; --navy2:#18263F; --ink:#101828; --ink2:#344054; --mute:#667085;
+    --bg:#F4F6F9; --card:#FFFFFF; --line:#E4E7EC; --line2:#EEF1F5;
+    --accent:#0E9488; --accentDk:#0B7A70; --accentSoft:#E7F4F2; --cyan:#0E9488; --cyanDk:#0B7A70;
+    --green:#059669; --amber:#D97706; --red:#DC2626; --grey:#667085; --crit:#991B1B;
+    --radius:12px; --radius-sm:8px;
+    --shadow:0 1px 2px rgba(16,24,40,.05); --shadow-md:0 4px 14px rgba(16,24,40,.08);
+    --ui:'Inter',-apple-system,Segoe UI,system-ui,Arial,sans-serif;
+    --display:'Engravers Gothic','Engravers Gothic BT','Copperplate Gothic Light','Copperplate','Montserrat','Inter',sans-serif;
+  }
+  *{box-sizing:border-box} html,body{margin:0}
+  body{font-family:var(--ui);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;font-size:14px;line-height:1.5}
+  .disp{font-family:var(--display);text-transform:uppercase;letter-spacing:.11em}
+  /* top bar */
+  .top{background:var(--navy);color:#fff;padding:0 24px;height:60px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:5;border-bottom:1px solid rgba(255,255,255,.06)}
+  .brand{font-family:var(--display);text-transform:uppercase;letter-spacing:.22em;font-weight:600;font-size:20px;display:flex;align-items:center;gap:11px;color:#fff}
+  .brand::before{content:"";width:22px;height:22px;border-radius:5px;background:var(--accent);display:inline-block}
+  .top .sub{color:#94A3B8;font-size:12px;font-weight:500;font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;white-space:nowrap} .top .spacer{flex:1}
+  #userLabel{overflow:hidden;text-overflow:ellipsis;max-width:220px}
+  @media(max-width:1200px){.top .sub#scopeLabel{display:none}}
+  .conf{color:#94A3B8;font-size:10px;font-weight:600;letter-spacing:.16em;border:1px solid rgba(148,163,184,.3);padding:4px 9px;border-radius:6px;font-family:var(--display)}
+  .btn{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:9px 15px;font-weight:600;cursor:pointer;font-size:13px;font-family:var(--ui);white-space:nowrap;transition:background .14s ease,border-color .14s ease}
+  .btn:hover{background:var(--accentDk)}
+  .btn.ghost{background:transparent;color:#CBD5E1;border:1px solid rgba(148,163,184,.35)}
+  .btn.ghost:hover{background:rgba(255,255,255,.06);color:#fff}
+  .btn:active{transform:translateY(1px)}
+  /* tabs: white sub-bar under the dark top bar */
+  .tabs{background:var(--card);display:flex;gap:2px;padding:0 20px;position:sticky;top:60px;z-index:4;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--line)}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{color:var(--mute);padding:14px 15px;cursor:pointer;font-weight:600;font-size:12px;font-family:var(--display);text-transform:uppercase;letter-spacing:.1em;border-bottom:2px solid transparent;white-space:nowrap;transition:color .15s ease,border-color .15s ease;margin-bottom:-1px}
+  .tab:hover{color:var(--ink)}
+  .tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+  .scope{background:rgba(255,255,255,.06);color:#fff;border:1px solid rgba(148,163,184,.35);border-radius:8px;padding:8px 11px;font-size:13px;max-width:220px;font-family:var(--ui)}
+  .scope option{color:#101828}
+  .wrap{max-width:1240px;margin:26px auto;padding:0 24px;animation:fade .3s ease}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  /* login */
+  .login{max-width:400px;margin:8vh auto;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:0;box-shadow:var(--shadow-md);overflow:hidden}
+  .login .hero{background:var(--navy);padding:32px 32px 26px;color:#fff;position:relative}
+  .login .hero .mark{width:42px;height:42px;border-radius:10px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:600;font-size:20px;color:#fff;margin-bottom:16px;letter-spacing:.05em}
+  .login h1{font-family:var(--display);text-transform:uppercase;letter-spacing:.2em;margin:0 0 8px;color:#fff;font-size:24px;font-weight:600}
+  .login .hero p{color:#94A3B8;margin:0;font-size:13px;line-height:1.5}
+  .login .body{padding:26px 32px 30px}
+  .login p{color:var(--mute);margin:0 0 18px;font-size:13.5px}
+  .fld{margin-bottom:14px} .fld label{display:block;font-size:11px;color:var(--mute);margin-bottom:6px;font-weight:600;font-family:var(--display);text-transform:uppercase;letter-spacing:.08em}
+  .fld input{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:8px;font-size:14px;font-family:var(--ui);transition:border-color .15s,box-shadow .15s;background:#fff;color:var(--ink)}
+  .fld input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(14,148,136,.14)}
+  .err{color:var(--red);font-size:13px;min-height:18px;margin-top:6px}
+  .eyebrow{color:var(--mute);font-weight:600;font-size:11px;letter-spacing:.14em;text-transform:uppercase;margin:28px 0 12px;font-family:var(--display)}
+  .grid{display:grid;gap:16px} .kpis{grid-template-columns:repeat(5,1fr)} .two{grid-template-columns:1.35fr 1fr}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);transition:box-shadow .16s ease,border-color .16s ease}
+  .card:hover{box-shadow:var(--shadow-md);border-color:#D5DAE3}
+  .card h3{margin:0 0 14px;font-size:12px;color:var(--mute);font-weight:600;font-family:var(--display);text-transform:uppercase;letter-spacing:.1em}
+  .kpi .lab{font-size:10.5px;color:var(--mute);font-weight:600;font-family:var(--display);text-transform:uppercase;letter-spacing:.1em} .kpi .val{font-family:var(--ui);font-size:29px;font-weight:700;color:var(--ink);line-height:1.1;margin-top:8px;font-variant-numeric:tabular-nums;letter-spacing:-.01em} .kpi .val.sm{font-size:20px}
+  .chip{display:inline-block;padding:3px 10px;border-radius:6px;color:#fff;font-size:11px;font-weight:600;font-family:var(--display);text-transform:uppercase;letter-spacing:.05em}
+  .rag-green{background:var(--green)} .rag-amber{background:var(--amber)} .rag-red{background:var(--red)}
+  .rag-not_started,.rag-unknown{background:var(--grey)}
+  .pri-high{background:var(--red)} .pri-medium{background:var(--amber)} .pri-low{background:var(--accent)}
+  .narr{background:var(--card);color:var(--ink2);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:var(--radius);padding:16px 20px;font-size:14.5px;line-height:1.55;box-shadow:var(--shadow)}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th{text-align:left;color:var(--mute);font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;font-family:var(--display);padding:9px 8px;border-bottom:1px solid var(--line)}
+  td{padding:11px 8px;border-bottom:1px solid var(--line2);color:var(--ink2);font-variant-numeric:tabular-nums}
+  tbody tr{transition:background .12s ease}
+  tr.clik{cursor:pointer} tbody tr:hover,tr.clik:hover{background:#F8FAFC}
+  .rec{padding:12px 0;border-bottom:1px solid var(--line2)} .rec:last-child{border-bottom:none}
+  .rec .t{font-weight:600;color:var(--ink)} .rec .r{color:var(--mute);font-size:13px;margin-top:3px}
+  .muted{color:var(--mute);font-size:13px}
+  .rowf{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  /* heat grid */
+  .heat{border-collapse:separate;border-spacing:5px}
+  .heat th{color:var(--mute);font-size:11px;text-align:center}
+  .hc{width:74px;height:42px;border-radius:8px;text-align:center;color:#fff;font-weight:600;font-size:12px;vertical-align:middle;font-variant-numeric:tabular-nums}
+  .hlabel{font-weight:600;color:var(--ink);white-space:nowrap;padding-right:8px}
+  .hg-green{background:var(--green)} .hg-amber{background:var(--amber)} .hg-red{background:var(--red)}
+  .hg-not_started,.hg-unknown{background:#D0D5DD;color:#475467}
+  .sev-low{background:var(--green)} .sev-medium{background:var(--amber)} .sev-high{background:var(--red)} .sev-critical{background:var(--crit)} .sev-none{background:#F2F4F7;color:#98A2B3}
+  /* modal */
+  .modal{position:fixed;inset:0;background:rgba(16,24,40,.5);display:none;align-items:flex-start;justify-content:center;z-index:20;overflow:auto;padding:44px 16px;backdrop-filter:blur(2px)}
+  .sheet{background:#fff;border-radius:14px;max-width:820px;width:100%;padding:26px 28px;box-shadow:0 20px 48px rgba(16,24,40,.24);animation:fade .2s ease}
+  .sheet h2{font-family:var(--display);text-transform:uppercase;letter-spacing:.08em;margin:0 0 2px;color:var(--ink);font-size:20px;font-weight:600}
+  .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}
+  .metric{background:#F8FAFC;border:1px solid var(--line);border-radius:10px;padding:12px 14px} .metric .l{font-size:10px;color:var(--mute);font-weight:600;font-family:var(--display);text-transform:uppercase;letter-spacing:.08em} .metric .v{font-size:18px;font-weight:700;color:var(--ink);margin-top:3px;font-variant-numeric:tabular-nums}
+  .x{float:right;cursor:pointer;color:var(--mute);font-size:24px;line-height:1;transition:color .12s} .x:hover{color:var(--red)}
+  @media(max-width:900px){.kpis{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,1fr)}.wrap{padding:0 16px}}
+  /* copilot */
+  .cp-fab{position:fixed;right:24px;bottom:24px;background:var(--accent);color:#fff;border:none;border-radius:10px;padding:12px 18px;font-weight:600;font-size:12px;cursor:pointer;box-shadow:var(--shadow-md);z-index:25;display:none;font-family:var(--display);text-transform:uppercase;letter-spacing:.08em;transition:background .14s} .cp-fab:hover{background:var(--accentDk)}
+  .cp-panel{position:fixed;right:24px;bottom:84px;width:384px;max-width:calc(100vw - 44px);height:540px;max-height:calc(100vh - 120px);background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 20px 48px rgba(16,24,40,.24);display:none;flex-direction:column;overflow:hidden;z-index:26}
+  .cp-head{background:var(--navy);color:#fff;padding:14px 16px;display:flex;align-items:center;gap:8px}
+  .cp-head .t{font-weight:600;font-family:var(--display);text-transform:uppercase;letter-spacing:.1em;font-size:13px} .cp-head .s{color:#94A3B8;font-size:11px} .cp-head .x{margin-left:auto;cursor:pointer;color:#CBD5E1;font-size:22px;line-height:1;float:none}
+  .cp-body{flex:1;overflow:auto;padding:14px;background:var(--bg)}
+  .cp-msg{margin-bottom:10px;display:flex} .cp-msg.u{justify-content:flex-end}
+  .cp-bub{max-width:82%;padding:10px 13px;border-radius:10px;font-size:13.5px;line-height:1.45}
+  .cp-msg.u .cp-bub{background:var(--accent);color:#fff;border-bottom-right-radius:3px}
+  .cp-msg.a .cp-bub{background:#fff;color:var(--ink2);border:1px solid var(--line);border-bottom-left-radius:3px}
+  .cp-intent{font-size:10px;color:var(--mute);margin-top:5px;text-transform:uppercase;letter-spacing:.5px}
+  .cp-sugg{padding:8px 12px;display:flex;gap:6px;flex-wrap:wrap;border-top:1px solid var(--line);background:#fff}
+  .cp-chip{background:#F2F4F7;border:1px solid var(--line);border-radius:8px;padding:6px 11px;font-size:12px;cursor:pointer;color:var(--ink2);transition:background .12s} .cp-chip:hover{background:#E9EDF3}
+  .cp-input{display:flex;gap:8px;padding:10px;border-top:1px solid var(--line);background:#fff}
+  .cp-input input{flex:1;border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:13.5px;font-family:var(--ui)}
+  .cp-input input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(14,148,136,.14)}
+  .cp-input button{background:var(--accent);border:none;border-radius:8px;padding:0 15px;font-weight:600;cursor:pointer;color:#fff}
+  .toasts{position:fixed;bottom:20px;right:20px;z-index:60;display:flex;flex-direction:column;gap:8px}
+  .toast{background:#fff;border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:10px;padding:12px 16px;box-shadow:var(--shadow-md);font-size:13.5px;min-width:220px;max-width:360px;color:var(--ink);animation:tin .2s ease}
+  .toast.ok{border-left-color:var(--green)} .toast.err{border-left-color:var(--red)}
+  @keyframes tin{from{opacity:0;transform:translateY(10px)}to{opacity:1}}
+  input.invalid,select.invalid{border-color:var(--red) !important;background:#FEF3F2}
+  .fmodal-bg{position:fixed;inset:0;background:rgba(16,24,40,.5);z-index:70;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(2px)}
+  .fmodal{background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 20px 48px rgba(16,24,40,.24);max-width:460px;width:100%;padding:24px 24px 20px;animation:fade .2s ease}
+  .fmodal h3{margin:0 0 16px;font-family:var(--display);text-transform:uppercase;letter-spacing:.08em;color:var(--ink);font-size:17px;font-weight:600}
+  .fmodal label{display:block;font-size:11px;color:var(--mute);font-weight:600;margin-bottom:5px;font-family:var(--display);text-transform:uppercase;letter-spacing:.06em}
+  .fmodal input,.fmodal select,.fmodal textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;margin-bottom:12px;font:inherit;font-family:var(--ui);color:var(--ink)}
+  .fmodal input:focus,.fmodal select:focus,.fmodal textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(14,148,136,.14)}
+  .fmodal textarea{min-height:70px;resize:vertical}
+  .fmodal .keybox{font-family:Consolas,monospace;font-size:13px;background:#F2F4F7;color:#1B3350;word-break:break-all;text-transform:none;letter-spacing:0}
+  /* ghost buttons on light content surfaces (Manage console, cards) */
+  .wrap .btn.ghost{background:#fff;color:var(--ink2);border:1px solid var(--line);font-family:var(--ui);text-transform:none;letter-spacing:normal}
+  .wrap .btn.ghost:hover{background:#F8FAFC;border-color:var(--accent);color:var(--accent)}
+  .mgsub{color:var(--mute)!important;font-family:var(--display)!important;text-transform:uppercase;letter-spacing:.06em;font-size:12px!important}
+  .mgsub[style*="--cyan"],.mgsub[style*="--accent"]{color:var(--accent)!important;border-color:var(--accent)!important}
+
+  /* ============================================================
+     v2 — pleasing & appealing: icon sidebar, soft-tint pills, polish
+     ============================================================ */
+  :root{
+    --side:238px;
+    --tint-g:#ECFDF3; --ink-g:#067647;
+    --tint-a:#FFFAEB; --ink-a:#B54708;
+    --tint-r:#FEF3F2; --ink-r:#B42318;
+    --tint-s:#EEF1F5; --ink-s:#475467;
+    --tint-accent:#E7F4F2;
+    --bg:#F5F7FA;
+  }
+  /* The left column is painted navy on the body itself so the sidebar colour
+     continues for the full document height (the sidebar is position:fixed and
+     only covers the viewport). Reset on narrow screens where it folds to a
+     top strip (see the max-width media query below). */
+  body{background:
+      linear-gradient(90deg,var(--navy) 0,var(--navy) var(--side),transparent var(--side)),
+      radial-gradient(1100px 480px at 100% -6%,rgba(14,148,136,.05),transparent 60%),
+      var(--bg)}
+  /* --- left sidebar (was horizontal tabs) --- */
+  .tabs{position:fixed;top:60px;left:0;bottom:0;width:var(--side);flex-direction:column;gap:2px;
+    padding:16px 14px;background:var(--navy);border-bottom:none;border-right:1px solid rgba(255,255,255,.05);
+    overflow-y:auto;overflow-x:hidden;align-items:stretch}
+  .tabs::-webkit-scrollbar{width:8px} .tabs::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:8px}
+  .navlabel{font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;font-size:9.5px;color:#5B6B85;padding:14px 12px 6px;font-weight:600}
+  .navlabel:first-child{padding-top:2px}
+  .tab{display:flex;align-items:center;gap:11px;color:#AEB8C7;padding:10px 12px;border-radius:9px;
+    border-bottom:none!important;margin-bottom:0;font-size:12px;letter-spacing:.05em;transition:background .14s ease,color .14s ease}
+  .tab svg{width:18px;height:18px;flex:none;opacity:.9;stroke-width:1.9}
+  .tab span{font-family:var(--display);text-transform:uppercase;letter-spacing:.06em}
+  .tab:hover{color:#fff;background:rgba(255,255,255,.06)}
+  .tab.active{color:#fff;background:rgba(14,148,136,.20);border-bottom:none!important;box-shadow:inset 2px 0 0 var(--accent)}
+  .tab.active svg{color:#2DD4BF;opacity:1}
+  /* --- content shifts beside the sidebar, fluid --- */
+  .wrap{margin:0 0 0 var(--side);max-width:none;padding:26px 32px}
+  /* --- soft-tinted status pills with a leading dot --- */
+  .chip{background:var(--tint-s);color:var(--ink-s);padding:4px 10px 4px 9px;border-radius:999px;
+    display:inline-flex;align-items:center;gap:6px;font-size:10.5px;letter-spacing:.04em}
+  .chip::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;flex:none}
+  .rag-green{background:var(--tint-g);color:var(--ink-g)} .rag-amber{background:var(--tint-a);color:var(--ink-a)} .rag-red{background:var(--tint-r);color:var(--ink-r)}
+  .rag-not_started,.rag-unknown{background:var(--tint-s);color:var(--ink-s)}
+  .pri-high{background:var(--tint-r);color:var(--ink-r)} .pri-medium{background:var(--tint-a);color:var(--ink-a)} .pri-low{background:var(--tint-accent);color:var(--accentDk)}
+  /* --- richer cards / KPIs / narrative --- */
+  .card{border-radius:14px}
+  .kpi{background:linear-gradient(180deg,#FFFFFF,#FBFDFE)}
+  .kpi .val{letter-spacing:-.015em}
+  .narr{background:linear-gradient(180deg,#FBFDFC,#F3FAF8);border-left-width:3px}
+  .eyebrow{color:var(--ink);font-size:13px;letter-spacing:.02em;font-weight:600;text-transform:none;margin:26px 0 14px;display:flex;align-items:center;gap:9px}
+  .eyebrow::before{content:"";width:4px;height:16px;border-radius:3px;background:var(--accent)}
+  /* --- responsive: sidebar folds to a top strip on narrow screens --- */
+  @media(max-width:980px){
+    .tabs{position:static;top:auto;left:auto;bottom:auto;width:auto;flex-direction:row;overflow-x:auto;
+      border-right:none;border-bottom:1px solid var(--line);background:var(--card);padding:0 10px}
+    .navlabel{display:none}
+    .tab{border-radius:0;padding:13px 12px;color:var(--mute)}
+    .tab span{font-size:12px}
+    .tab:hover{background:transparent;color:var(--ink)}
+    .tab.active{background:transparent;color:var(--accent);box-shadow:inset 0 -2px 0 var(--accent)}
+    .tab.active svg{color:var(--accent)}
+    .wrap{margin-left:0;padding:20px 16px}
+    /* No left navy column when the sidebar is a top strip. */
+    body{background:
+      radial-gradient(1100px 480px at 100% -6%,rgba(14,148,136,.05),transparent 60%),
+      var(--bg)}
+  }
+  /* progress bars / meters */
+  .barwrap{display:flex;align-items:center;gap:9px;min-width:120px}
+  .bar{height:7px;border-radius:999px;background:#E7ECF2;overflow:hidden;flex:1;min-width:70px}
+  .bar>span{display:block;height:100%;border-radius:999px;background:var(--accent);transition:width .5s cubic-bezier(.4,0,.2,1)}
+  .bar.g>span{background:var(--green)} .bar.a>span{background:var(--amber)} .bar.r>span{background:var(--red)}
+  .barwrap .pct{font-size:12px;color:var(--ink2);font-variant-numeric:tabular-nums;min-width:34px;text-align:right;font-weight:600}
+  /* sparklines — compact trend of the metric over recent captures */
+  .spark{display:block;width:100%;height:22px;overflow:visible}
+  .spark path{fill:none;stroke-width:1.6;vector-effect:non-scaling-stroke;stroke-linecap:round;stroke-linejoin:round}
+  .spark .fill{stroke:none;opacity:.10}
+  .spark circle{stroke:#fff;stroke-width:1}
+  .kpi .trend{margin-top:12px}
+  .kpi .trend .cap{font-size:9.5px;color:var(--mute);font-weight:600;font-family:var(--display);text-transform:uppercase;letter-spacing:.09em;margin-bottom:3px;display:flex;justify-content:space-between;align-items:baseline}
+  .kpi .trend .cap .dl{font-family:var(--ui);letter-spacing:0;text-transform:none;font-weight:600;font-variant-numeric:tabular-nums}
+  td .spark{width:88px;height:20px}
+  /* project scorecard cards */
+  .grid.scorecards{grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:14px}
+  .sc{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:16px 16px 14px;display:flex;flex-direction:column;gap:10px;position:relative;overflow:hidden}
+  .sc::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--grey)}
+  .sc.ok::before{background:var(--green)} .sc.off::before{background:var(--amber)}
+  .sc .sc-name{font-weight:700;color:var(--ink);font-size:13.5px;line-height:1.25;padding-right:8px}
+  .sc .sc-dir{font-size:10px;color:var(--mute);font-weight:600;font-family:var(--display);text-transform:uppercase;letter-spacing:.08em;margin-top:2px}
+  .sc .sc-val{display:flex;align-items:baseline;gap:6px}
+  .sc .sc-val b{font-size:28px;font-weight:700;color:var(--ink);letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1}
+  .sc .sc-val .u{font-size:12px;color:var(--mute);font-weight:600}
+  .sc .sc-tgt{font-size:11.5px;color:var(--mute);font-variant-numeric:tabular-nums}
+  .sc .sc-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:2px}
+  /* SDLC stage-gate governance */
+  .gov-item{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px 20px;margin-bottom:14px}
+  .gov-head{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+  .gov-head .who{font-weight:700;color:var(--ink);font-size:15px}
+  .gov-head .sub{color:var(--mute);font-size:12.5px;margin-top:2px}
+  .gov-prog{display:flex;align-items:center;gap:10px;min-width:200px;flex:1;max-width:320px}
+  .gate-track{display:flex;gap:0;align-items:flex-start;overflow-x:auto;padding:4px 2px 2px}
+  .gate{position:relative;flex:1 1 0;min-width:118px;text-align:center;padding:0 6px}
+  .gate:not(:first-child)::before{content:"";position:absolute;top:15px;left:-50%;width:100%;height:2px;background:var(--line);z-index:0}
+  .gate.done:not(:first-child)::before,.gate.rej:not(:first-child)::before{background:var(--green)}
+  .gate.rejgate:not(:first-child)::before{background:var(--red)}
+  .gate .node{position:relative;z-index:1;width:32px;height:32px;border-radius:50%;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;background:#fff;border:2px solid var(--line);color:var(--mute)}
+  .gate .node svg{width:16px;height:16px}
+  .gate.done .node{background:var(--tint-g);border-color:var(--green);color:var(--ink-g)}
+  .gate.pend .node{background:var(--tint-a);border-color:var(--amber);color:var(--ink-a);animation:pulseA 1.8s ease-in-out infinite}
+  .gate.prog .node{background:var(--tint-accent,#E7F4F2);border-color:var(--accent);color:var(--accentDk)}
+  .gate.rejgate .node{background:var(--tint-r);border-color:var(--red);color:var(--ink-r)}
+  .gate.up .node{background:#fff;border-color:var(--line);color:#B8BFC9}
+  .gate.blk .node{background:#F2F4F7;border-color:var(--line);color:#B8BFC9}
+  @keyframes pulseA{0%,100%{box-shadow:0 0 0 0 rgba(217,119,6,.35)}50%{box-shadow:0 0 0 5px rgba(217,119,6,0)}}
+  .gate .gname{font-size:11px;font-weight:600;color:var(--ink2);line-height:1.25;min-height:28px}
+  .gate .gmeta{font-size:10px;color:var(--mute);margin-top:4px;line-height:1.3}
+  .gate .gmeta b{color:var(--ink2);font-weight:600}
+  .gov-actions{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--line2);align-items:center;flex-wrap:wrap}
+  .gov-actions .lead{font-size:12.5px;color:var(--ink-a);font-weight:600;margin-right:auto}
+  .btn.ok{background:var(--green);color:#fff;border:none} .btn.ok:hover{filter:brightness(.95)}
+  .btn.no{background:#fff;color:var(--red);border:1px solid var(--red)} .btn.no:hover{background:var(--tint-r)}
+  .gov-status{font-size:11px;font-weight:700;font-family:var(--display);letter-spacing:.07em;text-transform:uppercase;padding:4px 11px;border-radius:999px}
+  .gs-in{background:var(--tint-accent,#E7F4F2);color:var(--accentDk)} .gs-done{background:var(--tint-g);color:var(--ink-g)} .gs-rej{background:var(--tint-r);color:var(--ink-r)} .gs-cx{background:var(--tint-s);color:var(--ink-s)}
+  /* skeleton shimmer for loading states */
+  .sk{position:relative;overflow:hidden;background:#EEF1F5;border-radius:8px}
+  .sk::after{content:"";position:absolute;inset:0;transform:translateX(-100%);background:linear-gradient(90deg,transparent,rgba(255,255,255,.6),transparent);animation:shimmer 1.3s infinite}
+  @keyframes shimmer{100%{transform:translateX(100%)}}
+</style>
+</head>
+<body>
+
+<div id="login" class="login">
+  <div class="hero">
+    <div class="mark">E</div>
+    <h1>ETIP</h1>
+    <p>Enterprise Transformation Intelligence — sign in to your organization.</p>
+  </div>
+  <div class="body">
+    <div class="fld"><label>Organization slug</label><input id="slug" value="demo-transformation-co"></div>
+    <div class="fld"><label>Email</label><input id="email" value="admin@demo.co"></div>
+    <div class="fld"><label>Password</label><input id="pass" type="password" value="Str0ng-Passphrase!1" onkeydown="if(event.key==='Enter')login()"></div>
+    <button class="btn" style="width:100%;margin-top:6px;padding:12px" onclick="login()">Sign in</button>
+    <div class="err" id="loginErr"></div>
+    <p class="muted" style="margin-top:14px">Tip: run <code>python scripts/seed_demo.py</code> first to populate demo data.</p>
+  </div>
+</div>
+
+<div id="app" style="display:none">
+  <div class="top">
+    <span class="brand">ETIP</span><span class="sub" id="scopeLabel">Executive Intelligence</span>
+    <span class="spacer"></span>
+    <span class="sub" id="userLabel"></span><span class="conf">CONFIDENTIAL</span>
+    <select class="scope" id="scopeSel" onchange="onScope()"><option value="">All portfolios</option></select>
+    <button class="btn" id="btnPack" onclick="downloadBoardPack('xlsx')">Board pack</button>
+    <button class="btn ghost" id="btnPdf" onclick="downloadBoardPack('pdf')">PDF</button>
+    <button class="btn ghost" onclick="refresh()">Refresh</button>
+    <button class="btn ghost" onclick="logout()">Sign out</button>
+  </div>
+  <div class="tabs">
+    <div class="navlabel">Menu</div>
+    <div class="tab active" data-t="overview" onclick="switchTab('overview')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg><span>Overview</span></div>
+    <div class="tab" data-t="heatmap" onclick="switchTab('heatmap')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span>Heat Map</span></div>
+    <div class="tab" data-t="forecast" onclick="switchTab('forecast')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg><span>Forecast</span></div>
+    <div class="tab" data-t="procurement" onclick="switchTab('procurement')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg><span>Procurement</span></div>
+    <div class="tab" data-t="integrations" onclick="switchTab('integrations')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg><span>Integrations</span></div>
+    <div class="tab" data-t="apikeys" onclick="switchTab('apikeys')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="4.5"/><path d="M10.7 12.3 21 2"/><path d="m16 6 3 3"/></svg><span>API Keys</span></div>
+    <div class="tab" data-t="aidelivery" onclick="switchTab('aidelivery')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg><span>AI Delivery</span></div>
+    <div class="tab" data-t="governance" onclick="switchTab('governance')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span>Governance</span></div>
+    <div class="navlabel">Administration</div>
+    <div class="tab" data-t="manage" onclick="switchTab('manage')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg><span>Manage</span></div>
+  </div>
+
+  <!-- OVERVIEW -->
+  <div class="wrap section" id="sec-overview">
+    <div class="eyebrow" id="ovEyebrow">Transformation health</div>
+    <div class="grid kpis" id="kpis"></div>
+    <div class="narr" id="narrative" style="margin-top:16px"></div>
+    <div id="scorecardWrap" style="display:none">
+      <div class="eyebrow">Project scorecard — KPIs
+        <button class="btn ghost" style="margin-left:auto;padding:5px 12px;font-size:12px" id="scOpenWs">Manage KPIs</button>
+      </div>
+      <div class="grid scorecards" id="scorecard"></div>
+    </div>
+    <div class="eyebrow">Cost &amp; budget</div>
+    <div class="grid kpis" id="costKpis"></div>
+    <div class="eyebrow">Portfolio &amp; benefits</div>
+    <div class="card">
+      <h3>Projects — click a row to drill down</h3>
+      <div style="overflow-x:auto"><table>
+        <thead><tr><th>Project</th><th>Health</th><th>SPI</th><th>CPI</th>
+          <th style="text-align:right">Budget</th><th style="text-align:right">Cost</th>
+          <th style="text-align:right">EAC</th><th style="text-align:right">ETC</th>
+          <th>SPI trend</th></tr></thead>
+        <tbody id="projRows"></tbody></table></div>
+    </div>
+    <div class="grid two" style="margin-top:16px">
+      <div class="card"><h3>Project health mix</h3><canvas id="healthChart" height="160"></canvas></div>
+      <div class="card"><h3>Benefits realization</h3><canvas id="benChart" height="150"></canvas><div id="benMeta" class="muted" style="margin-top:8px"></div></div>
+    </div>
+    <div class="card" style="margin-top:16px"><h3>KPI attainment</h3><div id="kpiList"></div></div>
+    <div class="eyebrow">Recommended actions</div>
+    <div class="card" id="recs"></div>
+  </div>
+
+  <!-- HEAT MAP -->
+  <div class="wrap section" id="sec-heatmap" style="display:none">
+    <div class="eyebrow">Delivery heat map — schedule · cost · budget · overall</div>
+    <div class="card" style="overflow:auto"><div id="deliveryHeat"></div></div>
+    <div class="eyebrow">Risk exposure — probability × impact (open risks)</div>
+    <div class="card" style="overflow:auto"><div id="riskHeat"></div></div>
+  </div>
+
+  <!-- FORECAST -->
+  <div class="wrap section" id="sec-forecast" style="display:none">
+    <div class="eyebrow">Success outlook &amp; forecast</div>
+    <div class="grid kpis" id="fcKpis"></div>
+    <div class="eyebrow">Per-project forecast</div>
+    <div class="card"><table><thead><tr><th>Project</th><th>Forecast completion</th><th>Slippage (days)</th><th>Projected overrun</th></tr></thead><tbody id="fcRows"></tbody></table></div>
+    <div class="eyebrow">Resource demand \u2014 next 8 weeks (org-wide, % of capacity)</div>
+    <div class="card" style="overflow:auto"><div id="rfWrap"></div></div>
+  </div>
+
+  <!-- PROCUREMENT -->
+  <div class="wrap section" id="sec-procurement" style="display:none">
+    <div class="eyebrow">Procurement &amp; vendor spend</div>
+    <div class="grid kpis" id="procKpis"></div>
+    <div class="eyebrow">Committed vs invoiced by vendor</div>
+    <div class="card"><canvas id="procChart" height="90"></canvas></div>
+    <div class="eyebrow">Vendors</div>
+    <div class="card"><table><thead><tr><th>Vendor</th><th>Category</th><th>Status</th><th>Committed</th><th>Invoiced</th><th>Outstanding</th></tr></thead><tbody id="procRows"></tbody></table></div>
+  </div>
+
+  <!-- INTEGRATIONS -->
+  <div class="wrap section" id="sec-integrations" style="display:none">
+    <div class="eyebrow">Integration hub — outbound webhooks</div>
+    <div class="grid kpis" id="intKpis"></div>
+    <div class="eyebrow">Registered webhooks</div>
+    <div class="card"><table><thead><tr><th>Name</th><th>Target</th><th>Events</th><th>Active</th><th>Signed</th></tr></thead><tbody id="intEndpoints"></tbody></table></div>
+    <div class="eyebrow">Recent deliveries <button class="btn ghost" style="margin-left:8px;padding:4px 10px;font-size:12px" onclick="retryDue()">Retry due</button></div>
+    <div class="card"><table><thead><tr><th>Event</th><th>Status</th><th>Code</th><th>Attempts</th><th>When</th></tr></thead><tbody id="intDeliveries"></tbody></table></div>
+    <div class="eyebrow">Outbox events <button class="btn ghost" style="margin-left:8px;padding:4px 10px;font-size:12px" onclick="dispatchOutbox()">Dispatch now</button></div>
+    <div class="card"><table><thead><tr><th>Event type</th><th>Status</th><th>Attempts</th><th>Created</th><th>Dispatched</th></tr></thead><tbody id="intOutbox"></tbody></table></div>
+  </div>
+
+  <!-- API KEYS -->
+  <div class="wrap section" id="sec-apikeys" style="display:none">
+    <div class="eyebrow">API keys — service-account access for external tools</div>
+    <div class="grid kpis" id="akKpis"></div>
+    <div class="eyebrow">Keys <button class="btn ghost" style="margin-left:8px;padding:4px 10px;font-size:12px" onclick="newApiKey()">New key</button></div>
+    <div class="card"><table><thead><tr><th>Name</th><th>Prefix</th><th>Active</th><th>Expires</th><th>Created</th><th></th></tr></thead><tbody id="akRows"></tbody></table></div>
+    <div class="muted" style="margin-top:8px">External tools authenticate with the <code>X-API-Key</code> header. The secret is shown only once, at creation.</div>
+  </div>
+
+  <!-- AI DELIVERY -->
+  <div class="wrap section" id="sec-aidelivery" style="display:none">
+    <div class="eyebrow">AI Delivery — build → compile → test → QA → deploy → perf</div>
+    <div class="grid two">
+      <div class="card">
+        <h3>Builds <button class="btn ghost" style="margin-left:6px;padding:4px 10px;font-size:12px" onclick="newBuild()">New</button></h3>
+        <div id="adBuilds" style="max-height:520px;overflow:auto"></div>
+      </div>
+      <div class="card"><div id="adDetail"><div class="muted">Select a build to see its pipeline, code and deployments.</div></div></div>
+    </div>
+  </div>
+
+  <!-- GOVERNANCE (SDLC stage gates) -->
+  <div class="wrap section" id="sec-governance" style="display:none">
+    <div class="eyebrow">Governance — SDLC stage-gate approvals</div>
+    <div class="grid kpis" id="govKpis"></div>
+    <div id="govAwaiting" style="margin-top:14px"></div>
+    <div class="eyebrow" style="margin-top:22px">Projects under stage-gate governance</div>
+    <div id="govItems"></div>
+    <div class="eyebrow" style="margin-top:26px">Financial milestones — deliverable acceptance &amp; payment release</div>
+    <div class="grid kpis" id="finKpis"></div>
+    <div id="finItems" style="margin-top:14px"></div>
+  </div>
+
+  <!-- MANAGE (editable) -->
+  <div class="wrap section" id="sec-manage" style="display:none">
+    <div class="eyebrow">Manage — create, edit, delete</div>
+    <div class="rowf" style="margin-bottom:12px">
+      <button class="btn ghost mgsub" data-s="portfolios" onclick="mgSub('portfolios')">Portfolios</button>
+      <button class="btn ghost mgsub" data-s="programs" onclick="mgSub('programs')">Programs</button>
+      <button class="btn ghost mgsub" data-s="projects" style="border-color:var(--cyan)" onclick="mgSub('projects')">Projects</button>
+      <button class="btn ghost mgsub" data-s="risks" onclick="mgSub('risks')">Risks</button>
+      <button class="btn ghost mgsub" data-s="tasks" onclick="mgSub('tasks')">Tasks</button>
+      <button class="btn ghost mgsub" data-s="benefits" onclick="mgSub('benefits')">Benefits</button>
+      <button class="btn ghost mgsub" data-s="milestones" onclick="mgSub('milestones')">Milestones</button>
+      <button class="btn ghost mgsub" data-s="resources" onclick="mgSub('resources')">Resources</button>
+      <button class="btn ghost mgsub" data-s="vendors" onclick="mgSub('vendors')">Vendors</button>
+      <button class="btn ghost mgsub" data-s="contracts" onclick="mgSub('contracts')">Contracts</button>
+      <button class="btn ghost mgsub" data-s="orders" onclick="mgSub('orders')">Purchase Orders</button>
+      <button class="btn ghost mgsub" data-s="finance" onclick="mgSub('finance')">Finance</button>
+      <button class="btn ghost mgsub" data-s="initiatives" onclick="mgSub('initiatives')">Initiatives</button>
+      <button class="btn ghost mgsub" data-s="goals" onclick="mgSub('goals')">Goals</button>
+      <button class="btn ghost mgsub" data-s="kpis" onclick="mgSub('kpis')">KPIs</button>
+    </div>
+    <div id="mgp-portfolios" style="display:none">
+      <div class="card" id="mgPfFormCard" style="display:none;margin-bottom:14px"></div>
+      <div class="card"><h3>Portfolios <button class="btn ghost" style="margin-left:6px;padding:4px 10px;font-size:12px" onclick="mgPfForm(null)">New portfolio</button></h3>
+        <table><thead><tr><th>Name</th><th>Code</th><th>Priority</th><th>Status</th><th>Budget</th><th></th></tr></thead><tbody id="mgPfRows"></tbody></table></div>
+    </div>
+    <div id="mgp-programs" style="display:none">
+      <div class="rowf" style="margin-bottom:10px"><span class="muted">Portfolio:</span><select id="mgProgPort" onchange="loadPrograms(this.value)" style="padding:7px 10px;border:1px solid var(--line);border-radius:8px;max-width:300px"></select></div>
+      <div class="card" id="mgProgFormCard" style="display:none;margin-bottom:14px"></div>
+      <div class="card"><h3>Programs <button class="btn ghost" style="margin-left:6px;padding:4px 10px;font-size:12px" onclick="mgProgForm(null)">New program</button></h3>
+        <table><thead><tr><th>Name</th><th>Code</th><th>Priority</th><th>Status</th><th></th></tr></thead><tbody id="mgProgRows"></tbody></table></div>
+    </div>
+    <div id="mgp-projects">
+      <div class="rowf" style="margin-bottom:10px"><span class="muted">Portfolio:</span><select id="mgPortSel" onchange="loadManage()" style="padding:7px 10px;border:1px solid var(--line);border-radius:8px;max-width:280px"><option value="">All portfolios</option></select></div>
+      <div class="card" id="mgFormCard" style="display:none;margin-bottom:14px"></div>
+      <div class="card"><h3>Projects <button class="btn ghost" style="margin-left:6px;padding:4px 10px;font-size:12px" onclick="mgShowForm(null)">New project</button></h3>
+        <table><thead><tr><th>Name</th><th>Code</th><th>Status</th><th>Budget</th><th>Progress</th><th></th></tr></thead><tbody id="mgRows"></tbody></table></div>
+    </div>
+    <div id="mgp-risks" style="display:none">
+      <div class="rowf" style="margin-bottom:10px"><span class="muted">Project:</span><select id="mgRiskProj" onchange="loadRisks(this.value)" style="padding:7px 10px;border:1px solid var(--line);border-radius:8px;max-width:300px"></select></div>
+      <div class="card" id="mgRiskFormCard" style="display:none;margin-bottom:14px"></div>
+      <div class="card"><h3>Risks <button class="btn ghost" style="margin-left:6px;padding:4px 10px;font-size:12px" onclick="mgRiskForm(null)">New risk</button></h3>
+        <table><thead><tr><th>Title</th><th>P×I</th><th>Score</th><th>Status</th><th></th></tr></thead><tbody id="mgRiskRows"></tbody></table></div>
+    </div>
+    <div id="mgp-tasks" style="display:none">
+      <div class="rowf" style="margin-bottom:10px"><span class="muted">Project:</span><select id="mgTaskProj" onchange="loadTasks(this.value)" style="padding:7px 10px;border:1px solid var(--line);border-radius:8px;max-width:300px"></select></div>
+      <div class="card" id="mgTaskFormCard" style="display:none;margin-bottom:14px"></div>
+      <div class="card"><h3>Tasks <button class="btn ghost" style="margin-left:6px;padding:4px 10px;font-size:12px" onclick="mgTaskForm(null)">New task</button></h3>
+        <table><thead><tr><th>Title</th><th>Priority</th><th>Status</th><th>Est. hrs</th><th></th></tr></thead><tbody id="mgTaskRows"></tbody></table></div>
+    </div>
+    <div id="mgp-benefits" style="display:none">
+      <div class="rowf" style="margin-bottom:10px"><span class="muted">Project:</span><select id="mgBenProj" onchange="loadBenefits(this.value)" style="padding:7px 10px;border:1px solid var(--line);border-radius:8px;max-width:300px"></select></div>
+      <div class="card" id="mgBenFormCard" style="display:none;margin-bottom:14px"></div>
+      <div class="card"><h3>Benefits <button class="btn ghost" style="margin-left:6px;padding:4px 10px;font-size:12px" onclick="mgBenForm(null)">New benefit</button></h3>
+        <table><thead><tr><th>Title</th><th>Category</th><th>Target</th><th>Realized</th><th>Status</th><th></th></tr></thead><tbody id="mgBenRows"></tbody></table></div>
+    </div>
+    <div id="mgp-milestones" style="display:none">
+      <div class="rowf" style="margin-bottom:10px"><span class="muted">Project:</span><select id="mgMsProj" onchange="loadMilestones(this.value)" style="padding:7px 10px;border:1px solid var(--line);border-radius:8px;max-width:300px"></select></div>
+      <div class="card" id="mgMsFormCard" style="display:none;margin-bottom:14px"></div>
+      <div class="card"><h3>Milestones <button class="btn ghost" style="margin-left:6px;padding:4px 10px;font-size:12px" onclick="mgMsForm(null)">New milestone</button></h3>
+        <table><thead><tr><th>Name</th><th>Type</th><th>Target date</th><th>Status</th><th></th></tr></thead><tbody id="mgMsRows"></tbody></table></div>
+    </div>
+    <div id="mgp-resources" style="display:none">
+      <div class="card" id="mgResFormCard" style="display:none;margin-bottom:14px"></div>
+      <div class="card"><h3>Resources <button class="btn ghost" style="margin-left:6px;padding:4px 10px;font-size:12px" onclick="mgResForm(null)">New resource</button></h3>
+        <table><thead><tr><th>Name</th><th>Type</th><th>Capacity (h/wk)</th><th>Cost rate</th><th></th></tr></thead><tbody id="mgResRows"></tbody></table></div>
+    </div>
+    <div id="mgp-vendors" style="display:none">
+      <div class="card" id="mgVenFormCard" style="display:none;margin-bottom:14px"></div>
+      <div class="card"><h3>Vendors <button class="btn ghost" style="margin-left:6px;padding:4px 10px;font-size:12px" onclick="mgVenForm(null)">New vendor</button></h3>
+        <table><thead><tr><th>Name</th><th>Code</th><th>Category</th><th>Status</th><th></th></tr></thead><tbody id="mgVenRows"></tbody></table></div>
+    </div>
+    <div id="mgp-contracts" style="display:none">
+      <div class="rowf" style="margin-bottom:10px"><span class="muted">Vendor:</span><select id="mgConVen" onchange="loadContracts(this.value)" style="padding:7px 10px;border:1px solid var(--line);border-radius:8px;max-width:300px"></select></div>
+      <div class="card" id="mgConFormCard" style="display:none;margin-bottom:14px"></div>
+      <div class="card"><h3>Contracts <button class="btn ghost" style="margin-left:6px;padding:4px 10px;font-size:12px" onclick="mgConForm(null)">New contract</button></h3>
+        <table><thead><tr><th>Title</th><th>Type</th><th>Value</th><th>Status</th><th></th></tr></thead><tbody id="mgConRows"></tbody></table></div>
+    </div>
+    <div id="mgp-orders" style="display:none">
+      <div class="rowf" style="margin-bottom:10px"><span class="muted">Vendor:</span><select id="mgPoVen" onchange="loadOrders(this.value)" style="padding:7px 10px;border:1px solid var(--line);border-radius:8px;max-width:300px"></select></div>
+      <div class="card" id="mgPoFormCard" style="display:none;margin-bottom:14px"></div>
+      <div class="card"><h3>Purchase orders <button class="btn ghost" style="margin-left:6px;padding:4px 10px;font-size:12px" onclick="mgPoForm(null)">New PO</button></h3>
+        <table><thead><tr><th>Reference</th><th>Committed</th><th>Invoiced</th><th>Status</th><th></th></tr></thead><tbody id="mgPoRows"></tbody></table></div>
+    </div>
+    <div id="mgp-finance" style="display:none">
+      <div class="rowf" style="margin-bottom:10px"><span class="muted">Project:</span><select id="mgFinProj" onchange="loadFinance(this.value)" style="padding:7px 10px;border:1px solid var(--line);border-radius:8px;max-width:300px"></select></div>
+      <div class="card" id="mgFinFormCard" style="display:none;margin-bottom:14px"></div>
+      <div class="card"><h3>Financial entries <button class="btn ghost" style="margin-left:6px;padding:4px 10px;font-size:12px" onclick="mgFinForm(null)">New entry</button></h3>
+        <table><thead><tr><th>Type</th><th>Category</th><th>Amount</th><th>Date</th><th></th></tr></thead><tbody id="mgFinRows"></tbody></table></div>
+    </div>
+    <div id="mgp-initiatives" style="display:none">
+      <div class="card" id="mgInitFormCard" style="display:none;margin-bottom:14px"></div>
+      <div class="card"><h3>Strategic initiatives <button class="btn ghost" style="margin-left:6px;padding:4px 10px;font-size:12px" onclick="mgInitForm(null)">New initiative</button></h3>
+        <table><thead><tr><th>Name</th><th>Priority</th><th>Status</th><th></th></tr></thead><tbody id="mgInitRows"></tbody></table></div>
+    </div>
+    <div id="mgp-goals" style="display:none">
+      <div class="rowf" style="margin-bottom:10px"><span class="muted">Initiative:</span><select id="mgGoalInit" onchange="loadGoals(this.value)" style="padding:7px 10px;border:1px solid var(--line);border-radius:8px;max-width:300px"></select></div>
+      <div class="card" id="mgGoalFormCard" style="display:none;margin-bottom:14px"></div>
+      <div class="card"><h3>Business goals <button class="btn ghost" style="margin-left:6px;padding:4px 10px;font-size:12px" onclick="mgGoalForm(null)">New goal</button></h3>
+        <table><thead><tr><th>Title</th><th>Category</th><th>Status</th><th></th></tr></thead><tbody id="mgGoalRows"></tbody></table></div>
+    </div>
+    <div id="mgp-kpis" style="display:none">
+      <div class="rowf" style="margin-bottom:10px"><span class="muted">Initiative:</span><select id="mgKpiInit" onchange="mgKpiInitChange(this.value)" style="padding:7px 10px;border:1px solid var(--line);border-radius:8px;max-width:240px"></select><span class="muted">Goal:</span><select id="mgKpiGoal" onchange="loadKpis(this.value)" style="padding:7px 10px;border:1px solid var(--line);border-radius:8px;max-width:240px"></select></div>
+      <div class="card" id="mgKpiFormCard" style="display:none;margin-bottom:14px"></div>
+      <div class="card"><h3>Goal KPIs <button class="btn ghost" style="margin-left:6px;padding:4px 10px;font-size:12px" onclick="mgKpiForm(null)">New KPI</button></h3>
+        <table><thead><tr><th>Name</th><th>Current</th><th>Target</th><th>Direction</th><th></th></tr></thead><tbody id="mgKpiRows"></tbody></table></div>
+    </div>
+  </div>
+</div>
+
+<!-- COPILOT -->
+<button class="cp-fab" id="cpFab" onclick="toggleCopilot()">Ask ETIP Copilot</button>
+<div class="cp-panel" id="cpPanel">
+  <div class="cp-head"><span class="t">ETIP Copilot</span><span class="s">grounded in your live data</span><span class="x" onclick="toggleCopilot()">×</span></div>
+  <div class="cp-body" id="cpBody">
+    <div class="cp-msg a"><div class="cp-bub">Hi — ask me about your portfolio. Try a suggestion below, or type a question like “How is ATLAS doing?”.</div></div>
+  </div>
+  <div class="cp-sugg">
+    <span class="cp-chip" onclick="cpSuggest('How is ATLAS doing?')">How is ATLAS doing?</span>
+    <span class="cp-chip" onclick="cpSuggest('Open risks for CIRRUS')">Risks for CIRRUS</span>
+    <span class="cp-chip" onclick="cpSuggest('ATLAS budget')">ATLAS budget</span>
+    <span class="cp-chip" onclick="cpSuggest('Overview of the DTX portfolio')">DTX portfolio overview</span>
+  </div>
+  <div class="cp-input"><input id="cpInput" placeholder="Ask a question…" onkeydown="if(event.key==='Enter')cpSend()"><button onclick="cpSend()">Send</button></div>
+</div>
+
+<div class="toasts" id="toasts"></div>
+<div class="fmodal-bg" id="fmodalBg"><div class="fmodal" id="fmodalBox"></div></div>
+
+<!-- DRILL-DOWN MODAL -->
+<div class="modal" id="modal"><div class="sheet" id="sheet"></div></div>
+
+<script>
+const ORIGIN = location.origin.startsWith("http") ? location.origin : "http://localhost:8000";
+const API = ORIGIN + "/api/v1";
+let TOKEN=null, SCOPE="", PSCOPE="", PERMS=new Set(), healthChart=null, benChart=null, procChart=null, loaded={heatmap:false,forecast:false,procurement:false,integrations:false,apikeys:false,aidelivery:false,governance:false,manage:false};
+const can=p=>PERMS.has(p);
+function toast(msg,type){const c=document.getElementById("toasts");if(!c)return;const t=document.createElement("div");t.className="toast "+(type==="error"?"err":type==="ok"?"ok":"");t.textContent=msg;c.appendChild(t);setTimeout(()=>{t.style.opacity="0";setTimeout(()=>t.remove(),200);},2800);}
+function closeFormModal(){document.getElementById("fmodalBg").style.display="none";document.getElementById("fmodalBox").innerHTML="";}
+function openFormModal(titleText,fieldsHtml,onOk,okLabel){
+  const box=document.getElementById("fmodalBox");
+  box.innerHTML=`<h3>${titleText}</h3>${fieldsHtml}<div class="rowf" style="margin-top:4px"><button class="btn" id="fmodalOk">${okLabel||"Create"}</button><button class="btn ghost" onclick="closeFormModal()">Cancel</button></div>`;
+  document.getElementById("fmodalBg").style.display="flex";
+  document.getElementById("fmodalOk").onclick=onOk;
+}
+function revealSecret(titleText,secret){
+  const box=document.getElementById("fmodalBox");
+  box.innerHTML=`<h3>${titleText}</h3><p class="muted" style="margin:0 0 8px;font-size:13px">Copy this now — it is shown only once.</p><input class="keybox" id="fmodalSecret" readonly value="${String(secret).replace(/"/g,"&quot;")}"><div class="rowf"><button class="btn" onclick="fmodalCopy()">Copy</button><button class="btn ghost" onclick="closeFormModal()">Done</button></div>`;
+  document.getElementById("fmodalBg").style.display="flex";
+  const inp=document.getElementById("fmodalSecret");inp.focus();inp.select();
+}
+function fmodalCopy(){const inp=document.getElementById("fmodalSecret");inp.select();try{navigator.clipboard.writeText(inp.value);toast("Copied","ok");}catch(_){document.execCommand("copy");toast("Copied","ok");}}
+function req(id){const el=document.getElementById(id);const ok=el&&el.value.trim();if(el)el.classList.toggle("invalid",!ok);return !!ok;}
+function bar(pct,cls){const v=Math.max(0,Math.min(100,Math.round(Number(pct)||0)));return `<div class="barwrap"><div class="bar ${cls||''}"><span style="width:${v}%"></span></div><span class="pct">${v}%</span></div>`;}
+// Inline-SVG sparkline. `pts` is an ordered list of numbers (oldest→newest);
+// draws a normalised trend line with a soft area fill and an end-point dot.
+// `color` is a CSS colour (defaults to the accent). Returns "" for <2 points.
+function spark(pts,color){
+  const a=(pts||[]).map(Number).filter(v=>Number.isFinite(v));
+  if(a.length<2)return "";
+  const W=100,H=22,P=2,c=color||"var(--accent)";
+  const min=Math.min(...a),max=Math.max(...a),span=(max-min)||1;
+  const xs=i=>P+(i*(W-2*P))/(a.length-1);
+  const ys=v=>H-P-((v-min)/span)*(H-2*P);
+  const pt=a.map((v,i)=>`${xs(i).toFixed(1)},${ys(v).toFixed(1)}`);
+  const line="M"+pt.join(" L");
+  const area=line+` L${xs(a.length-1).toFixed(1)},${H} L${xs(0).toFixed(1)},${H} Z`;
+  const ex=xs(a.length-1).toFixed(1),ey=ys(a[a.length-1]).toFixed(1);
+  return `<svg class="spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-hidden="true">`
+    +`<path class="fill" d="${area}" fill="${c}"/><path d="${line}" stroke="${c}"/>`
+    +`<circle cx="${ex}" cy="${ey}" r="2.2" fill="${c}"/></svg>`;
+}
+let SPARK={headline:{},projects:{}};  // last fetched trend bundle
+
+const h=v=>(v===null||v===undefined)?"—":v;
+// Format a numeric KPI value: trim trailing zeros, keep it readable.
+const fmtNum=v=>{if(v===null||v===undefined||v==="")return "—";const n=Number(v);if(!isFinite(n))return String(v);return n.toLocaleString(undefined,{maximumFractionDigits:2});};
+const money=v=>(v===null||v===undefined)?"—":"$"+Number(v).toLocaleString(undefined,{maximumFractionDigits:0});
+const ragClass=r=>"chip rag-"+(r||"unknown");
+async function api(p){const r=await fetch(API+p,{headers:{Authorization:"Bearer "+TOKEN}});if(!r.ok)throw new Error(p+" → "+r.status);return r.json();}
+
+// Scope-aware endpoint paths (portfolio when SCOPE is set, else transformation-wide).
+const P={
+  perf:()=>SCOPE?`/intelligence/performance/portfolios/${SCOPE}`:`/intelligence/performance/transformation`,
+  ben:()=>SCOPE?`/intelligence/variance/benefits/portfolios/${SCOPE}`:`/intelligence/variance/benefits/transformation`,
+  rec:()=>SCOPE?`/intelligence/recommendations/portfolios/${SCOPE}`:`/intelligence/recommendations/transformation`,
+  heat:()=>SCOPE?`/intelligence/heatmap/portfolios/${SCOPE}`:`/intelligence/heatmap/transformation`,
+  kpi:()=>SCOPE?`/intelligence/variance/kpis/portfolios/${SCOPE}`:`/intelligence/variance/kpis/transformation`,
+  fc:()=>SCOPE?`/intelligence/forecast/portfolios/${SCOPE}`:`/intelligence/forecast/transformation`,
+};
+const kpiCardHtml=x=>`<div class="card kpi"><div class="lab">${x.lab}</div>${x.html?`<div class="val" style="margin-top:8px">${x.html}</div>`:`<div class="val ${String(x.val).length>6?'sm':''}">${x.val}</div>`}${x.sub?`<div class="muted" style="margin-top:4px">${x.sub}</div>`:""}${x.trend?`<div class="trend"><div class="cap"><span>Trend</span>${x.trendNote?`<span class="dl">${x.trendNote}</span>`:""}</div>${x.trend}</div>`:""}</div>`;
+// Choose a status-tinted colour for a metric's trend from its own direction.
+function trendColor(pts){
+  const a=(pts||[]).map(Number).filter(Number.isFinite);
+  if(a.length<2)return "var(--accent)";
+  const d=a[a.length-1]-a[0];
+  if(Math.abs(d)<1e-9)return "var(--grey)";
+  return d>0?"var(--green)":"var(--red)";
+}
+// Signed change from first→last point, formatted for the tile caption.
+function trendDelta(pts,unit){
+  const a=(pts||[]).map(Number).filter(Number.isFinite);
+  if(a.length<2)return "";
+  const d=a[a.length-1]-a[0],s=d>=0?"+":"−",m=Math.abs(d);
+  return `${s}${m.toLocaleString(undefined,{maximumFractionDigits:2})}${unit||""}`;
+}
+
+async function downloadBoardPack(fmt){
+  fmt=fmt||"xlsx";
+  try{
+    const url=API+`/exports/board-pack.${fmt}`+(SCOPE?`?portfolio_id=${SCOPE}`:"");
+    const r=await fetch(url,{headers:{Authorization:"Bearer "+TOKEN}});
+    if(!r.ok){toast("Export failed ("+r.status+")","error");return;}
+    const blob=await r.blob(),a=document.createElement("a");
+    const cd=r.headers.get("content-disposition")||"";
+    const name=(cd.split("filename=")[1]||"").replace(/"/g,"")||("etip-board-pack."+fmt);
+    a.href=URL.createObjectURL(blob);a.download=name;
+    document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(a.href);
+  }catch(e){toast("Export failed: "+e.message,"error");}
+}
+
+async function loadMe(){
+  try{
+    const [me,perms]=await Promise.all([api("/auth/me"),api("/auth/me/permissions")]);
+    PERMS=new Set(perms||[]);
+    const role=(me.roles&&me.roles[0]&&me.roles[0].name)||"Member";
+    document.getElementById("userLabel").textContent=`${me.full_name} · ${role}  `;
+    // Capability-driven visibility (the API also enforces these server-side).
+    document.getElementById("btnPack").style.display=can("intelligence:read")?"":"none";
+    document.getElementById("btnPdf").style.display=can("intelligence:read")?"":"none";
+    document.getElementById("cpFab").style.display=can("copilot:use")?"block":"none";
+    const procTab=document.querySelector('.tab[data-t="procurement"]');
+    if(procTab)procTab.style.display=can("vendor:read")?"":"none";
+    const intTab=document.querySelector('.tab[data-t="integrations"]');
+    if(intTab)intTab.style.display=can("integration:read")?"":"none";
+    const akTab=document.querySelector('.tab[data-t="apikeys"]');
+    if(akTab)akTab.style.display=can("apikey:manage")?"":"none";
+    const adTab=document.querySelector('.tab[data-t="aidelivery"]');
+    if(adTab)adTab.style.display=can("build:read")?"":"none";
+    const govTab=document.querySelector('.tab[data-t="governance"]');
+    if(govTab)govTab.style.display=can("workflow:read")?"":"none";
+    const mgTab=document.querySelector('.tab[data-t="manage"]');
+    if(mgTab)mgTab.style.display=can("project:create")?"":"none";
+  }catch(e){/* keep defaults */}
+}
+async function populateScopes(){
+  try{
+    const sel=document.getElementById("scopeSel");
+    const [pf,pj]=await Promise.all([
+      api("/portfolios?limit=100"),
+      api("/projects?limit=200").catch(()=>({items:[]})),
+    ]);
+    let html=`<option value="">All portfolios</option>`;
+    if((pf.items||[]).length)
+      html+=`<optgroup label="Portfolios">`+(pf.items||[]).map(p=>`<option value="${p.id}">${p.name}${p.code?` (${p.code})`:""}</option>`).join("")+`</optgroup>`;
+    if((pj.items||[]).length)
+      html+=`<optgroup label="Projects">`+(pj.items||[]).map(p=>`<option value="pj:${p.id}">${p.code} · ${p.name}</option>`).join("")+`</optgroup>`;
+    sel.innerHTML=html;
+  }catch(e){/* no scopes yet */}
+}
+function onScope(){
+  const sel=document.getElementById("scopeSel");
+  const val=sel.value;
+  const label=document.getElementById("scopeLabel");
+  if(val.startsWith("pj:")){
+    PSCOPE=val.slice(3);SCOPE="";
+    label.textContent="Project: "+sel.options[sel.selectedIndex].text;
+  }else{
+    SCOPE=val;PSCOPE="";
+    label.textContent=SCOPE?("Portfolio: "+sel.options[sel.selectedIndex].text):"Executive Intelligence";
+  }
+  loaded={heatmap:false,forecast:false,procurement:false,integrations:false,apikeys:false,aidelivery:false,governance:false,manage:false};
+  const t=document.querySelector(".tab.active").dataset.t;
+  if(t==="overview")loadOverview();else if(t==="heatmap")loadHeatmap();else if(t==="forecast")loadForecast();else if(t==="procurement")loadProcurement();else if(t==="integrations")loadIntegrations();else if(t==="apikeys")loadApiKeys();else if(t==="aidelivery")loadAiDelivery();else if(t==="governance")loadGovernance();else loadManage();
+}
+
+async function login(){
+  const err=document.getElementById("loginErr");err.textContent="";
+  try{
+    const r=await fetch(API+"/auth/login",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({organization_slug:slug.value.trim(),email:email.value.trim(),password:pass.value})});
+    if(!r.ok){err.textContent="Login failed ("+r.status+"). Is the server running and seeded?";return;}
+    TOKEN=(await r.json()).access_token;
+    login_.style.display="none";app.style.display="block";
+    await loadMe();
+    await populateScopes();
+    await loadOverview();
+  }catch(e){err.textContent="Cannot reach the API at "+API+". Start the server first.";}
+}
+const login_=document.getElementById("login");
+function logout(){TOKEN=null;SCOPE="";PSCOPE="";PERMS=new Set();document.getElementById("userLabel").textContent="";loaded={heatmap:false,forecast:false,procurement:false,integrations:false,apikeys:false,aidelivery:false,governance:false,manage:false};app.style.display="none";login_.style.display="block";document.getElementById("cpFab").style.display="none";document.getElementById("cpPanel").style.display="none";}
+function refresh(){loaded={heatmap:false,forecast:false,procurement:false,integrations:false,apikeys:false,aidelivery:false,governance:false,manage:false};const t=document.querySelector(".tab.active").dataset.t;
+  if(t==="overview")loadOverview();else if(t==="heatmap")loadHeatmap();else if(t==="forecast")loadForecast();else if(t==="procurement")loadProcurement();else if(t==="integrations")loadIntegrations();else if(t==="apikeys")loadApiKeys();else if(t==="aidelivery")loadAiDelivery();else if(t==="governance")loadGovernance();else loadManage();}
+
+function switchTab(t){
+  document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x.dataset.t===t));
+  ["overview","heatmap","forecast","procurement","integrations","apikeys","aidelivery","governance","manage"].forEach(s=>document.getElementById("sec-"+s).style.display=(s===t?"block":"none"));
+  if(t==="heatmap"&&!loaded.heatmap)loadHeatmap();
+  if(t==="forecast"&&!loaded.forecast)loadForecast();
+  if(t==="procurement"&&!loaded.procurement)loadProcurement();
+  if(t==="integrations"&&!loaded.integrations)loadIntegrations();
+  if(t==="apikeys"&&!loaded.apikeys)loadApiKeys();
+  if(t==="aidelivery"&&!loaded.aidelivery)loadAiDelivery();
+  if(t==="governance"&&!loaded.governance)loadGovernance();
+  if(t==="manage"&&!loaded.manage)loadManage();
+}
+
+/* ---------- OVERVIEW ---------- */
+async function loadOverview(){
+  if(PSCOPE){return loadProjectOverview(PSCOPE);}
+  document.getElementById("scorecardWrap").style.display="none";
+  document.getElementById("ovEyebrow").textContent=SCOPE?"Portfolio health":"Transformation health";
+  try{
+    SPARK=await api("/intelligence/metrics/sparklines?limit=12").catch(()=>({headline:{},projects:{}}));
+    if(SCOPE){
+      const [perf,ben,rec,kpi]=await Promise.all([api(P.perf()),api(P.ben()),api(P.rec()),api(P.kpi())]);
+      renderKpisPortfolio(perf);renderCostKpis(perf.evm);
+      document.getElementById("narrative").textContent=`Executive summary scoped to ${perf.scope_label} — ${(perf.health?.rag||'unknown').replace('_',' ')} health across ${perf.project_count} project(s).`;
+      renderProjects(perf);renderHealthChart(perf);renderBenefits(ben);renderKpiList(kpi);renderRecs(rec.recommendations);
+    }else{
+      const [t,perf,rec,ben,kpi]=await Promise.all([
+        api("/intelligence/transformation"),api(P.perf()),api(P.rec()),api(P.ben()),api(P.kpi())]);
+      renderKpis(t);renderCostKpis(perf.evm);document.getElementById("narrative").textContent=t.narrative||"";
+      renderProjects(perf);renderHealthChart(perf);renderBenefits(ben);renderKpiList(kpi);renderRecs(rec.recommendations);
+    }
+  }catch(e){toast("Failed to load: "+e.message,"error");}
+}
+// Single-project overview: the whole Overview panel focused on one project,
+// including its own KPI register (managed in the project workspace modal).
+async function loadProjectOverview(pid){
+  try{
+    SPARK=await api("/intelligence/metrics/sparklines?limit=12").catch(()=>({headline:{},projects:{}}));
+    const [perf,ben,rec,kpis,kpiSum]=await Promise.all([
+      api("/intelligence/performance/projects/"+pid),
+      api("/intelligence/variance/benefits/projects/"+pid).catch(()=>({})),
+      api("/intelligence/recommendations/projects/"+pid).catch(()=>({recommendations:[]})),
+      api("/projects/"+pid+"/kpis").catch(()=>({items:[]})),
+      api("/projects/"+pid+"/kpi-summary").catch(()=>({total:0,on_target:0,average_attainment:null})),
+    ]);
+    const e=perf.evm||{},rag=perf.health?.rag||"unknown";
+    document.getElementById("kpis").innerHTML=[
+      {lab:"Project health",html:`<span class="${ragClass(rag)}">${rag.replace('_',' ').toUpperCase()}</span>`},
+      {lab:"Schedule (SPI)",val:h(e.spi)},
+      {lab:"Cost (CPI)",val:h(e.cpi)},
+      {lab:"Forecast (EAC)",val:money(e.eac),sub:"BAC "+money(e.bac)},
+      {lab:"KPI attainment",val:kpiSum.average_attainment==null?"—":kpiSum.average_attainment+"%",sub:`${kpiSum.on_target}/${kpiSum.total} on target`},
+    ].map(kpiCardHtml).join("");
+    document.getElementById("narrative").innerHTML=
+      `<b>${perf.code} — ${perf.name}</b>: ${rag.replace('_',' ')} health. ${(perf.health?.drivers||[]).join(" · ")||""} `
+      +`<a href="#" onclick="openProject('${pid}','${perf.code}');return false;" style="color:var(--accent);font-weight:600">Open workspace to manage KPIs →</a>`;
+    document.getElementById("ovEyebrow").textContent="Project health";
+    renderCostKpis(e);
+    renderScorecard(kpis.items||[],pid,kpiSum);
+    const one={breakdown:[{project_id:pid,code:perf.code,rag:rag,spi:e.spi,cpi:e.cpi,
+      bac:e.bac,ac:e.ac,eac:e.eac,etc:e.etc}]};
+    renderProjects(one);renderHealthChart(one);renderBenefits(ben||{});
+    renderProjectKpiSummary(kpiSum);
+    renderRecs((rec&&rec.recommendations)||[]);
+  }catch(e){toast("Failed to load project: "+e.message,"error");}
+}
+// The project scorecard: one card per KPI (stat tile + attainment meter + status).
+function renderScorecard(items,pid,sum){
+  const wrap=document.getElementById("scorecardWrap");
+  wrap.style.display="block";
+  const btn=document.getElementById("scOpenWs");
+  btn.style.display=can("projectkpi:manage")?"":"none";
+  btn.onclick=()=>openProject(pid,"");
+  document.getElementById("scorecard").innerHTML=(items.map(scorecardCard).join(""))
+    || `<div class="card" style="grid-column:1/-1"><div class="muted">No KPIs defined for this project yet.${can("projectkpi:manage")?" Use “Manage KPIs” to add its scorecard.":""}</div></div>`;
+}
+function scorecardCard(k){
+  const cls=k.on_target?"ok":"off";
+  const pct=k.attainment_percent==null?"—":k.attainment_percent+"%";
+  const status=k.on_target
+    ? `<span class="chip rag-green">On track</span>`
+    : `<span class="chip rag-amber">Off track</span>`;
+  return `<div class="sc ${cls}">
+    <div><div class="sc-name">${k.name}</div><div class="sc-dir">${k.direction==='increase'?'↑ higher is better':'↓ lower is better'}</div></div>
+    <div class="sc-val"><b>${fmtNum(k.current_value)}</b><span class="u">${k.unit||''}</span></div>
+    <div class="sc-tgt">Target ${fmtNum(k.target_value)}${k.unit?(' '+k.unit):''} · baseline ${fmtNum(k.baseline_value)}</div>
+    ${bar(k.attainment_percent,k.on_target?'g':'a')}
+    <div class="sc-foot">${status}<span class="muted" style="font-size:11px">${pct} attained</span></div>
+  </div>`;
+}
+function renderProjectKpiSummary(sum){
+  const on=sum.on_target||0,total=sum.total||0,off=sum.off_target||0;
+  const avg=sum.average_attainment==null?"—":sum.average_attainment+"%";
+  document.getElementById("kpiList").innerHTML=
+    `<div class="rowf" style="margin-bottom:12px"><span class="chip rag-green">${on} on target</span><span class="chip rag-amber">${off} off target</span><span class="muted">avg ${avg}</span></div>`
+    +`<div class="muted" style="font-size:13px">${total} KPI${total===1?"":"s"} on this project's scorecard (above). ${can("projectkpi:manage")?"Use “Manage KPIs” to add, update or remove them.":""}</div>`;
+}
+// Build the optional {trend, trendNote} fields for a KPI tile from a headline series.
+function kpiTrend(metric,unit){
+  const pts=(SPARK.headline||{})[metric];
+  if(!pts||pts.length<2)return {};
+  return {trend:spark(pts,trendColor(pts)),trendNote:trendDelta(pts,unit)};
+}
+function renderKpisPortfolio(perf){
+  const rag=perf.health?.rag||"unknown",e=perf.evm;
+  const c=[
+    {lab:"Portfolio health",html:`<span class="${ragClass(rag)}">${rag.replace("_"," ").toUpperCase()}</span>`},
+    {lab:"Projects",val:perf.project_count},
+    {lab:"Schedule (SPI)",val:h(e.spi),...kpiTrend("spi")},
+    {lab:"Cost (CPI)",val:h(e.cpi),...kpiTrend("cpi")},
+    {lab:"Forecast vs budget",val:money(e.eac),sub:"BAC "+money(e.bac)}];
+  kpis.innerHTML=c.map(kpiCardHtml).join("");
+}
+function renderKpis(t){
+  const rag=t.health?.rag||"unknown";
+  const c=[
+    {lab:"Overall health",html:`<span class="${ragClass(rag)}">${rag.replace("_"," ").toUpperCase()}</span>`},
+    {lab:"Success outlook",val:t.success_score+"/100",sub:t.success_label,...kpiTrend("success_score")},
+    {lab:"Schedule (SPI)",val:h(t.spi),...kpiTrend("spi")},
+    {lab:"Cost (CPI)",val:h(t.cpi),...kpiTrend("cpi")},
+    {lab:"Forecast vs budget",val:money(t.forecast_cost),sub:"BAC "+money(t.bac)}];
+  kpis.innerHTML=c.map(kpiCardHtml).join("");
+}
+function renderProjects(perf){
+  const rt="text-align:right;font-variant-numeric:tabular-nums";
+  projRows.innerHTML=(perf.breakdown||[]).map(p=>{
+    const s=(SPARK.projects||{})[p.project_id];
+    const trend=s&&s.length>=2?spark(s,trendColor(s)):'<span class="muted">—</span>';
+    const over=(p.eac!=null&&p.bac!=null&&Number(p.eac)>Number(p.bac))?'color:var(--red);font-weight:600':'';
+    return `<tr class="clik" onclick="openProject('${p.project_id}','${p.code}')">
+    <td><b>${p.code}</b></td><td><span class="${ragClass(p.rag)}">${(p.rag||'unknown').replace('_',' ')}</span></td>
+    <td>${h(p.spi)}</td><td>${h(p.cpi)}</td>
+    <td style="${rt}">${money(p.bac)}</td><td style="${rt}">${money(p.ac)}</td>
+    <td style="${rt};${over}">${money(p.eac)}</td><td style="${rt}">${money(p.etc)}</td>
+    <td>${trend}</td></tr>`;
+  }).join("")||`<tr><td colspan="9" class="muted">No projects yet.</td></tr>`;
+}
+// Aggregate cost & budget tiles from an EVM block (rollup / project).
+function renderCostKpis(e){
+  if(!e){document.getElementById("costKpis").innerHTML="";return;}
+  const overrun=(e.vac!=null&&Number(e.vac)<0);
+  document.getElementById("costKpis").innerHTML=[
+    {lab:"Budget (BAC)",val:money(e.bac)},
+    {lab:"Cost to date (AC)",val:money(e.ac),sub:e.cpi!=null?("CPI "+e.cpi):""},
+    {lab:"Forecast (EAC)",val:money(e.eac)},
+    {lab:"To complete (ETC)",val:money(e.etc)},
+    {lab:"Variance (VAC)",html:`<span style="color:${overrun?'var(--red)':'var(--green)'}">${money(e.vac)}</span>`,sub:overrun?"over budget":"under budget"},
+  ].map(kpiCardHtml).join("");
+}
+function renderHealthChart(perf){
+  const c={green:0,amber:0,red:0,not_started:0,unknown:0};(perf.breakdown||[]).forEach(p=>c[p.rag]=(c[p.rag]||0)+1);
+  if(healthChart)healthChart.destroy();
+  healthChart=new Chart(healthChart_,{type:"doughnut",data:{labels:["Green","Amber","Red","Not started"],
+    datasets:[{data:[c.green,c.amber,c.red,c.not_started+c.unknown],backgroundColor:["#1EA97C","#E8A33D","#D64550","#94A3B8"],borderWidth:0}]},
+    options:{plugins:{legend:{position:"bottom"}},cutout:"62%"}});
+}
+const healthChart_=document.getElementById("healthChart");
+function renderBenefits(b){
+  if(benChart)benChart.destroy();
+  benChart=new Chart(benChart_,{type:"bar",data:{labels:["Target","Realized"],datasets:[{data:[Number(b.total_target),Number(b.total_realized)],backgroundColor:["#BFD4F2","#12B0A8"],borderRadius:6}]},options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}});
+  const pct=b.realization_percent==null?"—":b.realization_percent+"%";
+  benMeta.innerHTML=`${bar(b.realization_percent, b.favourable?'g':'a')}<div style="margin-top:10px">Realization <b>${pct}</b> · target ${money(b.total_target)} · realized ${money(b.total_realized)} · <span style="color:${b.favourable?'var(--green)':'var(--red)'}">variance ${money(b.variance)}</span></div>`;
+}
+const benChart_=document.getElementById("benChart");
+function renderKpiList(k){
+  const head=`<div class="rowf" style="margin-bottom:8px"><span class="chip rag-green">${k.kpis_on_target} on target</span><span class="chip rag-red">${k.kpis_off_target} off target</span><span class="muted">avg ${k.average_attainment==null?'—':k.average_attainment+'%'}</span></div>`;
+  kpiList.innerHTML=head+((k.items||[]).map(i=>`<div class="rec"><div class="rowf" style="justify-content:space-between;margin-bottom:8px"><span class="t">${i.name}</span><span class="muted">${h(i.current_value)} / ${h(i.target_value)} ${i.unit||''}</span></div>${bar(i.attainment_percent, i.on_target?'g':'a')}</div>`).join("")||`<div class="muted">No KPIs yet.</div>`);
+}
+function renderRecs(list){
+  recs.innerHTML=(list||[]).slice(0,6).map(r=>`<div class="rec"><div class="rowf"><span class="chip pri-${r.priority}">${(r.priority||'').toUpperCase()}</span><span class="t">${r.title}</span><span class="muted">(${r.category})</span></div><div class="r">${r.rationale||''} ${r.recommended_action?('— '+r.recommended_action):''}</div></div>`).join("")||`<div class="muted">Everything on track.</div>`;
+}
+
+/* ---------- DRILL-DOWN ---------- */
+async function openProject(id,code){
+  const sheet=document.getElementById("sheet");
+  sheet.innerHTML=`<span class="x" onclick="closeModal()">×</span><h2>${code}</h2><p class="muted">Loading…</p>`;
+  modal.style.display="flex";
+  MODAL_PID=id;
+  try{
+    const [perf,varr,fc,rec,ben,kpis]=await Promise.all([
+      api("/intelligence/performance/projects/"+id),api("/intelligence/variance/projects/"+id),
+      api("/intelligence/forecast/projects/"+id),api("/intelligence/recommendations/projects/"+id),
+      api("/intelligence/variance/benefits/projects/"+id),
+      api("/projects/"+id+"/kpis").catch(()=>({items:[]}))]);
+    const e=perf.evm,rag=perf.health?.rag||"unknown";
+    const vrow=(v)=>`<tr><td>${v.label}</td><td>${money(v.amount)}</td><td>${v.percent==null?'—':v.percent+'%'}</td><td><span class="${v.favourable?'chip rag-green':'chip rag-red'}">${v.favourable?'favourable':'adverse'}</span></td></tr>`;
+    sheet.innerHTML=`<span class="x" onclick="closeModal()">×</span>
+      <h2>${perf.code} — ${perf.name}</h2>
+      <div class="rowf"><span class="${ragClass(rag)}">${rag.replace('_',' ').toUpperCase()}</span>
+        <span class="muted">${(perf.health?.drivers||[]).join(" · ")}</span></div>
+      <div class="metrics">
+        <div class="metric"><div class="l">SPI</div><div class="v">${h(e.spi)}</div></div>
+        <div class="metric"><div class="l">CPI</div><div class="v">${h(e.cpi)}</div></div>
+        <div class="metric"><div class="l">Earned value</div><div class="v">${money(e.ev)}</div></div>
+        <div class="metric"><div class="l">Actual cost</div><div class="v">${money(e.ac)}</div></div>
+        <div class="metric"><div class="l">EAC</div><div class="v">${money(e.eac)}</div></div>
+        <div class="metric"><div class="l">VAC</div><div class="v">${money(e.vac)}</div></div>
+        <div class="metric"><div class="l">Forecast completion</div><div class="v">${h(fc.schedule.forecast_completion)}</div></div>
+        <div class="metric"><div class="l">Slippage</div><div class="v">${fc.schedule.slippage_days==null?'—':fc.schedule.slippage_days+'d'}</div></div>
+      </div>
+      <h3 style="color:var(--navy)">Variance</h3>
+      <table><thead><tr><th>Dimension</th><th>Amount</th><th>%</th><th></th></tr></thead>
+      <tbody>${vrow(varr.schedule)}${vrow(varr.cost)}${vrow(varr.budget)}${vrow(varr.forecast)}</tbody></table>
+      <h3 style="color:var(--navy);margin-top:16px">Benefits</h3>
+      <p class="muted">Realization ${ben.realization_percent==null?'—':ben.realization_percent+'%'} · target ${money(ben.total_target)} · realized ${money(ben.total_realized)} · variance ${money(ben.variance)}</p>
+      <h3 style="color:var(--navy);margin-top:16px;display:flex;align-items:center;gap:10px">KPIs
+        <span class="muted" style="font-weight:400;font-size:12px">manage this project's KPIs separately</span></h3>
+      <div id="pkList">${pkListHtml(kpis.items||[])}</div>
+      ${can("projectkpi:manage")?pkAddFormHtml():""}
+      <h3 style="color:var(--navy);margin-top:16px">Recommendations</h3>
+      ${(rec.recommendations||[]).slice(0,5).map(r=>`<div class="rec"><div class="rowf"><span class="chip pri-${r.priority}">${(r.priority||'').toUpperCase()}</span><span class="t">${r.title}</span></div><div class="r">${r.rationale||''}</div></div>`).join("")||'<p class="muted">None.</p>'}`;
+  }catch(e){sheet.innerHTML=`<span class="x" onclick="closeModal()">×</span><p class="muted">Failed to load project: ${e.message}</p>`;}
+}
+let MODAL_PID=null;
+function pkListHtml(items){
+  if(!items.length)return `<p class="muted">No KPIs yet.</p>`;
+  const manage=can("projectkpi:manage");
+  return `<table><thead><tr><th>KPI</th><th>Current</th><th>Target</th><th>Attainment</th>${manage?"<th></th>":""}</tr></thead><tbody>`+
+    items.map(k=>`<tr>
+      <td><b>${k.name}</b>${k.unit?` <span class="muted">(${k.unit})</span>`:""}<div class="muted" style="font-size:11px">${k.direction==='increase'?'↑ higher is better':'↓ lower is better'}</div></td>
+      <td style="font-variant-numeric:tabular-nums">${h(k.current_value)}</td>
+      <td style="font-variant-numeric:tabular-nums">${h(k.target_value)}</td>
+      <td style="min-width:150px">${bar(k.attainment_percent,k.on_target?'g':'a')}</td>
+      ${manage?`<td style="white-space:nowrap;text-align:right"><button class="btn ghost" style="padding:4px 9px;font-size:11px" onclick="pkUpdate('${k.id}','${(k.name||'').replace(/'/g,"")}','${k.current_value}')">Update</button> <button class="btn ghost" style="padding:4px 9px;font-size:11px;color:var(--red)" onclick="pkDelete('${k.id}')">✕</button></td>`:""}
+    </tr>`).join("")+`</tbody></table>`;
+}
+function pkAddFormHtml(){
+  return `<div class="card" style="margin-top:10px;padding:12px 14px;background:#F8FAFC">
+    <div class="rowf" style="gap:8px;flex-wrap:wrap;align-items:flex-end">
+      <div style="flex:2;min-width:160px"><label class="muted" style="font-size:11px">KPI name</label><input id="pkName" placeholder="e.g. Automation coverage" style="width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px"></div>
+      <div style="width:76px"><label class="muted" style="font-size:11px">Unit</label><input id="pkUnit" placeholder="%" style="width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px"></div>
+      <div style="width:120px"><label class="muted" style="font-size:11px">Direction</label><select id="pkDir" style="width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px"><option value="increase">Higher better</option><option value="decrease">Lower better</option></select></div>
+      <div style="width:90px"><label class="muted" style="font-size:11px">Baseline</label><input id="pkBase" type="number" value="0" style="width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px"></div>
+      <div style="width:90px"><label class="muted" style="font-size:11px">Current</label><input id="pkCur" type="number" value="0" style="width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px"></div>
+      <div style="width:90px"><label class="muted" style="font-size:11px">Target</label><input id="pkTgt" type="number" value="0" style="width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px"></div>
+      <button class="btn" style="padding:9px 14px" onclick="pkAdd()">Add KPI</button>
+    </div></div>`;
+}
+async function pkAdd(){
+  const body={name:document.getElementById("pkName").value.trim(),unit:document.getElementById("pkUnit").value.trim(),
+    direction:document.getElementById("pkDir").value,
+    baseline_value:document.getElementById("pkBase").value||"0",current_value:document.getElementById("pkCur").value||"0",
+    target_value:document.getElementById("pkTgt").value||"0"};
+  if(body.name.length<2){toast("Enter a KPI name","error");return;}
+  try{const r=await fetch(API+"/projects/"+MODAL_PID+"/kpis",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+TOKEN},body:JSON.stringify(body)});
+    if(!r.ok){toast(await errMsg(r,"Add failed"),"error");return;}
+    toast("KPI added","ok");openProject(MODAL_PID,"");if(PSCOPE===MODAL_PID){loaded.governance=false;}
+  }catch(e){toast("Failed: "+e.message,"error");}
+}
+async function pkUpdate(kpiId,name,current){
+  const v=prompt("Update current value"+(name?` for “${name}”`:""),current);
+  if(v===null)return;
+  try{const r=await fetch(API+"/project-kpis/"+kpiId,{method:"PATCH",headers:{"Content-Type":"application/json",Authorization:"Bearer "+TOKEN},body:JSON.stringify({current_value:v})});
+    if(!r.ok){toast(await errMsg(r,"Update failed"),"error");return;}
+    toast("KPI updated","ok");openProject(MODAL_PID,"");
+  }catch(e){toast("Failed: "+e.message,"error");}
+}
+async function pkDelete(kpiId){
+  if(!confirm("Delete this KPI?"))return;
+  try{const r=await fetch(API+"/project-kpis/"+kpiId,{method:"DELETE",headers:{Authorization:"Bearer "+TOKEN}});
+    if(!r.ok){toast(await errMsg(r,"Delete failed"),"error");return;}
+    toast("KPI deleted","ok");openProject(MODAL_PID,"");
+  }catch(e){toast("Failed: "+e.message,"error");}
+}
+function closeModal(){modal.style.display="none";if(PSCOPE){loadProjectOverview(PSCOPE);}}
+modal.addEventListener("click",e=>{if(e.target.id==="modal")closeModal();});
+
+/* ---------- COPILOT ---------- */
+function toggleCopilot(){const p=document.getElementById("cpPanel");p.style.display=(p.style.display==="flex"?"none":"flex");}
+function cpSuggest(q){document.getElementById("cpInput").value=q;cpSend();}
+function cpAppend(role,text,intent){
+  const b=document.getElementById("cpBody");
+  const w=document.createElement("div");w.className="cp-msg "+(role==="u"?"u":"a");
+  const bub=document.createElement("div");bub.className="cp-bub";bub.textContent=text;
+  if(intent){const i=document.createElement("div");i.className="cp-intent";i.textContent=String(intent).replace(/_/g," ");bub.appendChild(i);}
+  w.appendChild(bub);b.appendChild(w);b.scrollTop=b.scrollHeight;return w;
+}
+async function cpSend(){
+  const inp=document.getElementById("cpInput");const q=inp.value.trim();if(!q)return;
+  inp.value="";cpAppend("u",q);
+  const thinking=cpAppend("a","…");
+  try{
+    const r=await fetch(API+"/copilot/ask",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+TOKEN},body:JSON.stringify({question:q,context:{}})});
+    document.getElementById("cpBody").removeChild(thinking);
+    if(!r.ok){cpAppend("a","Sorry, I couldn't answer that ("+r.status+").");return;}
+    const d=await r.json();cpAppend("a",d.answer,d.intent);
+  }catch(e){document.getElementById("cpBody").removeChild(thinking);cpAppend("a","Cannot reach the copilot service.");}
+}
+
+/* ---------- HEAT MAP ---------- */
+async function loadHeatmap(){
+  try{
+    const [d,risk]=await Promise.all([api(P.heat()),api("/intelligence/heatmap/risk")]);
+    renderDeliveryHeat(d);renderRiskHeat(risk);loaded.heatmap=true;
+  }catch(e){deliveryHeat.innerHTML=`<span class="muted">Failed to load: ${e.message}</span>`;}
+}
+function renderDeliveryHeat(d){
+  const rowsMap={};(d.cells||[]).forEach(c=>{(rowsMap[c.row_key]=rowsMap[c.row_key]||{label:c.row_label,cells:{}}).label=c.row_label;rowsMap[c.row_key].cells[c.column]=c.rag;});
+  const cols=d.columns||[];
+  let html=`<table class="heat"><thead><tr><th></th>${cols.map(c=>`<th>${c}</th>`).join("")}</tr></thead><tbody>`;
+  const keys=Object.keys(rowsMap);
+  html+=keys.map(k=>`<tr><td class="hlabel">${rowsMap[k].label}</td>${cols.map(c=>{const r=rowsMap[k].cells[c]||"unknown";return `<td class="hc hg-${r}">${r==='not_started'?'—':(r[0]||'?').toUpperCase()}</td>`;}).join("")}</tr>`).join("");
+  html+=`</tbody></table>`;
+  if(!keys.length)html=`<span class="muted">No projects to map yet.</span>`;
+  deliveryHeat.innerHTML=html;
+}
+function renderRiskHeat(rk){
+  const P=rk.max_probability||5,I=rk.max_impact||5,map={};
+  (rk.cells||[]).forEach(c=>map[c.probability+"|"+c.impact]={count:c.count,sev:c.severity});
+  let html=`<div class="muted" style="margin-bottom:6px">${rk.total_open} open risk(s)</div><table class="heat"><thead><tr><th>P \\ I</th>`;
+  for(let i=1;i<=I;i++)html+=`<th>${i}</th>`;html+=`</tr></thead><tbody>`;
+  for(let p=P;p>=1;p--){html+=`<tr><td class="hlabel">${p}</td>`;
+    for(let i=1;i<=I;i++){const c=map[p+"|"+i];const sev=c?c.sev:"none";const n=c?c.count:0;html+=`<td class="hc sev-${sev}">${n||''}</td>`;}
+    html+=`</tr>`;}
+  html+=`</tbody></table>`;riskHeat.innerHTML=html;
+}
+
+/* ---------- FORECAST ---------- */
+async function loadForecast(){
+  try{
+    const f=await api(P.fc());
+    let c;
+    if(f.success_score!==undefined){
+      c=[{lab:"Success outlook",val:f.success_score+"/100",sub:f.success_label},
+         {lab:"Forecast cost (EAC)",val:money(f.forecast_cost),sub:"BAC "+money(f.bac)},
+         {lab:"Budget overrun",val:money(f.budget_overrun)},
+         {lab:"Projects slipping",val:f.projects_slipping+" / "+f.project_count},
+         {lab:"Over-allocated",val:(f.resource_shortage?.over_allocated??0)}];
+    }else{
+      c=[{lab:"Forecast cost (EAC)",val:money(f.forecast_cost),sub:"BAC "+money(f.bac)},
+         {lab:"Budget overrun",val:money(f.budget_overrun)},
+         {lab:"Projects slipping",val:f.projects_slipping+" / "+f.project_count},
+         {lab:"Projects overrunning",val:f.projects_overrunning},
+         {lab:"Worst slippage",val:(f.worst_slippage_days==null?'—':f.worst_slippage_days+'d')}];
+    }
+    fcKpis.innerHTML=c.map(kpiCardHtml).join("");
+    fcRows.innerHTML=(f.breakdown||[]).map(b=>`<tr><td><b>${b.code}</b></td><td>${h(b.forecast_completion)}</td><td>${b.slippage_days==null?'—':b.slippage_days}</td><td>${money(b.overrun_amount)}</td></tr>`).join("")||`<tr><td colspan="4" class="muted">No projects yet.</td></tr>`;
+    await renderResourceDemand();
+    loaded.forecast=true;
+  }catch(e){fcKpis.innerHTML=`<span class="muted">Failed to load: ${e.message}</span>`;}
+}
+async function renderResourceDemand(){
+  try{
+    const rf=await api("/intelligence/resource-forecast?weeks=8");
+    const cellColor=d=>d>100?"hg-red":(d>=80?"hg-amber":(d>0?"hg-green":"hg-not_started"));
+    let html=`<table class="heat"><thead><tr><th class="hlabel">Resource</th>`+rf.periods.map(p=>`<th>W${p.index+1}</th>`).join("")+`</tr></thead><tbody>`;
+    html+=(rf.resources||[]).map(r=>`<tr><td class="hlabel">${r.resource_name}</td>`+r.demand.map(d=>`<td class="hc ${cellColor(d)}">${d}</td>`).join("")+`</tr>`).join("");
+    html+=`</tbody></table>`;
+    if(!rf.resources||!rf.resources.length)html=`<span class="muted">No resources with allocations yet.</span>`;
+    document.getElementById("rfWrap").innerHTML=html;
+  }catch(e){document.getElementById("rfWrap").innerHTML=`<span class="muted">Resource forecast unavailable.</span>`;}
+}
+
+/* ---------- PROCUREMENT ---------- */
+async function loadProcurement(){
+  try{
+    const [vres,cres,pres]=await Promise.all([api("/vendors?limit=100"),api("/contracts?limit=100"),api("/purchase-orders?limit=200")]);
+    const vendors=vres.items||[];
+    const spends=await Promise.all(vendors.map(v=>api("/vendors/"+v.id+"/spend")));
+    let tc=0,ti=0,to=0;spends.forEach(s=>{tc+=Number(s.total_committed);ti+=Number(s.total_invoiced);to+=Number(s.total_outstanding);});
+    const cards=[
+      {lab:"Total committed",val:money(tc)},{lab:"Total invoiced",val:money(ti)},{lab:"Outstanding",val:money(to)},
+      {lab:"Vendors",val:vendors.length},{lab:"Contracts / POs",val:cres.total+" / "+pres.total}];
+    procKpis.innerHTML=cards.map(x=>`<div class="card kpi"><div class="lab">${x.lab}</div><div class="val ${String(x.val).length>6?'sm':''}">${x.val}</div></div>`).join("");
+    procRows.innerHTML=vendors.map((v,i)=>{const s=spends[i];return `<tr><td><b>${v.name}</b> <span class="muted">${v.code}</span></td><td>${(v.category||'').replace(/_/g,' ')}</td><td><span class="chip ${v.status==='active'?'rag-green':'rag-amber'}">${v.status}</span></td><td>${money(s.total_committed)}</td><td>${money(s.total_invoiced)}</td><td>${money(s.total_outstanding)}</td></tr>`;}).join("")||`<tr><td colspan="6" class="muted">No vendors yet.</td></tr>`;
+    const ctx=document.getElementById("procChart");
+    if(procChart)procChart.destroy();
+    procChart=new Chart(ctx,{type:"bar",data:{labels:vendors.map(v=>v.code),datasets:[
+      {label:"Committed",data:spends.map(s=>Number(s.total_committed)),backgroundColor:"#BFD4F2",borderRadius:5},
+      {label:"Invoiced",data:spends.map(s=>Number(s.total_invoiced)),backgroundColor:"#12B0A8",borderRadius:5}]},
+      options:{plugins:{legend:{position:"top"}},scales:{y:{beginAtZero:true}}}});
+    loaded.procurement=true;
+  }catch(e){procKpis.innerHTML=`<span class="muted">Failed to load: ${e.message}</span>`;}
+}
+
+/* ---------- INTEGRATIONS ---------- */
+function delChip(s){const m={delivered:"rag-green",failed:"rag-red",pending:"rag-amber",skipped:"rag-not_started"};return `chip ${m[s]||'rag-unknown'}`;}
+async function loadIntegrations(){
+  try{
+    const [eps,dels,ob]=await Promise.all([api("/integrations/webhooks?limit=100"),api("/integrations/webhooks/deliveries?limit=50"),api("/integrations/outbox?limit=50")]);
+    const items=eps.items||[],dl=dels.items||[],obi=ob.items||[];
+    const failed=dl.filter(d=>d.status==="failed").length,delivered=dl.filter(d=>d.status==="delivered").length;
+    const pending=obi.filter(e=>e.status==="pending").length;
+    intKpis.innerHTML=[
+      {lab:"Endpoints",val:eps.total},{lab:"Active",val:items.filter(e=>e.is_active).length},
+      {lab:"Deliveries",val:dels.total},{lab:"Failed",val:failed},{lab:"Outbox pending",val:pending}
+    ].map(kpiCardHtml).join("");
+    intEndpoints.innerHTML=items.map(e=>`<tr><td><b>${e.name}</b></td><td class="muted" style="max-width:280px;overflow:hidden;text-overflow:ellipsis">${e.target_url}</td><td>${(e.event_types||[]).join(", ")||'—'}</td><td>${e.is_active?'<span class="chip rag-green">yes</span>':'<span class="chip rag-not_started">no</span>'}</td><td>${e.secret_set?'✓':'—'}</td></tr>`).join("")||`<tr><td colspan="5" class="muted">No webhooks registered.</td></tr>`;
+    intDeliveries.innerHTML=dl.map(d=>`<tr><td>${d.event_type}</td><td><span class="${delChip(d.status)}">${d.status}</span></td><td>${h(d.status_code)}</td><td>${d.attempts}</td><td class="muted">${(d.created_date||'').replace('T',' ').slice(0,16)}</td></tr>`).join("")||`<tr><td colspan="5" class="muted">No deliveries yet.</td></tr>`;
+    const obChip=s=>s==="dispatched"?"chip rag-green":(s==="pending"?"chip rag-amber":"chip rag-red");
+    intOutbox.innerHTML=obi.map(e=>`<tr><td><b>${e.event_type}</b></td><td><span class="${obChip(e.status)}">${e.status}</span></td><td>${e.attempts}</td><td class="muted">${(e.created_date||'').replace('T',' ').slice(0,16)}</td><td class="muted">${e.dispatched_date?(''+e.dispatched_date).replace('T',' ').slice(0,16):'—'}</td></tr>`).join("")||`<tr><td colspan="5" class="muted">No outbox events yet.</td></tr>`;
+    loaded.integrations=true;
+  }catch(e){intKpis.innerHTML=`<span class="muted">Failed to load: ${e.message}</span>`;}
+}
+async function dispatchOutbox(){
+  try{
+    const r=await fetch(API+"/integrations/outbox/dispatch",{method:"POST",headers:{Authorization:"Bearer "+TOKEN}});
+    if(!r.ok){toast("Dispatch failed ("+r.status+")","error");return;}
+    const d=await r.json();toast(`Dispatched ${d.dispatched} event(s), ${d.deliveries_created} delivery(ies)`,"ok");
+    loaded.integrations=false;loadIntegrations();
+  }catch(e){toast("Dispatch failed: "+e.message,"error");}
+}
+
+/* ---------- API KEYS ---------- */
+async function loadApiKeys(){
+  try{
+    const ks=await api("/api-keys?limit=100");
+    const items=ks.items||[];
+    akKpis.innerHTML=[{lab:"Keys",val:ks.total},{lab:"Active",val:items.filter(k=>k.is_active).length}].map(kpiCardHtml).join("");
+    akRows.innerHTML=items.map(k=>`<tr><td><b>${k.name}</b></td><td class="muted">${k.prefix}…</td><td>${k.is_active?'<span class="chip rag-green">active</span>':'<span class="chip rag-red">revoked</span>'}</td><td class="muted">${k.expires_date||'—'}</td><td class="muted">${(k.created_date||'').slice(0,10)}</td><td>${k.is_active?`<button class="btn ghost" style="padding:3px 10px;font-size:12px" onclick="revokeKey('${k.id}')">Revoke</button>`:''}</td></tr>`).join("")||`<tr><td colspan="6" class="muted">No API keys yet.</td></tr>`;
+    loaded.apikeys=true;
+  }catch(e){akKpis.innerHTML=`<span class="muted">Failed to load: ${e.message}</span>`;}
+}
+async function newApiKey(){
+  openFormModal("New API key",
+    `<label>Name</label><input id="akName" placeholder="e.g. Jira Integration">`,
+    async ()=>{
+      const name=(document.getElementById("akName").value||"").trim();
+      if(!name){document.getElementById("akName").classList.add("invalid");toast("Name is required","error");return;}
+      try{
+        const r=await fetch(API+"/api-keys",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+TOKEN},body:JSON.stringify({name})});
+        if(!r.ok){toast("Create failed ("+r.status+")","error");return;}
+        const d=await r.json();
+        revealSecret("API key created",d.api_key);
+        loaded.apikeys=false;loadApiKeys();
+      }catch(e){toast("Create failed: "+e.message,"error");}
+    });
+}
+async function revokeKey(id){
+  if(!confirm("Revoke this key? Tools using it will stop working."))return;
+  try{
+    const r=await fetch(API+"/api-keys/"+id+"/revoke",{method:"POST",headers:{Authorization:"Bearer "+TOKEN}});
+    if(!r.ok){toast("Revoke failed ("+r.status+")","error");return;}
+    loaded.apikeys=false;loadApiKeys();
+  }catch(e){toast("Revoke failed: "+e.message,"error");}
+}
+
+/* ---------- AI DELIVERY ---------- */
+const AD_STAGES=["generate","build","unit_test","qa","deploy","perf_test"];
+let adCurrent=null, adFiles={}, adFile="";
+function adStatusChip(s){const m={requested:"rag-not_started",generated:"rag-amber",built:"rag-amber",tested:"rag-amber",qa_passed:"rag-amber",deployed:"rag-green",validated:"rag-green",failed:"rag-red",cancelled:"rag-red"};return "chip "+(m[s]||"rag-amber");}
+async function loadAiDelivery(){
+  try{
+    const bs=await api("/builds?limit=100");
+    const items=bs.items||[];
+    adBuilds.innerHTML=items.map(b=>`<div onclick="selectBuild('${b.id}')" style="padding:10px 12px;border:1px solid var(--line);border-radius:9px;margin-bottom:8px;cursor:pointer" onmouseover="this.style.background='#F5F9FE'" onmouseout="this.style.background=''"><div style="font-weight:700;color:var(--navy)">${b.title}</div><div class="rowf" style="margin-top:4px"><span class="muted">${(b.target_type||'').replace('_',' ')}</span><span class="${adStatusChip(b.status)}">${b.status.replace('_',' ')}</span></div></div>`).join("")||`<div class="muted">No builds yet — click New.</div>`;
+    loaded.aidelivery=true;
+  }catch(e){adBuilds.innerHTML=`<span class="muted">Failed: ${e.message}</span>`;}
+}
+async function nbDetect(){
+  const files=(document.getElementById("nbFiles").value||"").split(/[\s,]+/).filter(Boolean);
+  if(!files.length){toast("Enter some repo file names","error");return;}
+  try{ const r=await fetch(API+"/builds/detect-stack",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+TOKEN},body:JSON.stringify({filenames:files})});
+    if(!r.ok){toast("Detect failed ("+r.status+")","error");return;}
+    const d=await r.json();
+    if(d.stack){const sel=document.getElementById("nbStack");sel.value=d.stack;toast("Detected: "+d.stack+(d.framework?" ("+d.framework+")":""),"ok");}
+    else toast("Could not detect a stack from those files","error");
+  }catch(e){toast("Failed: "+e.message,"error");}
+}
+async function newBuild(){
+  let stackOpts='<option value="">(scaffold by target type)</option>';
+  try{ const cats=await api("/builds/tech-stacks");
+    stackOpts+=cats.map(c=>`<optgroup label="${c.category}">${c.stacks.map(st=>`<option value="${st.id}">${st.label}</option>`).join("")}</optgroup>`).join("");
+  }catch(_){}
+  openFormModal("New build",
+    `<label>Title</label><input id="nbTitle" placeholder="What do you want to build?">
+     <label>Target type</label><select id="nbType"><option value="web_app">web_app</option><option value="website">website</option><option value="mobile_app">mobile_app</option><option value="api_service">api_service</option><option value="other">other</option></select>
+     <label>Technology (AI codegen target)</label><select id="nbStack">${stackOpts}</select>
+     <label>Detect from repo files (optional)</label><div style="display:flex;gap:6px;margin-bottom:11px"><input id="nbFiles" placeholder="e.g. go.mod, main.go" style="flex:1;margin-bottom:0"><button class="btn ghost" type="button" style="white-space:nowrap" onclick="nbDetect()">Detect</button></div>
+     <label>Spec (optional)</label><textarea id="nbSpec" placeholder="Describe it…"></textarea>`,
+    async ()=>{
+      const title=(document.getElementById("nbTitle").value||"").trim();
+      if(!title){document.getElementById("nbTitle").classList.add("invalid");toast("Title is required","error");return;}
+      const target_type=document.getElementById("nbType").value;
+      const tech_stack=document.getElementById("nbStack").value;
+      const spec=(document.getElementById("nbSpec").value||"").trim();
+      try{
+        const r=await fetch(API+"/builds",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+TOKEN},body:JSON.stringify({title,target_type,tech_stack,spec})});
+        if(!r.ok){toast("Create failed ("+r.status+")","error");return;}
+        const b=await r.json();closeFormModal();toast("Build created","ok");loaded.aidelivery=false;await loadAiDelivery();selectBuild(b.id);
+      }catch(e){toast("Failed: "+e.message,"error");}
+    });
+}
+async function selectBuild(id){
+  adCurrent=id;
+  try{
+    const [b,runs,deps,files]=await Promise.all([api("/builds/"+id),api("/builds/"+id+"/runs"),api("/builds/"+id+"/deployments"),api("/builds/"+id+"/files")]);
+    adFiles=files.files||{}; adFile=Object.keys(adFiles)[0]||"";
+    const latest={};(runs||[]).forEach(r=>{latest[r.stage]=r;});
+    const stageHtml=AD_STAGES.map(st=>{const r=latest[st];const cls=r?(r.status==="passed"?"hg-green":r.status==="failed"?"hg-red":"hg-amber"):"hg-not_started";return `<td class="hc ${cls}" style="width:auto;padding:6px 10px">${st.replace('_',' ')}</td>`;}).join("");
+    const utm=latest["unit_test"]&&latest["unit_test"].metrics||{}, pm=latest["perf_test"]&&latest["perf_test"].metrics||{};
+    const metricsLine=[utm.coverage!=null?`coverage ${utm.coverage}%`:null, pm.p95_ms!=null?`p95 ${pm.p95_ms}ms`:null, pm.rps!=null?`${pm.rps} rps`:null].filter(Boolean).join(" · ");
+    const depHtml=(deps||[]).map(d=>`<tr><td><b>${d.environment}</b></td><td><span class="${d.status==='deployed'?'chip rag-green':'chip rag-red'}">${d.status}</span></td><td class="muted">${d.release_version||'—'}</td><td class="muted">${d.url||'—'}</td></tr>`).join("")||`<tr><td colspan="4" class="muted">No deployments.</td></tr>`;
+    const fileOpts=Object.keys(adFiles).map(f=>`<option ${f===adFile?'selected':''}>${f}</option>`).join("");
+    adDetail.innerHTML=`
+      <div class="rowf"><h3 style="margin:0">${b.title}</h3><span class="${adStatusChip(b.status)}">${b.status.replace('_',' ')}</span>
+        <span style="flex:1"></span><button class="btn ghost" style="padding:5px 12px;font-size:13px" onclick="genBuild('${id}')">Generate</button></div>
+      <div class="muted" style="margin:6px 0 2px">${(b.target_type||'').replace('_',' ')} · ${b.spec||''}</div>
+      <div class="eyebrow" style="margin:14px 0 6px">Pipeline</div>
+      <table class="heat"><tbody><tr>${stageHtml}</tr></tbody></table>
+      ${metricsLine?`<div class="muted" style="margin-top:6px">${metricsLine}</div>`:''}
+      <div class="eyebrow" style="margin:16px 0 6px">Code editor</div>
+      ${Object.keys(adFiles).length?`<div class="rowf" style="margin-bottom:6px"><select id="adFileSel" onchange="adPickFile(this.value)" style="background:#fff;border:1px solid var(--line);border-radius:8px;padding:6px 10px">${fileOpts}</select><button class="btn ghost" style="padding:5px 12px;font-size:13px" onclick="adSave('${id}')">Save</button></div>
+      <textarea id="adEditor" oninput="adFiles[adFile]=this.value" spellcheck="false" style="width:100%;height:260px;font-family:ui-monospace,monospace;font-size:12px;border:1px solid var(--line);border-radius:8px;padding:10px;background:#0E1B36;color:#D3DEEF">${(adFiles[adFile]||'').replace(/</g,'&lt;')}</textarea>`:'<div class="muted">No generated files yet — click Generate.</div>'}
+      <div class="eyebrow" style="margin:16px 0 6px">Deployments</div>
+      <table><thead><tr><th>Environment</th><th>Status</th><th>Version</th><th>URL</th></tr></thead><tbody>${depHtml}</tbody></table>`;
+  }catch(e){adDetail.innerHTML=`<span class="muted">Failed: ${e.message}</span>`;}
+}
+function adPickFile(f){adFile=f;const ed=document.getElementById("adEditor");if(ed)ed.value=adFiles[f]||"";}
+async function genBuild(id){
+  try{ const r=await fetch(API+"/builds/"+id+"/generate",{method:"POST",headers:{Authorization:"Bearer "+TOKEN}});
+    if(!r.ok){toast("Generate failed ("+r.status+")","error");return;} const d=await r.json();
+    toast("Generated via "+d.provider,"ok"); selectBuild(id);
+  }catch(e){toast("Failed: "+e.message,"error");}
+}
+async function adSave(id){
+  try{ const r=await fetch(API+"/builds/"+id+"/files",{method:"PUT",headers:{"Content-Type":"application/json",Authorization:"Bearer "+TOKEN},body:JSON.stringify({files:adFiles})});
+    if(!r.ok){toast("Save failed ("+r.status+")","error");return;} toast("Saved","ok");
+  }catch(e){toast("Failed: "+e.message,"error");}
+}
+
+/* ---------- GOVERNANCE (SDLC stage gates) ---------- */
+const GATE_ICON={
+  done:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+  rejgate:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+  pend:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>',
+  prog:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/></svg>',
+  up:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>',
+  blk:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>',
+};
+// map a backend gate state → (css class, icon key)
+function gateClass(state){
+  if(state==="approved"||state==="passed")return "done";
+  if(state==="rejected")return "rejgate";
+  if(state==="pending")return "pend";
+  if(state==="in_progress")return "prog";
+  if(state==="blocked")return "blk";
+  return "up";
+}
+function fmtDate(iso){if(!iso)return "";try{return new Date(iso).toLocaleDateString(undefined,{day:"numeric",month:"short"});}catch(_){return "";}}
+const GOV_STATUS={in_progress:["gs-in","In progress"],completed:["gs-done","Completed"],rejected:["gs-rej","Rejected"],cancelled:["gs-cx","Cancelled"]};
+
+async function loadGovernance(){
+  loaded.governance=true;
+  const kp=document.getElementById("govKpis"),aw=document.getElementById("govAwaiting"),it=document.getElementById("govItems");
+  try{
+    const g=await api("/workflows/governance?limit=200");
+    if(!g.definition_ready){
+      kp.innerHTML="";aw.innerHTML="";
+      it.innerHTML=`<div class="card"><div class="muted" style="margin-bottom:12px">No SDLC stage-gate workflow is set up yet.</div>${can("workflow:manage")?`<button class="btn" onclick="setupSdlc()">Set up SDLC stage gates</button>`:`<div class="muted">Ask an administrator to set up the SDLC stage gates.</div>`}</div>`;
+      return;
+    }
+    const s=g.summary;
+    kp.innerHTML=[
+      {lab:"Under governance",val:g.items.length},
+      {lab:"In progress",val:s.instances_in_progress},
+      {lab:"Gates approved",val:s.approved_gates},
+      {lab:"Gates pending",val:s.pending_gates},
+      {lab:"Awaiting your sign-off",val:s.awaiting_my_approval},
+    ].map(kpiCardHtml).join("");
+    const mine=g.items.filter(i=>i.awaiting_my_approval);
+    aw.innerHTML=mine.length&&can("workflow:approve")
+      ? `<div class="narr" style="border-left-color:var(--amber)"><b>${mine.length}</b> gate${mine.length>1?"s":""} awaiting your approval: ${mine.map(i=>`${i.entity_label.split(" · ")[0]} — ${i.current_stage_name}`).join(" · ")}</div>`
+      : "";
+    it.innerHTML=g.items.map(govItemHtml).join("")||`<div class="muted">Nothing under governance yet.</div>`;
+  }catch(e){toast("Failed to load governance: "+e.message,"error");}
+  await loadFinancialMilestones();
+}
+
+const FIN_PAY={not_applicable:["gs-cx","—"],pending:["gs-in","Payment pending"],released:["gs-done","Paid"]};
+const FIN_ACC={not_submitted:["gs-cx","Not submitted"],pending:["gs-in","Awaiting acceptance"],accepted:["gs-done","Accepted"],rejected:["gs-rej","Rejected"]};
+async function loadFinancialMilestones(){
+  const kp=document.getElementById("finKpis"),it=document.getElementById("finItems");
+  if(!kp||!it)return;
+  try{
+    const f=await api("/milestones/financial");
+    const s=f.summary;
+    kp.innerHTML=[
+      {lab:"Billing milestones",val:s.count},
+      {lab:"Total value",val:money(s.total_value)},
+      {lab:"Released",val:money(s.released_value)},
+      {lab:"Pending",val:money(s.pending_value)},
+      {lab:"Ready to release",val:s.ready_to_release},
+    ].map(kpiCardHtml).join("");
+    it.innerHTML=`<div class="card" style="padding:0;overflow:hidden"><table style="margin:0">
+      <thead><tr><th style="padding-left:18px">Milestone</th><th>Project</th><th>Deliverable</th><th style="text-align:right">Amount</th><th>Acceptance</th><th>Payment</th><th style="text-align:right;padding-right:18px">Action</th></tr></thead>
+      <tbody>${f.items.map(finRowHtml).join("")||`<tr><td colspan="7" class="muted" style="padding:18px">No financial milestones yet.</td></tr>`}</tbody></table></div>`;
+  }catch(e){kp.innerHTML="";it.innerHTML=`<div class="muted">Financial milestones unavailable: ${e.message}</div>`;}
+}
+function finRowHtml(m){
+  const acc=FIN_ACC[m.acceptance_status]||["gs-cx",m.acceptance_status];
+  const pay=FIN_PAY[m.payment_status]||["gs-cx",m.payment_status];
+  const accCell=`<span class="gov-status ${acc[0]}">${acc[1]}</span>${m.acceptance_status==="pending"&&m.current_gate?`<div class="gmeta" style="margin-top:4px">gate: ${m.current_gate}</div>`:""}`;
+  const payCell=`<span class="gov-status ${pay[0]}">${pay[1]}</span>${m.paid_date?`<div class="gmeta" style="margin-top:4px">${fmtDate(m.paid_date)}</div>`:""}`;
+  let action=`<span class="muted">—</span>`;
+  if(m.acceptance_status==="not_submitted"&&can("milestone:update"))
+    action=`<button class="btn ghost" style="padding:5px 11px;font-size:12px" onclick="finSubmit('${m.milestone_id}')">Submit</button>`;
+  else if(m.awaiting_my_acceptance&&can("workflow:approve"))
+    action=`<button class="btn ok" style="padding:5px 11px;font-size:12px" onclick="finDecide('${m.acceptance_instance_id}','approved')">Accept</button> <button class="btn no" style="padding:5px 11px;font-size:12px" onclick="finDecide('${m.acceptance_instance_id}','rejected')">Reject</button>`;
+  else if(m.can_release&&can("milestone:accept"))
+    action=`<button class="btn ok" style="padding:5px 11px;font-size:12px" onclick="finRelease('${m.milestone_id}')">Release payment</button>`;
+  return `<tr>
+    <td style="padding-left:18px"><b>${m.name}</b></td>
+    <td>${m.project_label.split(" · ")[0]}</td>
+    <td class="muted" style="max-width:240px">${m.deliverable||"—"}</td>
+    <td style="text-align:right;font-variant-numeric:tabular-nums"><b>${money(m.payment_amount)}</b></td>
+    <td>${accCell}</td>
+    <td>${payCell}</td>
+    <td style="text-align:right;padding-right:18px;white-space:nowrap">${action}</td></tr>`;
+}
+async function finSubmit(id){
+  try{const r=await fetch(API+"/milestones/"+id+"/submit-for-acceptance",{method:"POST",headers:{Authorization:"Bearer "+TOKEN}});
+    if(!r.ok){toast(await errMsg(r,"Submit failed"),"error");return;}
+    toast("Submitted for acceptance","ok");loaded.governance=false;loadGovernance();
+  }catch(e){toast("Failed: "+e.message,"error");}
+}
+async function finDecide(instanceId,decision){
+  const comment=decision==="rejected"?(prompt("Reason for rejection:","")||"Rejected."):"Deliverable accepted.";
+  try{const r=await fetch(API+"/workflows/instances/"+instanceId+"/decision",{method:"POST",
+      headers:{"Content-Type":"application/json",Authorization:"Bearer "+TOKEN},body:JSON.stringify({decision,comment})});
+    if(!r.ok){toast(await errMsg(r,"Decision failed"),"error");return;}
+    toast(decision==="approved"?"Deliverable accepted":"Deliverable rejected","ok");loaded.governance=false;loadGovernance();
+  }catch(e){toast("Failed: "+e.message,"error");}
+}
+async function finRelease(id){
+  try{const r=await fetch(API+"/milestones/"+id+"/release-payment",{method:"POST",headers:{Authorization:"Bearer "+TOKEN}});
+    if(!r.ok){toast(await errMsg(r,"Release failed"),"error");return;}
+    toast("Payment released to the ledger","ok");loaded.governance=false;loadGovernance();
+  }catch(e){toast("Failed: "+e.message,"error");}
+}
+async function errMsg(r,fallback){try{const b=await r.json();if(b.error&&b.error.message)return b.error.message;}catch(_){}return fallback+" ("+r.status+")";}
+
+function govItemHtml(i){
+  const track=i.gates.map((gt,idx)=>{
+    const cls=gateClass(gt.state);
+    const meta=gt.state==="approved"&&gt.approver_name
+      ? `<div class="gmeta">✓ <b>${gt.approver_name}</b><br>${fmtDate(gt.decided_at)}</div>`
+      : gt.state==="rejected"&&gt.approver_name
+        ? `<div class="gmeta">✕ <b>${gt.approver_name}</b><br>${fmtDate(gt.decided_at)}</div>`
+        : gt.state==="pending"?`<div class="gmeta" style="color:var(--ink-a)"><b>Awaiting sign-off</b></div>`
+        : gt.state==="passed"?`<div class="gmeta">Passed</div>`:"";
+    return `<div class="gate ${cls}"><div class="node">${GATE_ICON[cls]}</div><div class="gname">${gt.name}</div>${meta}</div>`;
+  }).join("");
+  const st=GOV_STATUS[i.status]||["gs-cx",i.status];
+  const canApprove=i.awaiting_my_approval&&can("workflow:approve");
+  const actions=canApprove
+    ? `<div class="gov-actions"><span class="lead">Gate “${i.current_stage_name}” needs your decision</span>
+        <button class="btn ok" onclick="govDecide('${i.instance_id}','approved')">Approve gate</button>
+        <button class="btn no" onclick="govDecide('${i.instance_id}','rejected')">Reject</button></div>`
+    : "";
+  return `<div class="gov-item">
+    <div class="gov-head">
+      <div><div class="who">${i.entity_label}</div><div class="sub">${i.definition_name}${i.current_stage_name?` · current gate: ${i.current_stage_name}`:""}</div></div>
+      <div class="gov-prog">${bar(i.progress_percent,i.status==="rejected"?"r":"g")}</div>
+      <span class="gov-status ${st[0]}">${st[1]}</span>
+    </div>
+    <div class="gate-track">${track}</div>
+    ${actions}
+  </div>`;
+}
+
+async function setupSdlc(){
+  try{
+    const r=await fetch(API+"/workflows/setup-sdlc",{method:"POST",headers:{Authorization:"Bearer "+TOKEN}});
+    if(!r.ok){toast("Setup failed ("+r.status+")","error");return;}
+    toast("SDLC stage gates ready","ok");loaded.governance=false;loadGovernance();
+  }catch(e){toast("Failed: "+e.message,"error");}
+}
+
+async function govDecide(instanceId,decision){
+  const comment=decision==="rejected"
+    ? (prompt("Reason for rejection (sent back for rework):","")||"Rejected.")
+    : "Gate criteria met — approved.";
+  try{
+    const r=await fetch(API+"/workflows/instances/"+instanceId+"/decision",{method:"POST",
+      headers:{"Content-Type":"application/json",Authorization:"Bearer "+TOKEN},
+      body:JSON.stringify({decision,comment})});
+    if(!r.ok){
+      let msg="Decision failed ("+r.status+")";
+      try{const b=await r.json();if(b.error&&b.error.message)msg=b.error.message;}catch(_){}
+      toast(msg,"error");return;
+    }
+    toast(decision==="approved"?"Gate approved":"Gate rejected","ok");
+    loaded.governance=false;loadGovernance();
+  }catch(e){toast("Failed: "+e.message,"error");}
+}
+
+/* ---------- MANAGE (Projects CRUD) ---------- */
+let mgProjects=[], mgPortfoliosList=[];
+async function mgLoadPortfolios(){
+  const pf=await api("/portfolios?limit=200"); mgPortfoliosList=pf.items||[];
+  const sel=document.getElementById("mgPortSel");
+  sel.innerHTML='<option value="">All portfolios</option>'+mgPortfoliosList.map(p=>`<option value="${p.id}">${p.name}</option>`).join("");
+}
+async function loadManage(){
+  try{
+    await mgLoadPortfolios();
+    const port=document.getElementById("mgPortSel").value;
+    const r=await api("/projects?limit=200"+(port?"&portfolio_id="+port:"")); mgProjects=r.items||[];
+    mgRows.innerHTML=mgProjects.map(p=>`<tr><td><b>${p.name}</b></td><td class="muted">${p.code}</td><td><span class="chip ${p.status==='active'?'rag-green':p.status==='closed'?'rag-not_started':'rag-amber'}">${p.status}</span></td><td>${money(p.budget)}</td><td>${bar(p.progress_percent, p.progress_percent>=67?'g':p.progress_percent>=34?'a':'r')}</td><td class="rowf"><button class="btn ghost" style="padding:3px 10px;font-size:12px" onclick='mgEdit("${p.id}")'><button class="btn ghost" style="padding:3px 10px;font-size:12px" onclick="mgDelete('${p.id}')">Delete</button></td></tr>`).join("")||`<tr><td colspan="6" class="muted">No projects — click New project.</td></tr>`;
+    document.getElementById("mgFormCard").style.display="none";
+    loaded.manage=true;
+  }catch(e){mgRows.innerHTML=`<tr><td colspan="6" class="muted">Failed: ${e.message}</td></tr>`;}
+}
+function mgEdit(id){mgShowForm(mgProjects.find(p=>p.id===id));}
+function mgShowForm(p){
+  const c=document.getElementById("mgFormCard"); c.style.display="block";
+  const fld=(id,label,val,type)=>`<div style="margin-bottom:8px"><label style="display:block;font-size:12px;color:var(--mute);font-weight:700;margin-bottom:3px">${label}</label><input id="${id}" ${type||''} value="${val==null?'':String(val).replace(/"/g,'&quot;')}" style="width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px"></div>`;
+  const sel=(id,label,val,opts)=>`<div style="margin-bottom:8px"><label style="display:block;font-size:12px;color:var(--mute);font-weight:700;margin-bottom:3px">${label}</label><select id="${id}" style="width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px">${opts.map(o=>`<option ${o===val?'selected':''}>${o}</option>`).join("")}</select></div>`;
+  c.innerHTML=`<h3 style="margin:0 0 10px">${p?'Edit project':'New project'}</h3>
+    <div class="grid two">
+      ${fld("mgName","Name",p?p.name:'')}
+      ${fld("mgCode","Code",p?p.code:'', p?'disabled':'')}
+      ${fld("mgBudget","Budget",p?p.budget:'0.00')}
+      ${fld("mgProgress","Progress %",p?p.progress_percent:0)}
+      ${p?sel("mgStatus","Status",p.status,["proposed","active","on_hold","closed","cancelled"]):''}
+    </div>
+    <div class="rowf" style="margin-top:8px">
+      <button class="btn" onclick="mgSave('${p?p.id:''}')">${p?'Save changes':'Create'}</button>
+      <button class="btn ghost" onclick="document.getElementById('mgFormCard').style.display='none'">Cancel</button>
+    </div>`;
+}
+async function mgSave(id){
+  if(!req("mgName")||(!id&&!req("mgCode"))){toast("Name and code are required","error");return;}
+  const name=document.getElementById("mgName").value.trim();
+  const budget=document.getElementById("mgBudget").value.trim()||"0.00";
+  const progress=parseInt(document.getElementById("mgProgress").value||"0",10);
+  try{
+    let r;
+    if(id){
+      const body={name,budget,progress_percent:progress};
+      const st=document.getElementById("mgStatus"); if(st)body.status=st.value;
+      r=await fetch(API+"/projects/"+id,{method:"PATCH",headers:{"Content-Type":"application/json",Authorization:"Bearer "+TOKEN},body:JSON.stringify(body)});
+    }else{
+      const code=document.getElementById("mgCode").value.trim();
+      r=await fetch(API+"/projects",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+TOKEN},body:JSON.stringify({name,code,budget})});
+    }
+    if(!r.ok){const t=await r.text();toast("Save failed ("+r.status+"): "+t.slice(0,120),"error");return;}
+    toast(id?"Project saved":"Project created","ok");loaded.manage=false;loadManage();
+  }catch(e){toast("Failed: "+e.message,"error");}
+}
+async function mgDelete(id){
+  if(!confirm("Delete this project?"))return;
+  try{ const r=await fetch(API+"/projects/"+id,{method:"DELETE",headers:{Authorization:"Bearer "+TOKEN}});
+    if(!r.ok){toast("Delete failed ("+r.status+")","error");return;} toast("Project deleted","ok");loaded.manage=false;loadManage();
+  }catch(e){toast("Failed: "+e.message,"error");}
+}
+/* -- Manage sub-tabs + Risks/Tasks -- */
+function mgSub(s){
+  ["portfolios","programs","projects","risks","tasks","benefits","milestones","resources","vendors","contracts","orders","finance","initiatives","goals","kpis"].forEach(x=>document.getElementById("mgp-"+x).style.display=(x===s?"block":"none"));
+  document.querySelectorAll(".mgsub").forEach(b=>b.style.borderColor=(b.dataset.s===s?"var(--cyan)":"var(--line)"));
+  if(s==="portfolios"){renderPortfolios();}
+  if(s==="programs"){mgFillPortDropdown("mgProgPort",loadPrograms);}
+  if(s==="resources"){loadResources();}
+  if(s==="vendors"){loadVendors();}
+  if(s==="contracts"){mgFillVenDropdown("mgConVen",loadContracts);}
+  if(s==="orders"){mgFillVenDropdown("mgPoVen",loadOrders);}
+  if(s==="finance"){mgFillProj("mgFinProj",loadFinance);}
+  if(s==="initiatives"){loadInitiatives();}
+  if(s==="goals"){mgFillInitDropdown("mgGoalInit",loadGoals);}
+  if(s==="kpis"){mgFillInitDropdown("mgKpiInit",mgKpiInitChange);}
+  if(s==="risks"){mgFillProj("mgRiskProj",loadRisks);}
+  if(s==="tasks"){mgFillProj("mgTaskProj",loadTasks);}
+  if(s==="benefits"){mgFillProj("mgBenProj",loadBenefits);}
+  if(s==="milestones"){mgFillProj("mgMsProj",loadMilestones);}
+}
+function mgFillPortDropdown(selId,loader){
+  const sel=document.getElementById(selId);const cur=sel.value;
+  sel.innerHTML=mgPortfoliosList.map(p=>`<option value="${p.id}">${p.name} (${p.code})</option>`).join("");
+  if(mgPortfoliosList.length){sel.value=cur&&mgPortfoliosList.some(p=>p.id===cur)?cur:mgPortfoliosList[0].id;loader(sel.value);}
+  else sel.innerHTML=`<option value="">No portfolios</option>`;
+}
+function mgFillProj(selId,loader){
+  const sel=document.getElementById(selId); const cur=sel.value;
+  sel.innerHTML=mgProjects.map(p=>`<option value="${p.id}">${p.name} (${p.code})</option>`).join("");
+  if(mgProjects.length){sel.value=cur&&mgProjects.some(p=>p.id===cur)?cur:mgProjects[0].id;loader(sel.value);}
+  else sel.innerHTML=`<option value="">No projects</option>`;
+}
+const fldRow=(id,label,val,type)=>`<div style="margin-bottom:8px"><label style="display:block;font-size:12px;color:var(--mute);font-weight:700;margin-bottom:3px">${label}</label><input id="${id}" ${type||''} value="${val==null?'':String(val).replace(/"/g,'&quot;')}" style="width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px"></div>`;
+const selRow=(id,label,val,opts)=>`<div style="margin-bottom:8px"><label style="display:block;font-size:12px;color:var(--mute);font-weight:700;margin-bottom:3px">${label}</label><select id="${id}" style="width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px">${opts.map(o=>`<option ${o===val?'selected':''}>${o}</option>`).join("")}</select></div>`;
+/* Risks */
+let mgRisks=[];
+async function loadRisks(pid){ if(!pid)return;
+  try{ const r=await api("/risks?project_id="+pid+"&limit=200"); mgRisks=r.items||[];
+    mgRiskRows.innerHTML=mgRisks.map(x=>`<tr><td><b>${x.title}</b></td><td>${x.probability}×${x.impact}</td><td>${x.risk_score}</td><td><span class="chip ${x.status==='closed'?'rag-not_started':'rag-amber'}">${x.status}</span></td><td class="rowf"><button class="btn ghost" style="padding:3px 10px;font-size:12px" onclick='mgRiskEdit("${x.id}")'>Edit</button><button class="btn ghost" style="padding:3px 10px;font-size:12px" onclick="mgRiskDel('${x.id}')">Delete</button></td></tr>`).join("")||`<tr><td colspan="5" class="muted">No risks.</td></tr>`;
+    document.getElementById("mgRiskFormCard").style.display="none";
+  }catch(e){mgRiskRows.innerHTML=`<tr><td colspan="5" class="muted">Failed: ${e.message}</td></tr>`;}
+}
+function mgRiskEdit(id){mgRiskForm(mgRisks.find(x=>x.id===id));}
+function mgRiskForm(x){
+  const c=document.getElementById("mgRiskFormCard");c.style.display="block";
+  c.innerHTML=`<h3 style="margin:0 0 10px">${x?'Edit risk':'New risk'}</h3><div class="grid two">
+    ${fldRow("rkTitle","Title",x?x.title:'')}
+    ${fldRow("rkProb","Probability (1-5)",x?x.probability:3,'type="number" min="1" max="5"')}
+    ${fldRow("rkImp","Impact (1-5)",x?x.impact:3,'type="number" min="1" max="5"')}
+    ${x?selRow("rkStatus","Status",x.status,["identified","analyzing","mitigating","monitoring","closed"]):''}
+    </div><div class="rowf" style="margin-top:8px"><button class="btn" onclick="mgRiskSave('${x?x.id:''}')">${x?'Save':'Create'}</button><button class="btn ghost" onclick="document.getElementById('mgRiskFormCard').style.display='none'">Cancel</button></div>`;
+}
+async function mgRiskSave(id){
+  if(!req("rkTitle")){toast("Title is required","error");return;}
+  const pid=document.getElementById("mgRiskProj").value;
+  const body={title:document.getElementById("rkTitle").value.trim(),probability:parseInt(document.getElementById("rkProb").value||"3",10),impact:parseInt(document.getElementById("rkImp").value||"3",10)};
+  try{ let r;
+    if(id){const st=document.getElementById("rkStatus");if(st)body.status=st.value;r=await fetch(API+"/risks/"+id,{method:"PATCH",headers:{"Content-Type":"application/json",Authorization:"Bearer "+TOKEN},body:JSON.stringify(body)});}
+    else{body.project_id=pid;r=await fetch(API+"/risks",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+TOKEN},body:JSON.stringify(body)});}
+    if(!r.ok){toast("Save failed ("+r.status+")","error");return;} toast(id?"Risk saved":"Risk created","ok"); loadRisks(pid);
+  }catch(e){toast("Failed: "+e.message,"error");}
+}
+async function mgRiskDel(id){ if(!confirm("Delete this risk?"))return;
+  try{ const r=await fetch(API+"/risks/"+id,{method:"DELETE",headers:{Authorization:"Bearer "+TOKEN}}); if(!r.ok){toast("Delete failed ("+r.status+")","error");return;} toast("Risk deleted","ok"); loadRisks(document.getElementById("mgRiskProj").value);
+  }catch(e){toast("Failed: "+e.message,"error");}
+}
+/* Tasks */
+let mgTasks=[];
+async function loadTasks(pid){ if(!pid)return;
+  try{ const r=await api("/tasks?project_id="+pid+"&limit=200"); mgTasks=r.items||[];
+    mgTaskRows.innerHTML=mgTasks.map(x=>`<tr><td><b>${x.title}</b></td><td>${x.priority}</td><td><span class="chip ${x.status==='done'?'rag-green':x.status==='blocked'?'rag-red':'rag-amber'}">${(x.status||'').replace('_',' ')}</span></td><td>${h(x.estimate_hours)}</td><td class="rowf"><button class="btn ghost" style="padding:3px 10px;font-size:12px" onclick='mgTaskEdit("${x.id}")'>Edit</button><button class="btn ghost" style="padding:3px 10px;font-size:12px" onclick="mgTaskDel('${x.id}')">Delete</button></td></tr>`).join("")||`<tr><td colspan="5" class="muted">No tasks.</td></tr>`;
+    document.getElementById("mgTaskFormCard").style.display="none";
+  }catch(e){mgTaskRows.innerHTML=`<tr><td colspan="5" class="muted">Failed: ${e.message}</td></tr>`;}
+}
+function mgTaskEdit(id){mgTaskForm(mgTasks.find(x=>x.id===id));}
+function mgTaskForm(x){
+  const c=document.getElementById("mgTaskFormCard");c.style.display="block";
+  c.innerHTML=`<h3 style="margin:0 0 10px">${x?'Edit task':'New task'}</h3><div class="grid two">
+    ${fldRow("tkTitle","Title",x?x.title:'')}
+    ${selRow("tkPrio","Priority",x?x.priority:'medium',["low","medium","high","critical"])}
+    ${fldRow("tkEst","Estimate hours",x?x.estimate_hours:'0.00')}
+    ${x?selRow("tkStatus","Status",x.status,["todo","in_progress","in_review","blocked","done","cancelled"]):''}
+    </div><div class="rowf" style="margin-top:8px"><button class="btn" onclick="mgTaskSave('${x?x.id:''}')">${x?'Save':'Create'}</button><button class="btn ghost" onclick="document.getElementById('mgTaskFormCard').style.display='none'">Cancel</button></div>`;
+}
+async function mgTaskSave(id){
+  if(!req("tkTitle")){toast("Title is required","error");return;}
+  const pid=document.getElementById("mgTaskProj").value;
+  const body={title:document.getElementById("tkTitle").value.trim(),priority:document.getElementById("tkPrio").value,estimate_hours:document.getElementById("tkEst").value.trim()||"0.00"};
+  try{ let r;
+    if(id){const st=document.getElementById("tkStatus");if(st)body.status=st.value;r=await fetch(API+"/tasks/"+id,{method:"PATCH",headers:{"Content-Type":"application/json",Authorization:"Bearer "+TOKEN},body:JSON.stringify(body)});}
+    else{body.project_id=pid;r=await fetch(API+"/tasks",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+TOKEN},body:JSON.stringify(body)});}
+    if(!r.ok){toast("Save failed ("+r.status+")","error");return;} toast(id?"Task saved":"Task created","ok"); loadTasks(pid);
+  }catch(e){toast("Failed: "+e.message,"error");}
+}
+async function mgTaskDel(id){ if(!confirm("Delete this task?"))return;
+  try{ const r=await fetch(API+"/tasks/"+id,{method:"DELETE",headers:{Authorization:"Bearer "+TOKEN}}); if(!r.ok){toast("Delete failed ("+r.status+")","error");return;} toast("Task deleted","ok"); loadTasks(document.getElementById("mgTaskProj").value);
+  }catch(e){toast("Failed: "+e.message,"error");}
+}
+/* Benefits */
+let mgBenefits=[];
+async function loadBenefits(pid){ if(!pid)return;
+  try{ const r=await api("/benefits?project_id="+pid+"&limit=200"); mgBenefits=r.items||[];
+    mgBenRows.innerHTML=mgBenefits.map(x=>`<tr><td><b>${x.title}</b></td><td>${x.category}</td><td>${money(x.target_value)}</td><td>${money(x.realized_value)}</td><td><span class="chip ${x.status==='realized'?'rag-green':x.status==='missed'||x.status==='at_risk'?'rag-red':'rag-amber'}">${(x.status||'').replace('_',' ')}</span></td><td class="rowf"><button class="btn ghost" style="padding:3px 10px;font-size:12px" onclick='mgBenRealize("${x.id}")'>Realize</button><button class="btn ghost" style="padding:3px 10px;font-size:12px" onclick='mgBenEdit("${x.id}")'>Edit</button><button class="btn ghost" style="padding:3px 10px;font-size:12px" onclick="mgBenDel('${x.id}')">Delete</button></td></tr>`).join("")||`<tr><td colspan="6" class="muted">No benefits.</td></tr>`;
+    document.getElementById("mgBenFormCard").style.display="none";
+  }catch(e){mgBenRows.innerHTML=`<tr><td colspan="6" class="muted">Failed: ${e.message}</td></tr>`;}
+}
+function mgBenEdit(id){mgBenForm(mgBenefits.find(x=>x.id===id));}
+function mgBenForm(x){
+  const c=document.getElementById("mgBenFormCard");c.style.display="block";
+  c.innerHTML=`<h3 style="margin:0 0 10px">${x?'Edit benefit':'New benefit'}</h3><div class="grid two">
+    ${fldRow("bnTitle","Title",x?x.title:'')}
+    ${selRow("bnCat","Category",x?x.category:'operational',["financial","operational","strategic","customer","compliance","risk_reduction"])}
+    ${fldRow("bnTarget","Target value",x?x.target_value:'0.00')}
+    ${fldRow("bnReal","Realized value",x?x.realized_value:'0.00')}
+    ${fldRow("bnInv","Investment cost",x?x.investment_cost:'0.00')}
+    ${x?selRow("bnStatus","Status",x.status,["planned","in_progress","partially_realized","realized","at_risk","missed"]):''}
+    </div><div class="rowf" style="margin-top:8px"><button class="btn" onclick="mgBenSave('${x?x.id:''}')">${x?'Save':'Create'}</button><button class="btn ghost" onclick="document.getElementById('mgBenFormCard').style.display='none'">Cancel</button></div>`;
+}
+async function mgBenSave(id){
+  if(!req("bnTitle")){toast("Title is required","error");return;}
+  const pid=document.getElementById("mgBenProj").value;
+  const body={title:document.getElementById("bnTitle").value.trim(),category:document.getElementById("bnCat").value,target_value:document.getElementById("bnTarget").value.trim()||"0.00",realized_value:document.getElementById("bnReal").value.trim()||"0.00",investment_cost:document.getElementById("bnInv").value.trim()||"0.00"};
+  try{ let r;
+    if(id){const st=document.getElementById("bnStatus");if(st)body.status=st.value;r=await fetch(API+"/benefits/"+id,{method:"PATCH",headers:{"Content-Type":"application/json",Authorization:"Bearer "+TOKEN},body:JSON.stringify(body)});}
+    else{body.project_id=pid;r=await fetch(API+"/benefits",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+TOKEN},body:JSON.stringify(body)});}
+    if(!r.ok){toast("Save failed ("+r.status+")","error");return;} toast(id?"Benefit saved":"Benefit created","ok"); loadBenefits(pid);
+  }catch(e){toast("Failed: "+e.message,"error");}
+}
+async function mgBenDel(id){ if(!confirm("Delete this benefit?"))return;
+  try{ const r=await fetch(API+"/benefits/"+id,{method:"DELETE",headers:{Authorization:"Bearer "+TOKEN}}); if(!r.ok){toast("Delete failed ("+r.status+")","error");return;} toast("Benefit deleted","ok"); loadBenefits(document.getElementById("mgBenProj").value);
+  }catch(e){toast("Failed: "+e.message,"error");}
+}
+/* Milestones */
+let mgMilestones=[];
+async function loadMilestones(pid){ if(!pid)return;
+  try{ const r=await api("/milestones?project_id="+pid+"&limit=200"); mgMilestones=r.items||[];
+    mgMsRows.innerHTML=mgMilestones.map(x=>`<tr><td><b>${x.name}</b></td><td>${(x.milestone_type||'').replace('_',' ')}</td><td class="muted">${x.target_date||'—'}</td><td><span class="chip ${x.status==='achieved'?'rag-green':x.status==='missed'?'rag-red':'rag-amber'}">${(x.status||'').replace('_',' ')}</span></td><td class="rowf"><button class="btn ghost" style="padding:3px 10px;font-size:12px" onclick='mgMsEdit("${x.id}")'>Edit</button><button class="btn ghost" style="padding:3px 10px;font-size:12px" onclick="mgMsDel('${x.id}')">Delete</button></td></tr>`).join("")||`<tr><td colspan="5" class="muted">No milestones.</td></tr>`;
+    document.getElementById("mgMsFormCard").style.display="none";
+  }catch(e){mgMsRows.innerHTML=`<tr><td colspan="5" class="muted">Failed: ${e.message}</td></tr>`;}
+}
+function mgMsEdit(id){mgMsForm(mgMilestones.find(x=>x.id===id));}
+function mgMsForm(x){
+  const c=document.getElementById("mgMsFormCard");c.style.display="block";
+  c.innerHTML=`<h3 style="margin:0 0 10px">${x?'Edit milestone':'New milestone'}</h3><div class="grid two">
+    ${fldRow("msName","Name",x?x.name:'')}
+    ${selRow("msType","Type",x?x.milestone_type:'deliverable',["checkpoint","deliverable","phase_gate","go_live","external","other"])}
+    ${fldRow("msDate","Target date",x?x.target_date:'', 'type="date"')}
+    ${x?selRow("msStatus","Status",x.status,["planned","in_progress","achieved","missed","cancelled"]):''}
+    </div><div class="rowf" style="margin-top:8px"><button class="btn" onclick="mgMsSave('${x?x.id:''}')">${x?'Save':'Create'}</button><button class="btn ghost" onclick="document.getElementById('mgMsFormCard').style.display='none'">Cancel</button></div>`;
+}
+async function mgMsSave(id){
+  if(!req("msName")){toast("Name is required","error");return;}
+  if(!req("msDate")){toast("Target date is required","error");return;}
+  const pid=document.getElementById("mgMsProj").value;
+  const body={name:document.getElementById("msName").value.trim(),milestone_type:document.getElementById("msType").value,target_date:document.getElementById("msDate").value};
+  try{ let r;
+    if(id){const st=document.getElementById("msStatus");if(st)body.status=st.value;r=await fetch(API+"/milestones/"+id,{method:"PATCH",headers:{"Content-Type":"application/json",Authorization:"Bearer "+TOKEN},body:JSON.stringify(body)});}
+    else{body.project_id=pid;r=await fetch(API+"/milestones",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+TOKEN},body:JSON.stringify(body)});}
+    if(!r.ok){toast("Save failed ("+r.status+")","error");return;} toast(id?"Milestone saved":"Milestone created","ok"); loadMilestones(pid);
+  }catch(e){toast("Failed: "+e.message,"error");}
+}
+async function mgMsDel(id){ if(!confirm("Delete this milestone?"))return;
+  try{ const r=await fetch(API+"/milestones/"+id,{method:"DELETE",headers:{Authorization:"Bearer "+TOKEN}}); if(!r.ok){toast("Delete failed ("+r.status+")","error");return;} toast("Milestone deleted","ok"); loadMilestones(document.getElementById("mgMsProj").value);
+  }catch(e){toast("Failed: "+e.message,"error");}
+}
+/* Portfolios (org-level) */
+function renderPortfolios(){
+  mgPfRows.innerHTML=mgPortfoliosList.map(p=>`<tr><td><b>${p.name}</b></td><td class="muted">${p.code}</td><td>${p.priority||'\u2014'}</td><td><span class="chip ${p.status==='active'?'rag-green':p.status==='closed'?'rag-not_started':'rag-amber'}">${p.status}</span></td><td>${money(p.planned_budget)}</td><td class="rowf"><button class="btn ghost" style="padding:3px 10px;font-size:12px" onclick='mgPfEdit("${p.id}")'>Edit</button><button class="btn ghost" style="padding:3px 10px;font-size:12px" onclick="mgPfDel('${p.id}')">Delete</button></td></tr>`).join("")||`<tr><td colspan="6" class="muted">No portfolios \u2014 click New portfolio.</td></tr>`;
+  document.getElementById("mgPfFormCard").style.display="none";
+}
+function mgPfEdit(id){mgPfForm(mgPortfoliosList.find(p=>p.id===id));}
+function mgPfForm(p){
+  const c=document.getElementById("mgPfFormCard");c.style.display="block";
+  c.innerHTML=`<h3 style="margin:0 0 10px">${p?'Edit portfolio':'New portfolio'}</h3><div class="grid two">
+    ${fldRow("pfName","Name",p?p.name:'')}
+    ${fldRow("pfCode","Code",p?p.code:'', p?'disabled':'')}
+    ${selRow("pfPrio","Priority",p?p.priority:'medium',["low","medium","high","critical"])}
+    ${fldRow("pfBudget","Planned budget",p?p.planned_budget:'0.00')}
+    ${p?selRow("pfStatus","Status",p.status,["proposed","active","on_hold","closed","cancelled"]):''}
+    </div><div class="rowf" style="margin-top:8px"><button class="btn" onclick="mgPfSave('${p?p.id:''}')">${p?'Save':'Create'}</button><button class="btn ghost" onclick="document.getElementById('mgPfFormCard').style.display='none'">Cancel</button></div>`;
+}
+async function mgPfSave(id){
+  if(!req("pfName")||(!id&&!req("pfCode"))){toast("Name and code are required","error");return;}
+  const body={name:document.getElementById("pfName").value.trim(),priority:document.getElementById("pfPrio").value,planned_budget:document.getElementById("pfBudget").value.trim()||"0.00"};
+  try{ let r;
+    if(id){const st=document.getElementById("pfStatus");if(st)body.status=st.value;r=await fetch(API+"/portfolios/"+id,{method:"PATCH",headers:{"Content-Type":"application/json",Authorization:"Bearer "+TOKEN},body:JSON.stringify(body)});}
+    else{body.code=document.getElementById("pfCode").value.trim();r=await fetch(API+"/portfolios",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+TOKEN},body:JSON.stringify(body)});}
+    if(!r.ok){toast("Save failed ("+r.status+")","error");return;} toast(id?"Portfolio saved":"Portfolio created","ok"); await mgLoadPortfolios(); renderPortfolios();
+  }catch(e){toast("Failed: "+e.message,"error");}
+}
+async function mgPfDel(id){ if(!confirm("Delete this portfolio?"))return;
+  try{ const r=await fetch(API+"/portfolios/"+id,{method:"DELETE",headers:{Authorization:"Bearer "+TOKEN}}); if(!r.ok){toast("Delete failed ("+r.status+")","error");return;} toast("Portfolio deleted","ok"); await mgLoadPortfolios(); renderPortfolios();
+  }catch(e){toast("Failed: "+e.message,"error");}
+}
+/* Programs (portfolio-scoped) */
+let mgPrograms=[];
+async function loadPrograms(portfolioId){ if(!portfolioId)return;
+  try{ const r=await api("/programs?portfolio_id="+portfolioId+"&limit=200"); mgPrograms=r.items||[];
+    mgProgRows.innerHTML=mgPrograms.map(x=>`<tr><td><b>${x.name}</b></td><td class="muted">${x.code}</td><td>${x.priority||'\u2014'}</td><td><span class="chip ${x.status==='active'?'rag-green':x.status==='closed'?'rag-not_started':'rag-amber'}">${x.status}</span></td><td class="rowf"><button class="btn ghost" style="padding:3px 10px;font-size:12px" onclick='mgProgEdit("${x.id}")'>Edit</button><button class="btn ghost" style="padding:3px 10px;font-size:12px" onclick="mgProgDel('${x.id}')">Delete</button></td></tr>`).join("")||`<tr><td colspan="5" class="muted">No programs.</td></tr>`;
+    document.getElementById("mgProgFormCard").style.display="none";
+  }catch(e){mgProgRows.innerHTML=`<tr><td colspan="5" class="muted">Failed: ${e.message}</td></tr>`;}
+}
+function mgProgEdit(id){mgProgForm(mgPrograms.find(x=>x.id===id));}
+function mgProgForm(x){
+  const c=document.getElementById("mgProgFormCard");c.style.display="block";
+  c.innerHTML=`<h3 style="margin:0 0 10px">${x?'Edit program':'New program'}</h3><div class="grid two">
+    ${fldRow("pgName","Name",x?x.name:'')}
+    ${fldRow("pgCode","Code",x?x.code:'', x?'disabled':'')}
+    ${selRow("pgPrio","Priority",x?x.priority:'medium',["low","medium","high","critical"])}
+    ${x?selRow("pgStatus","Status",x.status,["proposed","active","on_hold","closed","cancelled"]):''}
+    </div><div class="rowf" style="margin-top:8px"><button class="btn" onclick="mgProgSave('${x?x.id:''}')">${x?'Save':'Create'}</button><button class="btn ghost" onclick="document.getElementById('mgProgFormCard').style.display='none'">Cancel</button></div>`;
+}
+async function mgProgSave(id){
+  if(!req("pgName")||(!id&&!req("pgCode"))){toast("Name and code are required","error");return;}
+  const pid=document.getElementById("mgProgPort").value;
+  const body={name:document.getElementById("pgName").value.trim(),priority:document.getElementById("pgPrio").value};
+  try{ let r;
+    if(id){const st=document.getElementById("pgStatus");if(st)body.status=st.value;r=await fetch(API+"/programs/"+id,{method:"PATCH",headers:{"Content-Type":"application/json",Authorization:"Bearer "+TOKEN},body:JSON.stringify(body)});}
+    else{body.portfolio_id=pid;body.code=document.getElementById("pgCode").value.trim();r=await fetch(API+"/programs",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+TOKEN},body:JSON.stringify(body)});}
+    if(!r.ok){toast("Save failed ("+r.status+")","error");return;} toast(id?"Program saved":"Program created","ok"); loadPrograms(pid);
+  }catch(e){toast("Failed: "+e.message,"error");}
+}
+async function mgProgDel(id){ if(!confirm("Delete this program?"))return;
+  try{ const r=await fetch(API+"/programs/"+id,{method:"DELETE",headers:{Authorization:"Bearer "+TOKEN}}); if(!r.ok){toast("Delete failed ("+r.status+")","error");return;} toast("Program deleted","ok"); loadPrograms(document.getElementById("mgProgPort").value);
+  }catch(e){toast("Failed: "+e.message,"error");}
+}
+/* Resources (org-level) */
+let mgResources=[];
+async function loadResources(){
+  try{ const r=await api("/resources?limit=200"); mgResources=r.items||[];
+    mgResRows.innerHTML=mgResources.map(x=>`<tr><td><b>${x.name}</b></td><td>${(x.resource_type||'').replace('_',' ')}</td><td>${h(x.capacity_hours_per_week)}</td><td>${money(x.cost_rate)}</td><td class="rowf"><button class="btn ghost" style="padding:3px 10px;font-size:12px" onclick='mgResAllocate("${x.id}")'>Allocate</button><button class="btn ghost" style="padding:3px 10px;font-size:12px" onclick='mgResEdit("${x.id}")'>Edit</button><button class="btn ghost" style="padding:3px 10px;font-size:12px" onclick="mgResDel('${x.id}')">Delete</button></td></tr>`).join("")||`<tr><td colspan="5" class="muted">No resources.</td></tr>`;
+    document.getElementById("mgResFormCard").style.display="none";
+  }catch(e){mgResRows.innerHTML=`<tr><td colspan="5" class="muted">Failed: ${e.message}</td></tr>`;}
+}
+function mgResEdit(id){mgResForm(mgResources.find(x=>x.id===id));}
+function mgResForm(x){
+  const c=document.getElementById("mgResFormCard");c.style.display="block";
+  c.innerHTML=`<h3 style="margin:0 0 10px">${x?'Edit resource':'New resource'}</h3><div class="grid two">
+    ${fldRow("rsName","Name",x?x.name:'')}
+    ${selRow("rsType","Type",x?x.resource_type:'employee',["employee","contractor","vendor","equipment"])}
+    ${fldRow("rsCap","Capacity (h/wk)",x?x.capacity_hours_per_week:'40.00')}
+    ${fldRow("rsRate","Cost rate",x?x.cost_rate:'0.00')}
+    </div><div class="rowf" style="margin-top:8px"><button class="btn" onclick="mgResSave('${x?x.id:''}')">${x?'Save':'Create'}</button><button class="btn ghost" onclick="document.getElementById('mgResFormCard').style.display='none'">Cancel</button></div>`;
+}
+async function mgResSave(id){
+  if(!req("rsName")){toast("Name is required","error");return;}
+  const body={name:document.getElementById("rsName").value.trim(),capacity_hours_per_week:document.getElementById("rsCap").value.trim()||"40.00",cost_rate:document.getElementById("rsRate").value.trim()||"0.00"};
+  try{ let r;
+    if(id){r=await fetch(API+"/resources/"+id,{method:"PATCH",headers:{"Content-Type":"application/json",Authorization:"Bearer "+TOKEN},body:JSON.stringify(body)});}
+    else{body.resource_type=document.getElementById("rsType").value;r=await fetch(API+"/resources",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+TOKEN},body:JSON.stringify(body)});}
+    if(!r.ok){toast("Save failed ("+r.status+")","error");return;} toast(id?"Resource saved":"Resource created","ok"); loadResources();
+  }catch(e){toast("Failed: "+e.message,"error");}
+}
+async function mgResDel(id){ if(!confirm("Delete this resource?"))return;
+  try{ const r=await fetch(API+"/resources/"+id,{method:"DELETE",headers:{Authorization:"Bearer "+TOKEN}}); if(!r.ok){toast("Delete failed ("+r.status+")","error");return;} toast("Resource deleted","ok"); loadResources();
+  }catch(e){toast("Failed: "+e.message,"error");}
+}
+/* Vendors (org-level) */
+let mgVendors=[];
+async function loadVendors(){
+  try{ const r=await api("/vendors?limit=200"); mgVendors=r.items||[];
+    mgVenRows.innerHTML=mgVendors.map(x=>`<tr><td><b>${x.name}</b></td><td class="muted">${x.code}</td><td>${(x.category||'').replace('_',' ')}</td><td><span class="chip ${x.status==='active'?'rag-green':x.status==='blacklisted'||x.status==='suspended'?'rag-red':'rag-not_started'}">${x.status}</span></td><td class="rowf"><button class="btn ghost" style="padding:3px 10px;font-size:12px" onclick='mgVenEdit("${x.id}")'>Edit</button><button class="btn ghost" style="padding:3px 10px;font-size:12px" onclick="mgVenDel('${x.id}')">Delete</button></td></tr>`).join("")||`<tr><td colspan="5" class="muted">No vendors.</td></tr>`;
+    document.getElementById("mgVenFormCard").style.display="none";
+  }catch(e){mgVenRows.innerHTML=`<tr><td colspan="5" class="muted">Failed: ${e.message}</td></tr>`;}
+}
+function mgVenEdit(id){mgVenForm(mgVendors.find(x=>x.id===id));}
+function mgVenForm(x){
+  const c=document.getElementById("mgVenFormCard");c.style.display="block";
+  c.innerHTML=`<h3 style="margin:0 0 10px">${x?'Edit vendor':'New vendor'}</h3><div class="grid two">
+    ${fldRow("vnName","Name",x?x.name:'')}
+    ${fldRow("vnCode","Code",x?x.code:'', x?'disabled':'')}
+    ${selRow("vnCat","Category",x?x.category:'other',["technology","prof_services","staffing","hardware","facilities","other"])}
+    ${x?selRow("vnStatus","Status",x.status,["active","inactive","suspended","blacklisted"]):''}
+    </div><div class="rowf" style="margin-top:8px"><button class="btn" onclick="mgVenSave('${x?x.id:''}')">${x?'Save':'Create'}</button><button class="btn ghost" onclick="document.getElementById('mgVenFormCard').style.display='none'">Cancel</button></div>`;
+}
+async function mgVenSave(id){
+  if(!req("vnName")||(!id&&!req("vnCode"))){toast("Name and code are required","error");return;}
+  const body={name:document.getElementById("vnName").value.trim(),category:document.getElementById("vnCat").value};
+  try{ let r;
+    if(id){const st=document.getElementById("vnStatus");if(st)body.status=st.value;r=await fetch(API+"/vendors/"+id,{method:"PATCH",headers:{"Content-Type":"application/json",Authorization:"Bearer "+TOKEN},body:JSON.stringify(body)});}
+    else{body.code=document.getElementById("vnCode").value.trim();r=await fetch(API+"/vendors",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+TOKEN},body:JSON.stringify(body)});}
+    if(!r.ok){toast("Save failed ("+r.status+")","error");return;} toast(id?"Vendor saved":"Vendor created","ok"); loadVendors();
+  }catch(e){toast("Failed: "+e.message,"error");}
+}
+async function mgVenDel(id){ if(!confirm("Delete this vendor?"))return;
+  try{ const r=await fetch(API+"/vendors/"+id,{method:"DELETE",headers:{Authorization:"Bearer "+TOKEN}}); if(!r.ok){toast("Delete failed ("+r.status+")","error");return;} toast("Vendor deleted","ok"); loadVendors();
+  }catch(e){toast("Failed: "+e.message,"error");}
+}
+/* dropdown fillers for vendors + initiatives */
+async function mgFillVenDropdown(selId,loader){
+  if(!mgVendors.length){try{const r=await api("/vendors?limit=200");mgVendors=r.items||[];}catch(_){}}
+  const sel=document.getElementById(selId);const cur=sel.value;
+  sel.innerHTML=mgVendors.map(v=>`<option value="${v.id}">${v.name} (${v.code})</option>`).join("");
+  if(mgVendors.length){sel.value=cur&&mgVendors.some(v=>v.id===cur)?cur:mgVendors[0].id;loader(sel.value);}
+  else sel.innerHTML=`<option value="">No vendors</option>`;
+}
+let mgInitiatives=[];
+async function mgFillInitDropdown(selId,loader){
+  if(!mgInitiatives.length){try{const r=await api("/initiatives?limit=200");mgInitiatives=r.items||[];}catch(_){}}
+  const sel=document.getElementById(selId);const cur=sel.value;
+  sel.innerHTML=mgInitiatives.map(i=>`<option value="${i.id}">${i.name}</option>`).join("");
+  if(mgInitiatives.length){sel.value=cur&&mgInitiatives.some(i=>i.id===cur)?cur:mgInitiatives[0].id;loader(sel.value);}
+  else sel.innerHTML=`<option value="">No initiatives</option>`;
+}
+/* Contracts (vendor-scoped) */
+let mgContracts=[];
+async function loadContracts(vid){ if(!vid)return;
+  try{ const r=await api("/contracts?vendor_id="+vid+"&limit=200"); mgContracts=r.items||[];
+    mgConRows.innerHTML=mgContracts.map(x=>`<tr><td><b>${x.title}</b></td><td>${(x.contract_type||'').replace(/_/g,' ')}</td><td>${money(x.value)}</td><td><span class="chip ${x.status==='active'?'rag-green':x.status==='terminated'?'rag-red':'rag-not_started'}">${x.status}</span></td><td class="rowf"><button class="btn ghost" style="padding:3px 10px;font-size:12px" onclick='mgConEdit("${x.id}")'>Edit</button><button class="btn ghost" style="padding:3px 10px;font-size:12px" onclick="mgConDel('${x.id}')">Delete</button></td></tr>`).join("")||`<tr><td colspan="5" class="muted">No contracts.</td></tr>`;
+    document.getElementById("mgConFormCard").style.display="none";
+  }catch(e){mgConRows.innerHTML=`<tr><td colspan="5" class="muted">Failed: ${e.message}</td></tr>`;}
+}
+function mgConEdit(id){mgConForm(mgContracts.find(x=>x.id===id));}
+function mgConForm(x){ const c=document.getElementById("mgConFormCard");c.style.display="block";
+  c.innerHTML=`<h3 style="margin:0 0 10px">${x?'Edit contract':'New contract'}</h3><div class="grid two">
+    ${fldRow("cnTitle","Title",x?x.title:'')}
+    ${selRow("cnType","Type",x?x.contract_type:'fixed_price',["fixed_price","time_and_materials","retainer","subscription","other"])}
+    ${fldRow("cnValue","Value",x?x.value:'0.00')}
+    ${x?selRow("cnStatus","Status",x.status,["draft","active","expired","terminated","completed"]):''}
+    </div><div class="rowf" style="margin-top:8px"><button class="btn" onclick="mgConSave('${x?x.id:''}')">${x?'Save':'Create'}</button><button class="btn ghost" onclick="document.getElementById('mgConFormCard').style.display='none'">Cancel</button></div>`;
+}
+async function mgConSave(id){ if(!req("cnTitle")){toast("Title is required","error");return;}
+  const vid=document.getElementById("mgConVen").value;
+  const body={title:document.getElementById("cnTitle").value.trim(),contract_type:document.getElementById("cnType").value,value:document.getElementById("cnValue").value.trim()||"0.00"};
+  try{ let r; if(id){const st=document.getElementById("cnStatus");if(st)body.status=st.value;r=await fetch(API+"/contracts/"+id,{method:"PATCH",headers:{"Content-Type":"application/json",Authorization:"Bearer "+TOKEN},body:JSON.stringify(body)});}
+    else{body.vendor_id=vid;r=await fetch(API+"/contracts",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+TOKEN},body:JSON.stringify(body)});}
+    if(!r.ok){toast("Save failed ("+r.status+")","error");return;} toast(id?"Contract saved":"Contract created","ok"); loadContracts(vid);
+  }catch(e){toast("Failed: "+e.message,"error");}
+}
+async function mgConDel(id){ if(!confirm("Delete this contract?"))return;
+  try{ const r=await fetch(API+"/contracts/"+id,{method:"DELETE",headers:{Authorization:"Bearer "+TOKEN}}); if(!r.ok){toast("Delete failed ("+r.status+")","error");return;} toast("Contract deleted","ok"); loadContracts(document.getElementById("mgConVen").value);
+  }catch(e){toast("Failed: "+e.message,"error");}
+}
+/* Purchase Orders (vendor-scoped) */
+let mgOrders=[];
+async function loadOrders(vid){ if(!vid)return;
+  try{ const r=await api("/purchase-orders?vendor_id="+vid+"&limit=200"); mgOrders=r.items||[];
+    mgPoRows.innerHTML=mgOrders.map(x=>`<tr><td><b>${x.reference||'\u2014'}</b></td><td>${money(x.committed_amount)}</td><td>${money(x.invoiced_amount)}</td><td><span class="chip ${x.status==='paid'||x.status==='invoiced'?'rag-green':x.status==='cancelled'?'rag-red':'rag-amber'}">${(x.status||'').replace(/_/g,' ')}</span></td><td class="rowf"><button class="btn ghost" style="padding:3px 10px;font-size:12px" onclick='mgPoEdit("${x.id}")'>Edit</button><button class="btn ghost" style="padding:3px 10px;font-size:12px" onclick="mgPoDel('${x.id}')">Delete</button></td></tr>`).join("")||`<tr><td colspan="5" class="muted">No purchase orders.</td></tr>`;
+    document.getElementById("mgPoFormCard").style.display="none";
+  }catch(e){mgPoRows.innerHTML=`<tr><td colspan="5" class="muted">Failed: ${e.message}</td></tr>`;}
+}
+function mgPoEdit(id){mgPoForm(mgOrders.find(x=>x.id===id));}
+function mgPoForm(x){ const c=document.getElementById("mgPoFormCard");c.style.display="block";
+  c.innerHTML=`<h3 style="margin:0 0 10px">${x?'Edit purchase order':'New purchase order'}</h3><div class="grid two">
+    ${fldRow("poRef","Reference",x?x.reference:'')}
+    ${fldRow("poComm","Committed amount",x?x.committed_amount:'0.00')}
+    ${fldRow("poInv","Invoiced amount",x?x.invoiced_amount:'0.00')}
+    ${x?selRow("poStatus","Status",x.status,["draft","issued","partially_invoiced","invoiced","paid","cancelled"]):''}
+    </div><div class="rowf" style="margin-top:8px"><button class="btn" onclick="mgPoSave('${x?x.id:''}')">${x?'Save':'Create'}</button><button class="btn ghost" onclick="document.getElementById('mgPoFormCard').style.display='none'">Cancel</button></div>`;
+}
+async function mgPoSave(id){
+  const vid=document.getElementById("mgPoVen").value;
+  const body={reference:document.getElementById("poRef").value.trim(),committed_amount:document.getElementById("poComm").value.trim()||"0.00",invoiced_amount:document.getElementById("poInv").value.trim()||"0.00"};
+  try{ let r; if(id){const st=document.getElementById("poStatus");if(st)body.status=st.value;r=await fetch(API+"/purchase-orders/"+id,{method:"PATCH",headers:{"Content-Type":"application/json",Authorization:"Bearer "+TOKEN},body:JSON.stringify(body)});}
+    else{body.vendor_id=vid;r=await fetch(API+"/purchase-orders",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+TOKEN},body:JSON.stringify(body)});}
+    if(!r.ok){toast("Save failed ("+r.status+")","error");return;} toast(id?"PO saved":"PO created","ok"); loadOrders(vid);
+  }catch(e){toast("Failed: "+e.message,"error");}
+}
+async function mgPoDel(id){ if(!confirm("Delete this purchase order?"))return;
+  try{ const r=await fetch(API+"/purchase-orders/"+id,{method:"DELETE",headers:{Authorization:"Bearer "+TOKEN}}); if(!r.ok){toast("Delete failed ("+r.status+")","error");return;} toast("PO deleted","ok"); loadOrders(document.getElementById("mgPoVen").value);
+  }catch(e){toast("Failed: "+e.message,"error");}
+}
+/* Finance (project-scoped) */
+let mgFinance=[];
+async function loadFinance(pid){ if(!pid)return;
+  try{ const r=await api("/financial-entries?project_id="+pid+"&limit=200"); mgFinance=r.items||[];
+    mgFinRows.innerHTML=mgFinance.map(x=>`<tr><td>${x.entry_type}</td><td>${x.category||'\u2014'}</td><td>${money(x.amount)}</td><td class="muted">${x.entry_date||'\u2014'}</td><td class="rowf"><button class="btn ghost" style="padding:3px 10px;font-size:12px" onclick='mgFinEdit("${x.id}")'>Edit</button><button class="btn ghost" style="padding:3px 10px;font-size:12px" onclick="mgFinDel('${x.id}')">Delete</button></td></tr>`).join("")||`<tr><td colspan="5" class="muted">No entries.</td></tr>`;
+    document.getElementById("mgFinFormCard").style.display="none";
+  }catch(e){mgFinRows.innerHTML=`<tr><td colspan="5" class="muted">Failed: ${e.message}</td></tr>`;}
+}
+function mgFinEdit(id){mgFinForm(mgFinance.find(x=>x.id===id));}
+function mgFinForm(x){ const c=document.getElementById("mgFinFormCard");c.style.display="block";
+  c.innerHTML=`<h3 style="margin:0 0 10px">${x?'Edit entry':'New financial entry'}</h3><div class="grid two">
+    ${selRow("fnType","Type",x?x.entry_type:'actual',["budget","forecast","actual"])}
+    ${fldRow("fnCat","Category",x?x.category:'')}
+    ${fldRow("fnAmt","Amount",x?x.amount:'0.00')}
+    ${fldRow("fnDate","Entry date",x?x.entry_date:'', 'type="date"')}
+    </div><div class="rowf" style="margin-top:8px"><button class="btn" onclick="mgFinSave('${x?x.id:''}')">${x?'Save':'Create'}</button><button class="btn ghost" onclick="document.getElementById('mgFinFormCard').style.display='none'">Cancel</button></div>`;
+}
+async function mgFinSave(id){ if(!req("fnDate")){toast("Entry date is required","error");return;}
+  const pid=document.getElementById("mgFinProj").value;
+  const body={entry_type:document.getElementById("fnType").value,category:document.getElementById("fnCat").value.trim(),amount:document.getElementById("fnAmt").value.trim()||"0.00",entry_date:document.getElementById("fnDate").value};
+  try{ let r; if(id){r=await fetch(API+"/financial-entries/"+id,{method:"PATCH",headers:{"Content-Type":"application/json",Authorization:"Bearer "+TOKEN},body:JSON.stringify(body)});}
+    else{body.project_id=pid;r=await fetch(API+"/financial-entries",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+TOKEN},body:JSON.stringify(body)});}
+    if(!r.ok){toast("Save failed ("+r.status+")","error");return;} toast(id?"Entry saved":"Entry created","ok"); loadFinance(pid);
+  }catch(e){toast("Failed: "+e.message,"error");}
+}
+async function mgFinDel(id){ if(!confirm("Delete this entry?"))return;
+  try{ const r=await fetch(API+"/financial-entries/"+id,{method:"DELETE",headers:{Authorization:"Bearer "+TOKEN}}); if(!r.ok){toast("Delete failed ("+r.status+")","error");return;} toast("Entry deleted","ok"); loadFinance(document.getElementById("mgFinProj").value);
+  }catch(e){toast("Failed: "+e.message,"error");}
+}
+/* Initiatives (org-level) */
+async function loadInitiatives(){
+  try{ const r=await api("/initiatives?limit=200"); mgInitiatives=r.items||[];
+    mgInitRows.innerHTML=mgInitiatives.map(x=>`<tr><td><b>${x.name}</b></td><td>${x.priority||'\u2014'}</td><td><span class="chip ${x.status==='active'?'rag-green':x.status==='cancelled'?'rag-red':'rag-amber'}">${(x.status||'').replace(/_/g,' ')}</span></td><td class="rowf"><button class="btn ghost" style="padding:3px 10px;font-size:12px" onclick='mgInitEdit("${x.id}")'>Edit</button><button class="btn ghost" style="padding:3px 10px;font-size:12px" onclick="mgInitDel('${x.id}')">Delete</button></td></tr>`).join("")||`<tr><td colspan="4" class="muted">No initiatives.</td></tr>`;
+    document.getElementById("mgInitFormCard").style.display="none";
+  }catch(e){mgInitRows.innerHTML=`<tr><td colspan="4" class="muted">Failed: ${e.message}</td></tr>`;}
+}
+function mgInitEdit(id){mgInitForm(mgInitiatives.find(x=>x.id===id));}
+function mgInitForm(x){ const c=document.getElementById("mgInitFormCard");c.style.display="block";
+  c.innerHTML=`<h3 style="margin:0 0 10px">${x?'Edit initiative':'New initiative'}</h3><div class="grid two">
+    ${fldRow("inName","Name",x?x.name:'')}
+    ${selRow("inPrio","Priority",x?x.priority:'medium',["low","medium","high","critical"])}
+    ${x?selRow("inStatus","Status",x.status,["proposed","active","on_hold","completed","cancelled"]):''}
+    </div><div class="rowf" style="margin-top:8px"><button class="btn" onclick="mgInitSave('${x?x.id:''}')">${x?'Save':'Create'}</button><button class="btn ghost" onclick="document.getElementById('mgInitFormCard').style.display='none'">Cancel</button></div>`;
+}
+async function mgInitSave(id){ if(!req("inName")){toast("Name is required","error");return;}
+  const body={name:document.getElementById("inName").value.trim(),priority:document.getElementById("inPrio").value};
+  try{ let r; if(id){const st=document.getElementById("inStatus");if(st)body.status=st.value;r=await fetch(API+"/initiatives/"+id,{method:"PATCH",headers:{"Content-Type":"application/json",Authorization:"Bearer "+TOKEN},body:JSON.stringify(body)});}
+    else{r=await fetch(API+"/initiatives",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+TOKEN},body:JSON.stringify(body)});}
+    if(!r.ok){toast("Save failed ("+r.status+")","error");return;} toast(id?"Initiative saved":"Initiative created","ok"); mgInitiatives=[]; loadInitiatives();
+  }catch(e){toast("Failed: "+e.message,"error");}
+}
+async function mgInitDel(id){ if(!confirm("Delete this initiative?"))return;
+  try{ const r=await fetch(API+"/initiatives/"+id,{method:"DELETE",headers:{Authorization:"Bearer "+TOKEN}}); if(!r.ok){toast("Delete failed ("+r.status+")","error");return;} toast("Initiative deleted","ok"); mgInitiatives=[]; loadInitiatives();
+  }catch(e){toast("Failed: "+e.message,"error");}
+}
+/* Goals (initiative-scoped) */
+let mgGoals=[];
+async function loadGoals(initId){ if(!initId)return;
+  try{ const r=await api("/initiatives/"+initId+"/goals?limit=200"); mgGoals=r.items||[];
+    mgGoalRows.innerHTML=mgGoals.map(x=>`<tr><td><b>${x.title}</b></td><td>${x.category||'\u2014'}</td><td><span class="chip ${x.status==='achieved'?'rag-green':x.status==='missed'||x.status==='at_risk'?'rag-red':'rag-amber'}">${(x.status||'').replace(/_/g,' ')}</span></td><td class="rowf"><button class="btn ghost" style="padding:3px 10px;font-size:12px" onclick='mgGoalEdit("${x.id}")'>Edit</button><button class="btn ghost" style="padding:3px 10px;font-size:12px" onclick="mgGoalDel('${x.id}')">Delete</button></td></tr>`).join("")||`<tr><td colspan="4" class="muted">No goals.</td></tr>`;
+    document.getElementById("mgGoalFormCard").style.display="none";
+  }catch(e){mgGoalRows.innerHTML=`<tr><td colspan="4" class="muted">Failed: ${e.message}</td></tr>`;}
+}
+function mgGoalEdit(id){mgGoalForm(mgGoals.find(x=>x.id===id));}
+function mgGoalForm(x){ const c=document.getElementById("mgGoalFormCard");c.style.display="block";
+  c.innerHTML=`<h3 style="margin:0 0 10px">${x?'Edit goal':'New goal'}</h3><div class="grid two">
+    ${fldRow("glTitle","Title",x?x.title:'')}
+    ${selRow("glCat","Category",x?x.category:'other',["growth","efficiency","customer","quality","financial","sustainability","other"])}
+    ${x?selRow("glStatus","Status",x.status,["not_started","in_progress","at_risk","achieved","missed"]):''}
+    </div><div class="rowf" style="margin-top:8px"><button class="btn" onclick="mgGoalSave('${x?x.id:''}')">${x?'Save':'Create'}</button><button class="btn ghost" onclick="document.getElementById('mgGoalFormCard').style.display='none'">Cancel</button></div>`;
+}
+async function mgGoalSave(id){ if(!req("glTitle")){toast("Title is required","error");return;}
+  const initId=document.getElementById("mgGoalInit").value;
+  const body={title:document.getElementById("glTitle").value.trim(),category:document.getElementById("glCat").value};
+  try{ let r; if(id){const st=document.getElementById("glStatus");if(st)body.status=st.value;r=await fetch(API+"/goals/"+id,{method:"PATCH",headers:{"Content-Type":"application/json",Authorization:"Bearer "+TOKEN},body:JSON.stringify(body)});}
+    else{body.initiative_id=initId;r=await fetch(API+"/goals",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+TOKEN},body:JSON.stringify(body)});}
+    if(!r.ok){toast("Save failed ("+r.status+")","error");return;} toast(id?"Goal saved":"Goal created","ok"); loadGoals(initId);
+  }catch(e){toast("Failed: "+e.message,"error");}
+}
+async function mgGoalDel(id){ if(!confirm("Delete this goal?"))return;
+  try{ const r=await fetch(API+"/goals/"+id,{method:"DELETE",headers:{Authorization:"Bearer "+TOKEN}}); if(!r.ok){toast("Delete failed ("+r.status+")","error");return;} toast("Goal deleted","ok"); loadGoals(document.getElementById("mgGoalInit").value);
+  }catch(e){toast("Failed: "+e.message,"error");}
+}
+/* KPIs (goal-scoped, initiative\u2192goal cascade) */
+let mgKpis=[];
+async function mgKpiInitChange(initId){ if(!initId)return;
+  const sel=document.getElementById("mgKpiGoal");
+  try{ const r=await api("/initiatives/"+initId+"/goals?limit=200"); const goals=r.items||[];
+    sel.innerHTML=goals.map(g=>`<option value="${g.id}">${g.title}</option>`).join("")||`<option value="">No goals</option>`;
+    if(goals.length){sel.value=goals[0].id;loadKpis(goals[0].id);} else {mgKpiRows.innerHTML=`<tr><td colspan="5" class="muted">This initiative has no goals.</td></tr>`;}
+  }catch(e){sel.innerHTML=`<option value="">Failed</option>`;}
+}
+async function loadKpis(goalId){ if(!goalId)return;
+  try{ const r=await api("/goals/"+goalId+"/kpis?limit=200"); mgKpis=r.items||[];
+    mgKpiRows.innerHTML=mgKpis.map(x=>`<tr><td><b>${x.name}</b>${x.unit?' <span class="muted">('+x.unit+')</span>':''}</td><td>${h(x.current_value)}</td><td>${h(x.target_value)}</td><td>${x.direction}</td><td class="rowf"><button class="btn ghost" style="padding:3px 10px;font-size:12px" onclick='mgKpiMeasure("${x.id}")'>Record</button><button class="btn ghost" style="padding:3px 10px;font-size:12px" onclick='mgKpiEdit("${x.id}")'>Edit</button><button class="btn ghost" style="padding:3px 10px;font-size:12px" onclick="mgKpiDel('${x.id}')">Delete</button></td></tr>`).join("")||`<tr><td colspan="5" class="muted">No KPIs.</td></tr>`;
+    document.getElementById("mgKpiFormCard").style.display="none";
+  }catch(e){mgKpiRows.innerHTML=`<tr><td colspan="5" class="muted">Failed: ${e.message}</td></tr>`;}
+}
+function mgKpiEdit(id){mgKpiForm(mgKpis.find(x=>x.id===id));}
+function mgKpiForm(x){ const c=document.getElementById("mgKpiFormCard");c.style.display="block";
+  c.innerHTML=`<h3 style="margin:0 0 10px">${x?'Edit KPI':'New KPI'}</h3><div class="grid two">
+    ${fldRow("kpName","Name",x?x.name:'')}
+    ${fldRow("kpUnit","Unit",x?x.unit:'')}
+    ${selRow("kpDir","Direction",x?x.direction:'increase',["increase","decrease"])}
+    ${fldRow("kpBase","Baseline",x?x.baseline_value:'0')}
+    ${fldRow("kpCur","Current",x?x.current_value:'0')}
+    ${fldRow("kpTgt","Target",x?x.target_value:'0')}
+    </div><div class="rowf" style="margin-top:8px"><button class="btn" onclick="mgKpiSave('${x?x.id:''}')">${x?'Save':'Create'}</button><button class="btn ghost" onclick="document.getElementById('mgKpiFormCard').style.display='none'">Cancel</button></div>`;
+}
+async function mgKpiSave(id){ if(!req("kpName")){toast("Name is required","error");return;}
+  const goalId=document.getElementById("mgKpiGoal").value;
+  const body={name:document.getElementById("kpName").value.trim(),unit:document.getElementById("kpUnit").value.trim(),direction:document.getElementById("kpDir").value,baseline_value:document.getElementById("kpBase").value.trim()||"0",current_value:document.getElementById("kpCur").value.trim()||"0",target_value:document.getElementById("kpTgt").value.trim()||"0"};
+  try{ let r; if(id){r=await fetch(API+"/kpis/"+id,{method:"PATCH",headers:{"Content-Type":"application/json",Authorization:"Bearer "+TOKEN},body:JSON.stringify(body)});}
+    else{body.goal_id=goalId;r=await fetch(API+"/kpis",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+TOKEN},body:JSON.stringify(body)});}
+    if(!r.ok){toast("Save failed ("+r.status+")","error");return;} toast(id?"KPI saved":"KPI created","ok"); loadKpis(goalId);
+  }catch(e){toast("Failed: "+e.message,"error");}
+}
+async function mgKpiDel(id){ if(!confirm("Delete this KPI?"))return;
+  try{ const r=await fetch(API+"/kpis/"+id,{method:"DELETE",headers:{Authorization:"Bearer "+TOKEN}}); if(!r.ok){toast("Delete failed ("+r.status+")","error");return;} toast("KPI deleted","ok"); loadKpis(document.getElementById("mgKpiGoal").value);
+  }catch(e){toast("Failed: "+e.message,"error");}
+}
+/* Nested detail actions */
+function mgKpiMeasure(id){
+  const k=mgKpis.find(x=>x.id===id)||{};
+  openFormModal("Record KPI measurement",`<label>Current value${k.unit?' ('+k.unit+')':''}</label><input id="kmVal" type="text" value="${k.current_value||''}">`,
+    async ()=>{ const v=(document.getElementById("kmVal").value||"").trim(); if(v===""){toast("Value required","error");return;}
+      try{ const r=await fetch(API+"/kpis/"+id+"/measurement",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+TOKEN},body:JSON.stringify({current_value:v})});
+        if(!r.ok){toast("Failed ("+r.status+")","error");return;} closeFormModal();toast("Measurement recorded","ok");loadKpis(document.getElementById("mgKpiGoal").value);
+      }catch(e){toast("Failed: "+e.message,"error");}
+    },"Record");
+}
+function mgBenRealize(id){
+  const b=mgBenefits.find(x=>x.id===id)||{};
+  openFormModal("Record benefit realization",`<label>Realized value</label><input id="brVal" type="text" value="${b.realized_value||'0.00'}"><label>Realized date</label><input id="brDate" type="date"><label>Status</label><select id="brStatus"><option value="">(auto)</option><option>in_progress</option><option>partially_realized</option><option>realized</option><option>at_risk</option><option>missed</option></select>`,
+    async ()=>{ const v=(document.getElementById("brVal").value||"").trim(); if(v===""){toast("Value required","error");return;}
+      const body={realized_value:v}; const d=document.getElementById("brDate").value; if(d)body.realized_date=d; const st=document.getElementById("brStatus").value; if(st)body.status=st;
+      try{ const r=await fetch(API+"/benefits/"+id+"/realization",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+TOKEN},body:JSON.stringify(body)});
+        if(!r.ok){toast("Failed ("+r.status+")","error");return;} closeFormModal();toast("Realization recorded","ok");loadBenefits(document.getElementById("mgBenProj").value);
+      }catch(e){toast("Failed: "+e.message,"error");}
+    },"Record");
+}
+let mgAllocs=[], mgAllocResId=null;
+function mgResAllocate(id){
+  mgAllocResId=id;
+  const res=mgResources.find(r=>r.id===id)||{};
+  const c=document.getElementById("mgResFormCard");c.style.display="block";
+  c.innerHTML=`<h3 style="margin:0 0 6px">Allocations — ${res.name||''}</h3><div id="mgAllocForm"></div>
+    <table><thead><tr><th>Project</th><th>%</th><th>Start</th><th>End</th><th></th></tr></thead><tbody id="mgAllocRows"></tbody></table>
+    <div class="rowf" style="margin-top:8px"><button class="btn" onclick="mgAllocFormShow(null)">Add allocation</button><button class="btn ghost" onclick="document.getElementById('mgResFormCard').style.display='none'">Close</button></div>`;
+  mgAllocLoad();
+}
+async function mgAllocLoad(){
+  try{ const r=await api("/allocations?resource_id="+mgAllocResId+"&limit=200"); mgAllocs=r.items||[];
+    const pn=id=>{const p=mgProjects.find(x=>x.id===id);return p?p.name:String(id).slice(0,8);};
+    mgAllocRows.innerHTML=mgAllocs.map(a=>`<tr><td>${pn(a.project_id)}</td><td>${a.allocation_percent}%</td><td class="muted">${a.start_date}</td><td class="muted">${a.end_date}</td><td class="rowf"><button class="btn ghost" style="padding:2px 8px;font-size:11px" onclick='mgAllocEdit("${a.id}")'>Edit</button><button class="btn ghost" style="padding:2px 8px;font-size:11px" onclick="mgAllocDel('${a.id}')">Delete</button></td></tr>`).join("")||`<tr><td colspan="5" class="muted">No allocations.</td></tr>`;
+  }catch(e){mgAllocRows.innerHTML=`<tr><td colspan="5" class="muted">Failed: ${e.message}</td></tr>`;}
+}
+function mgAllocEdit(id){mgAllocFormShow(mgAllocs.find(a=>a.id===id));}
+function mgAllocFormShow(a){
+  const opts=mgProjects.map(p=>`<option value="${p.id}" ${a&&a.project_id===p.id?'selected':''}>${p.name}</option>`).join("")||`<option value="">No projects</option>`;
+  document.getElementById("mgAllocForm").innerHTML=`<div class="grid two" style="margin-bottom:8px">
+    <div><label style="font-size:12px;color:var(--mute);font-weight:700">Project</label><select id="alProj" ${a?'disabled':''} style="width:100%;padding:8px;border:1px solid var(--line);border-radius:8px">${opts}</select></div>
+    <div><label style="font-size:12px;color:var(--mute);font-weight:700">Allocation %</label><input id="alPct" type="number" min="1" max="100" value="${a?a.allocation_percent:50}" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:8px"></div>
+    <div><label style="font-size:12px;color:var(--mute);font-weight:700">Start</label><input id="alStart" type="date" value="${a?a.start_date:''}" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:8px"></div>
+    <div><label style="font-size:12px;color:var(--mute);font-weight:700">End</label><input id="alEnd" type="date" value="${a?a.end_date:''}" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:8px"></div>
+    </div><button class="btn" onclick="mgAllocSave('${a?a.id:''}')">${a?'Save':'Add'}</button> <button class="btn ghost" onclick="document.getElementById('mgAllocForm').innerHTML=''">Cancel</button>`;
+}
+async function mgAllocSave(id){
+  const pct=parseInt(document.getElementById("alPct").value||"50",10);
+  const start=document.getElementById("alStart").value,end=document.getElementById("alEnd").value;
+  if(!start||!end){toast("Start and end dates are required","error");return;}
+  try{ let r;
+    if(id){r=await fetch(API+"/allocations/"+id,{method:"PATCH",headers:{"Content-Type":"application/json",Authorization:"Bearer "+TOKEN},body:JSON.stringify({allocation_percent:pct,start_date:start,end_date:end})});}
+    else{const pid=document.getElementById("alProj").value;if(!pid){toast("Project required","error");return;}r=await fetch(API+"/resources/"+mgAllocResId+"/allocations",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+TOKEN},body:JSON.stringify({project_id:pid,start_date:start,end_date:end,allocation_percent:pct})});}
+    if(!r.ok){toast("Failed ("+r.status+"): "+(await r.text()).slice(0,120),"error");return;}
+    toast(id?"Allocation saved":"Allocation added","ok");document.getElementById("mgAllocForm").innerHTML="";mgAllocLoad();
+  }catch(e){toast("Failed: "+e.message,"error");}
+}
+async function mgAllocDel(id){ if(!confirm("Delete this allocation?"))return;
+  try{ const r=await fetch(API+"/allocations/"+id,{method:"DELETE",headers:{Authorization:"Bearer "+TOKEN}}); if(!r.ok){toast("Delete failed ("+r.status+")","error");return;} toast("Allocation deleted","ok"); mgAllocLoad();
+  }catch(e){toast("Failed: "+e.message,"error");}
+}
+async function retryDue(){
+  try{
+    const r=await fetch(API+"/integrations/webhooks/deliveries/retry-due",{method:"POST",headers:{Authorization:"Bearer "+TOKEN}});
+    if(!r.ok){toast("Retry failed ("+r.status+")","error");return;}
+    const d=await r.json();toast(`Retried ${d.total} delivery(ies)`,"ok");
+    loaded.integrations=false;loadIntegrations();
+  }catch(e){toast("Retry failed: "+e.message,"error");}
+}
+</script>
+</body>
+</html>

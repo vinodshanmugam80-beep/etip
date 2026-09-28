@@ -1,0 +1,63 @@
+# Reference GitLab CI pipeline: your CI/CD as ETIP's executor.
+#
+# Copy into your application repo as .gitlab-ci.yml, together with
+# scripts/etip_report.py. Each stage runs the real work then reports the outcome
+# (with metrics) back to a build in ETIP.
+#
+# Set CI/CD variables (Settings → CI/CD → Variables):
+#   ETIP_URL       e.g. https://etip.your-company.com
+#   ETIP_API_KEY   an ETIP API key (build:manage) — masked/protected
+#   ETIP_BUILD_ID  the build request id to report against
+
+stages: [build, test, qa, deploy, perf]
+
+default:
+  image: python:3.12-slim
+
+variables:
+  PROV: "gitlab-ci"
+
+build:
+  stage: build
+  script:
+    # <your compile/build command>
+    - python scripts/etip_report.py run --stage build --status passed --provider "$PROV" --logs-url "$CI_JOB_URL"
+  # report failure if the job fails
+  after_script:
+    - if [ "$CI_JOB_STATUS" = "failed" ]; then python scripts/etip_report.py run --stage build --status failed --provider "$PROV"; fi
+
+unit_test:
+  stage: test
+  script:
+    # <your test command; compute coverage into $COV>
+    - COV=91.4
+    - python scripts/etip_report.py run --stage unit_test --status passed --provider "$PROV" --metrics "{\"coverage\": $COV}"
+
+qa:
+  stage: qa
+  script:
+    # <lint / security / accessibility>
+    - python scripts/etip_report.py run --stage qa --status passed --provider "$PROV"
+
+deploy_staging:
+  stage: deploy
+  environment: staging
+  script:
+    # <your deploy command>
+    - python scripts/etip_report.py deploy --environment staging --status deployed --url "https://staging.example.com" --version "${CI_COMMIT_SHORT_SHA}" --provider "$PROV"
+
+perf_test:
+  stage: perf
+  script:
+    # <run k6/Locust; parse $P95 and $RPS>
+    - P95=180; RPS=500
+    - python scripts/etip_report.py run --stage perf_test --status passed --provider "$PROV" --metrics "{\"p95_ms\": $P95, \"rps\": $RPS}"
+
+deploy_production:
+  stage: deploy
+  environment: production
+  when: manual                       # gate production behind a manual approval
+  rules:
+    - if: '$CI_COMMIT_TAG'
+  script:
+    - python scripts/etip_report.py deploy --environment production --status deployed --url "https://app.example.com" --version "${CI_COMMIT_TAG}" --provider "$PROV"
