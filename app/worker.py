@@ -10,9 +10,11 @@ as they are added.
 from __future__ import annotations
 
 import os
+import pkgutil
 
 from celery import Celery
 
+import app.modules as _modules_package
 from app.core.config import get_settings
 
 _settings = get_settings()
@@ -46,7 +48,16 @@ celery_app.conf.update(
 )
 
 # Feature modules register their tasks under ``app.modules.<name>.tasks``.
-celery_app.autodiscover_tasks(["app.modules"])
+# ``autodiscover_tasks`` imports ``"<package>.tasks"`` for each package name it
+# is given, so it must be handed each feature module individually (e.g.
+# ``app.modules.integration``) rather than the ``app.modules`` package itself,
+# which has no ``tasks`` module of its own and would silently discover nothing.
+_feature_modules = [
+    f"{_modules_package.__name__}.{module_info.name}"
+    for module_info in pkgutil.iter_modules(_modules_package.__path__)
+    if module_info.ispkg
+]
+celery_app.autodiscover_tasks(_feature_modules, force=True)
 
 
 @celery_app.task(name="etip.ping")  # type: ignore[untyped-decorator]

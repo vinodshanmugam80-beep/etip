@@ -53,6 +53,20 @@ _DASHBOARD_CSP = (
     "connect-src 'self'"
 )
 
+# FastAPI's built-in interactive API docs (Swagger UI and ReDoc) render an HTML
+# page that loads swagger-ui/redoc's JS and CSS from a CDN and runs an inline
+# bootstrap script. The strict default policy blocks all of that, leaving /docs
+# and /redoc blank. Scope a policy to exactly the origins those pages need.
+_API_DOCS_PATHS = {"/docs", "/redoc", "/docs/oauth2-redirect"}
+_API_DOCS_CSP = (
+    "default-src 'self'; "
+    "script-src 'self' 'unsafe-inline' cdn.jsdelivr.net; "
+    "style-src 'self' 'unsafe-inline' cdn.jsdelivr.net fonts.googleapis.com; "
+    "font-src 'self' fonts.gstatic.com; "
+    "img-src 'self' data: fastapi.tiangolo.com cdn.jsdelivr.net; "
+    "connect-src 'self'"
+)
+
 
 class RequestContextMiddleware(BaseHTTPMiddleware):
     """Assign a request id and expose it to logs and response headers."""
@@ -91,6 +105,9 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         if request.url.path in _DASHBOARD_PATHS:
             # Override the strict default with the dashboard-scoped policy.
             response.headers["Content-Security-Policy"] = _DASHBOARD_CSP
+        elif request.url.path in _API_DOCS_PATHS:
+            # Override the strict default so Swagger UI / ReDoc can render.
+            response.headers["Content-Security-Policy"] = _API_DOCS_CSP
         return response
 
 
