@@ -20,6 +20,7 @@ COPY --from=builder /opt/venv /opt/venv
 COPY app ./app
 COPY alembic ./alembic
 COPY alembic.ini ./alembic.ini
+COPY scripts ./scripts
 # appuser owns its own working directory so processes that write small runtime
 # files here (e.g. Celery Beat's schedule file) can do so without root.
 RUN chown -R appuser:appuser /app
